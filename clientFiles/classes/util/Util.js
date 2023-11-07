@@ -1,0 +1,16 @@
+class Util {
+	//Returns a random integer between range [min, max], if one value is given min is 0 and max is that value
+	static randInt(min, max = "none") {
+		if (max === "none"){
+			max = min;
+			min = 0;
+		}
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+
+	//Creates a deep copy of an object, array1 == array2 without array1 === array2
+	static clone(obj) {
+		//Get the JSON data from the object and put it together again
+		return JSON.parse(JSON.stringify(obj));
+	}
+}
