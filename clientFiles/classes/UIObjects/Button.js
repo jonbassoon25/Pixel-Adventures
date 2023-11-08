@@ -1,16 +1,11 @@
 import { Display } from "../util/Display.js";
 import { Mouse } from "../util/Mouse.js";
 import { UI } from "./UI.js"
+import { UIObject } from "./UIObject.js";
 
-export class Button {
+export class Button extends UIObject {
 	constructor(image, x, y, width, height) {
-		//Absolute position (on 1920 by 1080 screen)
-		this.absX = x;
-		this.absY = y;
-		this.absWidth = width;
-		this.absHeight = height;
-		//Relative position (to screen size);
-		[this.x, this.y, this.width, this.height] = [...Display.calcElementDimenstions(x, y, width, height)];
+		super(x, y, width, height);
 		//Assign image
 		this.image = image;
 	}
@@ -38,19 +33,14 @@ export class Button {
 		return this.#isHovered() && Mouse.button1Down;
 	}
 
-	//Updates the button's position relative to screen size
-	#updateRelativePosition() {
-		[this.x, this.y, this.width, this.height] = [...Display.calcElementDimenstions(this.absX, this.absY, this.absWidth, this.absHeight)];
-	}
-
 	//Draws the button and updates with new values
 	update() {
-		this.#updateRelativePosition();
-		UI.draw(this.image, this.x, this.y, this.width, this.height, false);
+		super.updatePosition();
+		UI.draw(this.image, this.x, this.y, this.width, this.height);
 		if (this.#isPressed()) {
-			UI.draw("buttonPressed", this.x, this.y, this.width, this.height, false);
+			UI.draw("buttonPressed", this.x, this.y, this.width, this.height);
 		} else if (this.#isHovered()) {
-			UI.draw("buttonHovered", this.x, this.y, this.width, this.height, false);
+			UI.draw("buttonHovered", this.x, this.y, this.width, this.height);
 		}
 	}
 

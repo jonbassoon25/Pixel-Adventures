@@ -5,7 +5,7 @@ const canvas = document.getElementById("gameScreen");
 const ctx = canvas.getContext("2d");
 
 export class UI {
-	static draw(image, x, y, width, height, resize = true) {
+	static draw(image, x, y, width, height, resize = false) {
 		//If the coordinates passed in are absolute (they need to be resized)
 		if (resize) {
 			//Calculate the new element dimensions
@@ -20,7 +20,7 @@ export class UI {
 		}
 	}
 
-	static drawText(text, x, y, size, resize = true) {
+	static drawText(text, x, y, size, resize = false) {
 		if (resize) {
 			let packet = [...Display.calcElementDimenstions(x, y, 0, size)];
 			x = packet[0];

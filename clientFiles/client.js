@@ -26,6 +26,8 @@ import { Mouse } from "./classes/util/Mouse.js";
 
 import { Button } from "./classes/UIObjects/Button.js";
 import { Textbox } from "./classes/UIObjects/Textbox.js";
+import { Slider } from "./classes/UIObjects/Slider.js";
+import { UI } from "./classes/UIObjects/UI.js";
 
 
 //------------------------------------------------------------------------------------//
@@ -42,6 +44,7 @@ const socket = io();
 //Define test classes
 let testButton = new Button("placeholder", 100, 100, 100, 100);
 let testTextbox = new Textbox(500, 100, 500, 50);
+let testSlider = new Slider(500, 200, 500, 50, 0, 100, 5);
 
 function updateGame() {
 	Display.calcScreenSize();
@@ -53,6 +56,11 @@ function updateGame() {
 
 	//Test textbox class
 	testTextbox.update();
+
+	//Test slider class
+	testSlider.update();
+	UI.drawText(testSlider.snapOutput().toString(), 800, 230, 50, true);
+	
 
 	
 	//Reset single frame input varialbes
