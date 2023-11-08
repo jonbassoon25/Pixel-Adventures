@@ -12,6 +12,7 @@ export class Mouse {
 	static button2Pressed = false;
 	static button2Released = false;
 
+	//Reset all single frame Mouse variables
 	static resetVars() {
 		this.button1Pressed = false;
 		this.button1Released = false;

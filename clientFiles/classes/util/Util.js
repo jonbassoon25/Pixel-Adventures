@@ -1,4 +1,4 @@
-class Util {
+export class Util {
 	//Returns a random integer between range [min, max], if one value is given min is 0 and max is that value
 	static randInt(min, max = "none") {
 		if (max === "none"){

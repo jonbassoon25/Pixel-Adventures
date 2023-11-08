@@ -5,13 +5,16 @@ function loadAssets() {
 	foldersToLoad["util"] = ["placeholder"];
 	foldersToLoad["buttons"] = ["buttonHovered", "buttonPressed"];
 
-	//Load folders
+	//For every folder to load
 	for (let currentFolderIndex = 0; currentFolderIndex < Object.keys(foldersToLoad).length; currentFolderIndex++) {
+		//Assign the current folder name
 		let currentFolder = Object.keys(foldersToLoad)[currentFolderIndex];
+		//For every item in the current folder
 		for (let currentItemIndex = 0; currentItemIndex < foldersToLoad[currentFolder].length; currentItemIndex++) {
+			//Assign the current item
 			let currentItem = foldersToLoad[currentFolder][currentItemIndex];
 			console.log("/textures/" + currentFolder + "/" + currentItem + ".png");
-
+			//Load the current item into textures as an image
 			textures[currentItem] = new Image();
 			textures[currentItem].src = "/textures/" + currentFolder + "/" + currentItem + ".png";
 		}
@@ -19,6 +22,8 @@ function loadAssets() {
 	return textures;
 }
 
+//Assign textures
 let textures = loadAssets();
 
+//Export textures
 export { textures };

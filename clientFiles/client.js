@@ -16,23 +16,26 @@ Created: 11.4.23
 //------------------------------------------------------------------------------------//
 //Imports
 
-//Util Classes
+//Util Imports
 
 import { Display } from "./classes/util/Display.js"
 import { Keyboard } from "./classes/util/Keyboard.js"
 import { Mouse } from "./classes/util/Mouse.js";
+import { textures } from "./classes/util/Textures.js";
+import { Util } from "./classes/util/Util.js";
 
-//UI Object Classes
+//UI Object Imports
 
 import { Button } from "./classes/UIObjects/Button.js";
-import { Textbox } from "./classes/UIObjects/Textbox.js";
 import { Slider } from "./classes/UIObjects/Slider.js";
+import { Textbox } from "./classes/UIObjects/Textbox.js";
 import { UI } from "./classes/UIObjects/UI.js";
 
 
 //------------------------------------------------------------------------------------//
 //Constants
 
+//Define the canvas
 const canvas = document.getElementById("gameScreen");
 
 //Initalize the server communication handler
@@ -89,7 +92,7 @@ setInterval(() => {
 //------------------------------------------------------------------------------------//
 //Event Listeners
 
-//triggers on all mouse down events, sets mouseButtonState to "down"
+//Triggers on all mouse down events, updates Mouse to reflect the current situation
 canvas.addEventListener("mousedown", (event) => {
 	switch (event.button) {
 		case 0:
@@ -105,7 +108,7 @@ canvas.addEventListener("mousedown", (event) => {
 	}
 });
 
-//triggers on all mouse up events, sets mouseButtonState to "false"
+//Triggers on all mouse up events, updates Mouse to reflect the current situation
 canvas.addEventListener("mouseup", (event) => {
 	switch (event.button) {
 		case 0:
@@ -121,13 +124,13 @@ canvas.addEventListener("mouseup", (event) => {
 	}
 });
 
-//triggers on all mouse movements
+//Triggers on all mouse movements, updates Mouse.x and Mouse.y to reflect the current mouse coordinates
 canvas.addEventListener('mousemove', (event) => {
 	Mouse.x = event.clientX;
 	Mouse.y = event.clientY;
 });
 
-//Triggers on all key presses and sets the keyPressed value to true
+//Triggers on all key down events and updates Keyboard to reflect the current situation
 document.addEventListener("keydown", (event) => {
 	//If the key is a standard character key
 	if (event.key.length === 1) {
@@ -148,11 +151,11 @@ document.addEventListener("keydown", (event) => {
 				console.log("Unsupported Key Pressed: " + event.key);
 			}
 	}
-	//allow key presses to register in-game
+	//Allow key presses to register in-game
 	updateGame();
 });
 
-//Removes the key from keysPressed on key release
+//Triggers on all key up events and updates Keyboard to reflect the current situation
 document.addEventListener("keyup", (event) => {
 	//If the key is a standard character key
 	if (event.key.length === 1) {
@@ -171,13 +174,14 @@ document.addEventListener("keyup", (event) => {
 				console.log("Unsupported Key Released: " + event.key);
 			}
 	}
-	//allow key presses to register in-game
+	//Allow key presses to register in-game
 	updateGame();
 });
 
 //------------------------------------------------------------------------------------//
 //Server Events
 
+//Log any recieved server errors
 socket.on("error", (msg) => {
 	console.log(msg);
 });

@@ -1,6 +1,8 @@
+//Define the canvas
 const canvas = document.getElementById("gameScreen");
 
 export class Display {
+	//Define intial variables
 	static sizeMult = 1;
 	static horizontalOffset = 0;
 	static verticalOffset = 0;

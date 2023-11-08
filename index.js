@@ -108,6 +108,8 @@ setTimeout(() => {
 	io.emit("error", "serverDied");
 }, 5000);
 
+
+//Every 10 seconds, diplay the current user count
 setInterval(() => {
 	connections = io.engine.clientsCount;
 	console.log("\nConnected Users: " + connections.toString());

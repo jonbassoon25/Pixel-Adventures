@@ -1,4 +1,5 @@
 export class Keyboard {
+	//Keyboard vars
 	static keysDown = [];
 	static shiftDown = false;
 	static backspaceDown = false;
@@ -8,11 +9,13 @@ export class Keyboard {
 	static shiftPressed = false;
 	static backspacePressed = false;
 
+	//"Presses" a keyboard key
 	static keyDown(key) {
 		this.keysPressed.push(key);
 		this.keysDown = Array.from(new Set([...this.keysDown, key]));
 	}
 
+	//"Releases" a keyboard key
 	static keyUp(key) {
 		this.keysReleased.push(key);
 		for (let keyIndex = 0; keyIndex < this.keysDown.length; keyIndex++) {
@@ -24,6 +27,7 @@ export class Keyboard {
 		}
 	}
 
+	//Resets all single frame Keyboard variables
 	static resetVars() {
 		this.keysPressed = [];
 		this.keysReleased = [];
