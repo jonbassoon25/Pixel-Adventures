@@ -27,7 +27,7 @@ export class UI {
 	}
 
 	//Draws specified text onto the canvas, can take relative or absolute values
-	static drawText(text, x, y, size, resize = false) {
+	static drawText(text, x, y, size, resize = false, color = "#ffffff") {
 		//If the coordinates passed in are absolute (they need to be resized)
 		if (resize) {
 			//Use trash variable to store the unneeded return from Display.calcElementDimensions
@@ -36,8 +36,8 @@ export class UI {
 		}
 		//Set the font size to fill the textbox from top to bottom
 		ctx.font = size.toString() + "px Monospace";
-		//Set the text color to white
-		ctx.fillStyle = "#ffffff";
+		//Set the text color to the given color
+		ctx.fillStyle = color;
 		//Draw the text onto the canvas
 		ctx.fillText(text, x, y);
 	}

@@ -60,7 +60,7 @@ function save(data, file){
 };
 
 
-//Send a update to EVERYONE in the room, (socket io is stupid and doesn't send it to the client makeing the request)
+//Send a update to EVERYONE in the room, (socket io is stupid and doesn't send it to the client making the request)
 function roomEmit(roomName, socket, event, data) {
 	socket.to(roomName).emit(event, data);
 	socket.emit(event, data);

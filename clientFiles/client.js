@@ -3,7 +3,7 @@ Created by Jonathan Hanson and Zac Young
 
 client.js
 
-Client side javascript for FBLA Game 2023 - 2024
+Main client side javascript file for FBLA Game 2023 - 2024
 
 Created: 11.4.23
 */
@@ -21,6 +21,8 @@ Created: 11.4.23
 import { Display } from "./classes/util/Display.js"
 import { Keyboard } from "./classes/util/Keyboard.js"
 import { Mouse } from "./classes/util/Mouse.js";
+import { Scene } from "./classes/util/Scene.js";
+import { SceneCreator } from "./classes/util/SceneCreator.js";
 import { textures } from "./classes/util/Textures.js";
 import { Util } from "./classes/util/Util.js";
 
@@ -31,6 +33,10 @@ import { Slider } from "./classes/UIObjects/Slider.js";
 import { Textbox } from "./classes/UIObjects/Textbox.js";
 import { UI } from "./classes/UIObjects/UI.js";
 
+//Game Object Imports
+import { GameObject } from "./classes/gameObjects/GameObject.js";
+
+Scene.initScene(SceneCreator.createPlaceholderScene(20, 20));
 
 //------------------------------------------------------------------------------------//
 //Constants
@@ -52,17 +58,23 @@ let testSlider = new Slider(500, 200, 500, 50, 0, 100, 5);
 function updateGame() {
 	Display.calcScreenSize();
 
+	//For UI Element Testing
+	/*
 	//Test button class using subsistAsButton() method
 	if (testButton.subsistAsButton()) {
 		console.log("Button Released");
 	}
 
-	//Test textbox class
+	//Test textbox class, currently textbox char limit and text y position aren't calculated correctly
 	testTextbox.update();
 
 	//Test slider class
 	testSlider.update();
 	UI.drawText(testSlider.snapOutput().toString(), 800, 230, 50, true);
+ 	*/
+
+	//Update Scene
+	Scene.update();
 	
 
 	
@@ -120,6 +132,7 @@ canvas.addEventListener("mouseup", (event) => {
 			Mouse.button2Released = true;
 			break;
 		default:
+			//Other mouse buttons (middle click) may be useful at some point
 			console.log("Unknown Mouse Button Released: " + event.button);
 	}
 });

@@ -19,7 +19,7 @@ export class Textbox extends UIObject {
 		//The textbox is not selected by the user
 		this.isSelected = false;
 		//Calculate and set the character limit of the textbox
-		this.charLimit = Math.floor((2 * this.absWidth) / this.absHeight);
+		this.charLimit = Math.floor((2 * this.absWidth) / (this.absHeight + 5));
 	}
 
 	//Logs text input from the Keyboard object
