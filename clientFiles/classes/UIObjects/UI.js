@@ -10,6 +10,9 @@ const ctx = canvas.getContext("2d");
 
 //UI Class
 export class UI {
+	//-1 is flipped, 1 is normal
+	static flipPercent = 1;
+	static flipped = false;
 	//Draws an image onto the canvas, can take a image string or image, can take relative or absolute values
 	static draw(image, x, y, width, height, resize = false) {
 		//If the coordinates passed in are absolute (they need to be resized)
@@ -31,7 +34,7 @@ export class UI {
 		//If the coordinates passed in are absolute (they need to be resized)
 		if (resize) {
 			//Use trash variable to store the unneeded return from Display.calcElementDimensions
-			let trash = 0;
+			let trash;
 			[x, y, trash, size] = [...Display.calcElementDimenstions(x, y, 0, size)];
 		}
 		//Set the font size to fill the textbox from top to bottom
@@ -40,5 +43,13 @@ export class UI {
 		ctx.fillStyle = color;
 		//Draw the text onto the canvas
 		ctx.fillText(text, x, y);
+	}
+
+	static flipScene() {
+		if (this.flipped && this.flipPercent > -1) {
+			this.flipPercent -= 0.1;
+		} else if (this.flipPercent < 1) {
+			this.flipPercent += 0.1;
+		}
 	}
 }

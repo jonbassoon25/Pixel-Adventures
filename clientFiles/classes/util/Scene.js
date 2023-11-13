@@ -1,6 +1,6 @@
 export class Scene {
 	static structure = [[]];
-	static tileSize = 80;
+	static tileSize = 40;
 	//How many pixels have been scrolled (positive = user walking right). 
 	static scrollAmount = 0; 
 

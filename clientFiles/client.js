@@ -36,7 +36,7 @@ import { UI } from "./classes/UIObjects/UI.js";
 //Game Object Imports
 import { GameObject } from "./classes/gameObjects/GameObject.js";
 
-Scene.initScene(SceneCreator.createPlaceholderScene(20, 20));
+Scene.initScene(SceneCreator.createPlaceholderScene(48, 27));
 
 //------------------------------------------------------------------------------------//
 //Constants
