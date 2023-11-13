@@ -3,11 +3,13 @@ export class Keyboard {
 	static keysDown = [];
 	static shiftDown = false;
 	static backspaceDown = false;
+	static escapeDown = false;
 	//Single frame vars
 	static keysPressed = [];
 	static keysReleased = [];
 	static shiftPressed = false;
 	static backspacePressed = false;
+	static escapePressed = false;
 
 	//"Presses" a keyboard key
 	static keyDown(key) {
@@ -33,5 +35,6 @@ export class Keyboard {
 		this.keysReleased = [];
 		this.shiftPressed = false;
 		this.backspacePressed = false;
+		this.escapePressed = false;
 	}
 }

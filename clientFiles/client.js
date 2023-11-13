@@ -29,6 +29,7 @@ import { Util } from "./classes/util/Util.js";
 //UI Object Imports
 
 import { Button } from "./classes/UIObjects/Button.js";
+import { PauseMenu } from "./classes/UIObjects/PauseMenu.js";
 import { Slider } from "./classes/UIObjects/Slider.js";
 import { Textbox } from "./classes/UIObjects/Textbox.js";
 import { UI } from "./classes/UIObjects/UI.js";
@@ -77,6 +78,8 @@ function updateGame() {
 	Scene.update();
 	
 
+	//Update Pause Menu
+	PauseMenu.update();
 	
 	//Reset single frame input varialbes
 	Mouse.resetVars();
@@ -159,6 +162,10 @@ document.addEventListener("keydown", (event) => {
 			Keyboard.backspaceDown = true;
 			Keyboard.backspacePressed = true;
 			break;
+		case "Escape":
+			Keyboard.escapeDown = true;
+			Keyboard.escapePressed = true;
+			break;
 		default:
 			if (event.key.length !== 1) {
 				console.log("Unsupported Key Pressed: " + event.key);
@@ -181,6 +188,9 @@ document.addEventListener("keyup", (event) => {
 			break;
 		case "Backspace": 
 			Keyboard.backspaceDown = false;
+			break;
+		case "Escape":
+			Keyboard.escapeDown = false;
 			break;
 		default:
 			if (event.key.length !== 1) {
