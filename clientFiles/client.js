@@ -40,6 +40,7 @@ import { SceneTile } from "./classes/gameObjects/SceneTile.js";
 
 //Game Entity Imports
 import { PhysicsObject } from "./classes/gameEntities/PhysicsObject.js";
+import { Player } from "./classes/gameEntities/Player.js";
 
 Scene.initScene(SceneCreator.createPlaceholderScene(48, 27));
 
@@ -59,11 +60,6 @@ const socket = io();
 let testButton = new Button("placeholder", 100, 100, 100, 100);
 let testTextbox = new Textbox(500, 100, 500, 50);
 let testSlider = new Slider(500, 200, 500, 50, 0, 100, 5);
-
-let obj1 = new PhysicsObject("placeholder", 960, 100, 50);
-let obj2 = new PhysicsObject("placeholder", 960, 100, 50);
-obj1.velocityVector = [250, 0];
-obj2.velocityVector = [-250, 0];
 
 function updateGame() {
 	Display.calcScreenSize();
@@ -87,19 +83,20 @@ function updateGame() {
 	//Scene.update();
 
 	if (Keyboard.isKeyPressed("r")) {
-		obj1 = new PhysicsObject("placeholder", 960, 100, 50);
-		obj2 = new PhysicsObject("placeholder", 960, 100, 50);
+		var obj1 = new Player(570, 100, 50);
+		var obj2 = new PhysicsObject("placeholder", 1350, 100, 50);
 
 		obj1.velocityVector = [250, 0];
 		obj2.velocityVector = [-250, 0];
 
 		//[obj1, obj2] = [...Physics.collide(obj1, obj2)];
 	}
+	
+
+	
 
 	//Update Physics Objects
-	obj1.update();
-	obj2.update();
-	
+	Physics.update();
 
 	//Update Pause Menu
 	PauseMenu.update();
@@ -194,8 +191,6 @@ document.addEventListener("keydown", (event) => {
 				console.log("Unsupported Key Pressed: " + event.key);
 			}
 	}
-	//Allow key presses to register in-game
-	updateGame();
 });
 
 //Triggers on all key up events and updates Keyboard to reflect the current situation
@@ -220,8 +215,6 @@ document.addEventListener("keyup", (event) => {
 				console.log("Unsupported Key Released: " + event.key);
 			}
 	}
-	//Allow key presses to register in-game
-	updateGame();
 });
 
 //------------------------------------------------------------------------------------//

@@ -7,7 +7,7 @@ import { PauseMenu } from "../UIObjects/PauseMenu.js";
 //Expects 60 updates per second
 export class Physics {
 	//Acceleration due to gravity in px/sec^2
-	static g = 300;
+	static g = 600;
 	//Max falling speed in px/sec
 	static terminalSpeed = 900;
 	//Max lateral speed in px/sec
@@ -20,6 +20,10 @@ export class Physics {
 
 	//Changes the values of the physics object to represent it at this time
 	static simulate(physicsObj) {
+		//If the game is paused, don't update the object's position
+		if (PauseMenu.paused) {
+			return physicsObj;
+		}
 		//Update the y velocity vector of the physics object for gravity
 		physicsObj.velocityVector[1] += this.g / 60;
 		//Constrain the x velocity vector of the physics object within max values
@@ -82,15 +86,19 @@ export class Physics {
 	}
 
 	//Updates all physics objects
-	static update() {
-		for (let i = 0; i < physicsObjects.length; i++) {
-			physicsObjects[i].update();
+	static #updatePhysicsObjects() {
+		for (let i = 0; i < this.physicsObjects.length; i++) {
+			this.physicsObjects[i].update();
 		}
-		for (let i = 0; i < physicsObjects.length; i++) {
-			for (let k = 0; k < physicsObjects.length; k++) {
-				if (i != k && physicsObjects[i].collidesWith(physicsObjects[k])) {
-					console.log("Collision");
-					[physicsObjects[i], physicsObjects[k]] = [...this.collide(physicsObjects[i], physicsObjects[k])];
+	}
+
+	//Updates all physics objects
+	static update() {
+		this.#updatePhysicsObjects();
+		for (let i = 0; i < this.physicsObjects.length; i++) {
+			for (let k = 0; k < this.physicsObjects.length; k++) {
+				if (i != k && this.physicsObjects[i].collidesWith(this.physicsObjects[k])) {
+					[this.physicsObjects[i], this.physicsObjects[k]] = [...this.collide(this.physicsObjects[i], this.physicsObjects[k])];
 				}
 			}
 		}

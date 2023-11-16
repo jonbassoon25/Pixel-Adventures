@@ -1,6 +1,7 @@
 //Util Imports
 import { Display } from "../util/Display.js";
 import { Physics } from "../util/Physics.js";
+import { Util } from "../util/Util.js";
 
 //UI Object Imports
 import { UI } from "../UIObjects/UI.js";
@@ -56,11 +57,24 @@ export class PhysicsObject {
 	collidesWith(physicsObject) {
 		return false;
 	}
+
+	//Deletes this object from the physicsObjects array
+	delete() {
+		Physics.physicsObjects = Util.delValue(Physics.physicsObjects, this);
+	}
+
+	isOutOfBounds() {
+		return this.x < 0 || this.x > 1920 || this.y < 0 || this.y > 1080;
+	}
 	
 	//Updates the physics object
 	update() {
 		this.#updatePhysicsValues(Physics.simulate(this));
 		this.#updatePosition();
+		if (this.isOutOfBounds()) {
+			this.delete();
+			return;
+		}
 		UI.draw(this.image, this.x, this.y, this.width, this.height);
 	}
 }
