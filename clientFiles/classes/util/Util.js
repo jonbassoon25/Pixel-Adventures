@@ -13,4 +13,10 @@ export class Util {
 		//Get the JSON data from the object and put it together again
 		return JSON.parse(JSON.stringify(obj));
 	}
+
+	//Rounds a number to specified decimal position (be cautious of bit representation interference)
+	static round(num, decimals = 0) {
+		console.log(num)
+		return Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals);
+	}
 }

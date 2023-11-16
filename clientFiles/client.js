@@ -21,6 +21,7 @@ Created: 11.4.23
 import { Display } from "./classes/util/Display.js"
 import { Keyboard } from "./classes/util/Keyboard.js"
 import { Mouse } from "./classes/util/Mouse.js";
+import { Physics } from "./classes/util/Physics.js";
 import { Scene } from "./classes/util/Scene.js";
 import { SceneCreator } from "./classes/util/SceneCreator.js";
 import { textures } from "./classes/util/Textures.js";
@@ -35,7 +36,10 @@ import { Textbox } from "./classes/UIObjects/Textbox.js";
 import { UI } from "./classes/UIObjects/UI.js";
 
 //Game Object Imports
-import { GameObject } from "./classes/gameObjects/GameObject.js";
+import { SceneTile } from "./classes/gameObjects/SceneTile.js";
+
+//Game Entity Imports
+import { PhysicsObject } from "./classes/gameEntities/PhysicsObject.js";
 
 Scene.initScene(SceneCreator.createPlaceholderScene(48, 27));
 
@@ -56,6 +60,11 @@ let testButton = new Button("placeholder", 100, 100, 100, 100);
 let testTextbox = new Textbox(500, 100, 500, 50);
 let testSlider = new Slider(500, 200, 500, 50, 0, 100, 5);
 
+let obj1 = new PhysicsObject("placeholder", 960, 100, 50);
+let obj2 = new PhysicsObject("placeholder", 960, 100, 50);
+obj1.velocityVector = [250, 0];
+obj2.velocityVector = [-250, 0];
+
 function updateGame() {
 	Display.calcScreenSize();
 
@@ -75,7 +84,21 @@ function updateGame() {
  	*/
 
 	//Update Scene
-	Scene.update();
+	//Scene.update();
+
+	if (Keyboard.isKeyPressed("r")) {
+		obj1 = new PhysicsObject("placeholder", 960, 100, 50);
+		obj2 = new PhysicsObject("placeholder", 960, 100, 50);
+
+		obj1.velocityVector = [250, 0];
+		obj2.velocityVector = [-250, 0];
+
+		//[obj1, obj2] = [...Physics.collide(obj1, obj2)];
+	}
+
+	//Update Physics Objects
+	obj1.update();
+	obj2.update();
 	
 
 	//Update Pause Menu
@@ -102,7 +125,7 @@ setInterval(() => {
 	}
 	//Incriment frames once per frame
 	frames++;
-}, 1000/30);
+}, 1000/60);
 
 //------------------------------------------------------------------------------------//
 //Event Listeners

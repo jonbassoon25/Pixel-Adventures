@@ -10,7 +10,6 @@ export class PauseMenu {
 	static update() {
 		if (Keyboard.escapePressed) {
 			this.paused = !this.paused;
-			console.log(PauseMenu.paused);
 		}
 		if (this.paused) {
 			UI.draw("buttonPressed", 960, 540, 1920, 1080, true);

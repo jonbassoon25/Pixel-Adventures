@@ -3,7 +3,7 @@ import { Scene } from "../util/Scene.js";
 import { UI } from "../UIObjects/UI.js";
 import { UIObject } from "../UIObjects/UIObject.js";
 
-export class GameObject extends UIObject {
+export class SceneTile extends UIObject {
 	constructor(image, x, y, hitboxPoints = []) {
 		//Calculate absolute values of x
 		super(x * Scene.tileSize - Scene.scrollAmount + Scene.tileSize / 2, y * Scene.tileSize + Scene.tileSize / 2, Scene.tileSize, Scene.tileSize);

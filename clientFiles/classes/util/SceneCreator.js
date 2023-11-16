@@ -1,4 +1,4 @@
-import { GameObject } from "../gameObjects/GameObject.js";
+import { SceneTile } from "../gameObjects/SceneTile.js";
 
 export class SceneCreator {
 	static createPlaceholderScene(width, height) {
@@ -6,7 +6,7 @@ export class SceneCreator {
 		for (let row = 0; row < width; row++) {
 			output.push([]);
 			for (let col = 0; col < height; col++) {
-				output[row].push(new GameObject("placeholder", row, col, [[0, 0], [1, 0], [1, 1], [0, 1]]));
+				output[row].push(new SceneTile("placeholder", row, col, [[0, 0], [1, 0], [1, 1], [0, 1]]));
 			}
 		}
 		return output;

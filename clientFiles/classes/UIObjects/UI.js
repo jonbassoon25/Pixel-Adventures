@@ -47,9 +47,9 @@ export class UI {
 
 	static flipScene() {
 		if (this.flipped && this.flipPercent > -1) {
-			this.flipPercent -= 0.1;
+			this.flipPercent -= 0.05;
 		} else if (this.flipPercent < 1) {
-			this.flipPercent += 0.1;
+			this.flipPercent += 0.05;
 		}
 	}
 }

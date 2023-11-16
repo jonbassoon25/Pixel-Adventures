@@ -11,6 +11,19 @@ export class Keyboard {
 	static backspacePressed = false;
 	static escapePressed = false;
 
+	//Returns if a specified key is down
+
+	static isKeyDown(key) {
+		return Keyboard.keysDown.includes(key);
+	}
+
+	static isKeyPressed(key) {
+		return Keyboard.keysPressed.includes(key);
+	}
+
+	static isKeyReleased(key) {
+		return Keyboard.keysReleased.includes(key);
+	}
 	//"Presses" a keyboard key
 	static keyDown(key) {
 		this.keysPressed.push(key);
