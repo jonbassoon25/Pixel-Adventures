@@ -4,7 +4,10 @@ import { UI } from "../UIObjects/UI.js";
 import { UIObject } from "../UIObjects/UIObject.js";
 
 export class SceneTile extends UIObject {
-	constructor(image, x, y, hitboxPoints = []) {
+	static squareHitbox = [[0, 0], [1, 0], [1, 1], [0, 1]];
+	static triangleHitbox = [[0, 1], [0.5, 0], [1, 1]];
+	
+	constructor(image, x, y, hitboxPoints = SceneTile.squareHitbox, collides = true) {
 		//Calculate absolute values of x
 		super(x * Scene.tileSize - Scene.scrollAmount + Scene.tileSize / 2, y * Scene.tileSize + Scene.tileSize / 2, Scene.tileSize, Scene.tileSize);
 		//Coordinates of the GameObject, expressed relative to coordinte system array
@@ -12,14 +15,23 @@ export class SceneTile extends UIObject {
 		this.relY = y;
 		//Assign image
 		this.image = image;
-		//Hitbox points, expressed relative to the individual coordinate square: 0 = left / up, 1 = right / down. Decimal values to express any value in between. Hitbox points is an 2d array for every point
-		if (hitboxPoints.length < 2) {
-			console.warn("Too few hitboxPoints in GameObject (" + hitboxPoints.length + "/2)\n\tLocation: (" + this.x + ", " + this.y + ")" + "\n\tConverting hitbox to standard box.");
-			this.hitboxPoints = [[0, 0], [1, 0], [1, 1], [0, 1]];
+		//Does this object have collision
+		this.collides = collides;
+		//Hitbox points, expressed relative to the individual coordinate square: 0 = left / up, 1 = right / down. Decimal values to express any value in between. Hitbox points is an 2d array
+		if (hitboxPoints.length < 2 && this.collides) {
+			console.warn("HitboxPoints in SceneTile is too short (" + hitboxPoints.length + "/2)\nConverting to Square Hitbox.");
+			this.hitboxPoints = SceneTile.squareHitbox;
 		} else {
 			this.hitboxPoints = hitboxPoints;
 		}
-		
+	}
+
+	//Returns true or false of if the given point has the possibility of colliding with this object
+	checkPossibleCollision(x, y) {
+		if (this.collides) {
+			return false;
+		}
+		return x >= this.x && x <= this.x + Scene.tileSize && y >= this.y && y <= this.y + Scene.tileSize;
 	}
 	
 	update() {

@@ -14,6 +14,8 @@ export class PhysicsObject {
 		//Set absolute position values
 		this.absX = x;
 		this.absY = y;
+		this.width = 0; //Assigned in update step
+		this.height = 0; //Assigned in update step
 		//Set relative position values
 		let trash;
 		[this.x, this.y, this.width, this.height] = [...Display.calcElementDimenstions(x, y, 0, 0)];
@@ -55,7 +57,7 @@ export class PhysicsObject {
 
 	//Does this object collide with the other given physics object
 	collidesWith(physicsObject) {
-		return false;
+		return Physics.isCollision(this, physicsObject);
 	}
 
 	//Deletes this object from the physicsObjects array

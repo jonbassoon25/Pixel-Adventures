@@ -85,6 +85,17 @@ export class Physics {
 		yield physicsObj2
 	}
 
+	//Do physicsObj1 and physicsObj2 collide
+	isCollision(physicsObj1, physicsObj2) {
+		if ((physicsObj1.x < physicsObj2.x && physicsObj1.x + physicsObj1.width >= physicsObj2.x) || (physicsObj1.x >= physicsObj2.x && physicsObj1.x < physicsObj2.x + physicsObj2.width)) {
+			return true;
+		}
+		if ((physicsObj1.y < physicsObj2.y && physicsObj1.y + physicsObj1.height >= physicsObj2.y) || (physicsObj1.y >= physicsObj2.y && physicsObj1.y < physicsObj2.y + physicsObj2.height)) {
+			return true;
+		}
+		return false;
+	}
+
 	//Simulate the 2d collision of a physics object and an immovable object
 	static staticCollide(physicsObj, horizontalImpact, collisionEnergyTransfer = this.collisionEnergyTransfer) {
 		if (horizontalImpact) {
