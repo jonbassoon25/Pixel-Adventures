@@ -61,6 +61,9 @@ let testButton = new Button("placeholder", 100, 100, 100, 100);
 let testTextbox = new Textbox(500, 100, 500, 50);
 let testSlider = new Slider(500, 200, 500, 50, 0, 100, 5);
 
+let obj1;
+let obj2;
+
 function updateGame() {
 	Display.calcScreenSize();
 
@@ -83,13 +86,21 @@ function updateGame() {
 	//Scene.update();
 
 	if (Keyboard.isKeyPressed("r")) {
-		var obj1 = new Player(570, 100, 50);
-		var obj2 = new PhysicsObject("placeholder", 1350, 100, 50);
+		obj1 = new PhysicsObject("placeholder", 570, 100, 50);
+		obj2 = new PhysicsObject("placeholder", 1350, 100, 50);
 
 		obj1.velocityVector = [250, 0];
 		obj2.velocityVector = [-250, 0];
-
 		//[obj1, obj2] = [...Physics.collide(obj1, obj2)];
+	} 
+	if (Keyboard.isKeyPressed("c")) {
+		[obj1, obj2] = [...Physics.collide(obj1, obj2)];
+	}
+	if (Keyboard.isKeyPressed("h")) {
+		obj1 = Physics.staticCollide(obj1, true);
+	}
+	if (Keyboard.isKeyPressed("v")) {
+		obj1 = Physics.staticCollide(obj1, false);
 	}
 	
 

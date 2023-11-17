@@ -85,6 +85,16 @@ export class Physics {
 		yield physicsObj2
 	}
 
+	//Simulate the 2d collision of a physics object and an immovable object
+	static staticCollide(physicsObj, horizontalImpact, collisionEnergyTransfer = this.collisionEnergyTransfer) {
+		if (horizontalImpact) {
+			physicsObj.velocityVector[0] *= -collisionEnergyTransfer;
+		} else {
+			physicsObj.velocityVector[1] *= -collisionEnergyTransfer;
+		}
+		return physicsObj;
+	}
+
 	//Updates all physics objects
 	static #updatePhysicsObjects() {
 		for (let i = 0; i < this.physicsObjects.length; i++) {
