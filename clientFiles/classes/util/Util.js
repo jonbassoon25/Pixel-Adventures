@@ -28,4 +28,6 @@ export class Util {
 	static round(num, decimals = 0) {
 		return Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals);
 	}
+
+	//Reverses a list
 }

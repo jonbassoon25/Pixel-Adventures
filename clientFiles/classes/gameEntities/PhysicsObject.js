@@ -1,24 +1,18 @@
 //Util Imports
-import { Display } from "../util/Display.js";
+import { HitboxManager } from "../util/HitboxManager.js";
 import { Physics } from "../util/Physics.js";
 import { Util } from "../util/Util.js";
 
 //UI Object Imports
 import { UI } from "../UIObjects/UI.js";
+import { UIObject } from "../UIObjects/UIObject.js";
 
-export class PhysicsObject {
+export class PhysicsObject extends UIObject {
 	//Mass cannot be 0 because it will cause a divide by 0 error in physics calculations
-	constructor(image, x, y, mass, hitboxPoints = []) {
+	constructor(image, x, y, width, height, mass, hitboxPoints = []) {
+		super(x, y, width, height);
 		//Name of the physicsObject (what subclass is it)
 		this.name = "PhysicsObject";
-		//Set absolute position values
-		this.absX = x;
-		this.absY = y;
-		this.width = 0; //Assigned in update step
-		this.height = 0; //Assigned in update step
-		//Set relative position values
-		let trash;
-		[this.x, this.y, this.width, this.height] = [...Display.calcElementDimenstions(x, y, 0, 0)];
 		//Mass of object relative to others
 		this.mass = mass;
 		//Velocity vector of the object expressed in px/sec, positive is right and down
@@ -30,7 +24,7 @@ export class PhysicsObject {
 		//Assign hitboxPoints
 		if (hitboxPoints.length < 2) {
 			console.warn("Too few hitboxPoints in PhysicsObject (" + hitboxPoints.length + "/2)\n\tLocation: (" + this.x + ", " + this.y + ")" + "\n\tConverting hitbox to standard box (50px * 50px)");
-			this.hitboxPoints = [[0, 0], [50, 0], [50, 50], [0, 50]];
+			this.hitboxPoints = HitboxManager.triangleHitbox;
 		} else {
 			this.hitboxPoints = hitboxPoints;
 		}
@@ -45,34 +39,30 @@ export class PhysicsObject {
 		this.velocityVector = physicsObj.velocityVector;
 	}
 
-	//Update the physics object position relative to user screen size
-	#updatePosition() {
-		let max = [Number.MIN_VALUE, Number.MIN_VALUE];
-		for (let i = 0; i < this.hitboxPoints.length; i++) {
-			max[0] = Math.max(max[0], this.hitboxPoints[i][0]);
-			max[1] = Math.max(max[1], this.hitboxPoints[i][1]);
-		}
-		[this.x, this.y, this.width, this.height] = [...Display.calcElementDimenstions(this.absX, this.absY, max[0], max[1])];
-	}
-
-	//Does this object collide with the other given physics object
-	collidesWith(physicsObject) {
-		return Physics.isCollision(this, physicsObject);
-	}
-
 	//Deletes this object from the physicsObjects array
 	delete() {
 		Physics.physicsObjects = Util.delValue(Physics.physicsObjects, this);
 	}
 
 	isOutOfBounds() {
-		return this.x < 0 || this.x > 1920 || this.y < 0 || this.y > 1080;
+		return false;
+		
+		//return this.x < 0 || this.x > 1920 || this.y < 0 || this.y > 1080;
+	}
+
+	calcHitboxWidth() {
+		let maxWidth = Number.MIN_VALUE;
+		for (let hitboxIndex = 0; hitboxIndex < hitboxPoints.length; hitboxIndex++) {
+			
+		}
+
+		return maxWidth;
 	}
 	
 	//Updates the physics object
 	update() {
+		super.updatePosition();
 		this.#updatePhysicsValues(Physics.simulate(this));
-		this.#updatePosition();
 		if (this.isOutOfBounds()) {
 			this.delete();
 			return;

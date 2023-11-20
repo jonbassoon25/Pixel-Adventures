@@ -21,6 +21,7 @@ Created: 11.4.23
 import { Display } from "./classes/util/Display.js"
 import { Keyboard } from "./classes/util/Keyboard.js"
 import { Mouse } from "./classes/util/Mouse.js";
+import { HitboxManager } from "./classes/util/HitboxManager.js";
 import { Physics } from "./classes/util/Physics.js";
 import { Scene } from "./classes/util/Scene.js";
 import { SceneCreator } from "./classes/util/SceneCreator.js";
@@ -86,8 +87,11 @@ function updateGame() {
 	//Scene.update();
 
 	if (Keyboard.isKeyPressed("r")) {
-		obj1 = new PhysicsObject("placeholder", 570, 100, 50);
-		obj2 = new PhysicsObject("placeholder", 1350, 100, 50);
+		obj1 = new PhysicsObject("placeholder", 570, 100, 50, 50, 50);
+		obj2 = new PhysicsObject("placeholder", 1350, 100, 50, 50, 50);
+
+		obj1.mass = 500;
+		console.log(HitboxManager.getEquations(obj1));
 
 		obj1.velocityVector = [250, 0];
 		obj2.velocityVector = [-250, 0];

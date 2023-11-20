@@ -1,12 +1,11 @@
+//Util Imports
+import { HitboxManager } from "../util/HitboxManager.js";
 import { Scene } from "../util/Scene.js";
 
 import { UI } from "../UIObjects/UI.js";
 import { UIObject } from "../UIObjects/UIObject.js";
 
 export class SceneTile extends UIObject {
-	static squareHitbox = [[0, 0], [1, 0], [1, 1], [0, 1]];
-	static triangleHitbox = [[0, 1], [0.5, 0], [1, 1]];
-	
 	constructor(image, x, y, hitboxPoints = SceneTile.squareHitbox, collides = true) {
 		//Calculate absolute values of x
 		super(x * Scene.tileSize - Scene.scrollAmount + Scene.tileSize / 2, y * Scene.tileSize + Scene.tileSize / 2, Scene.tileSize, Scene.tileSize);
@@ -20,7 +19,7 @@ export class SceneTile extends UIObject {
 		//Hitbox points, expressed relative to the individual coordinate square: 0 = left / up, 1 = right / down. Decimal values to express any value in between. Hitbox points is an 2d array
 		if (hitboxPoints.length < 2 && this.collides) {
 			console.warn("HitboxPoints in SceneTile is too short (" + hitboxPoints.length + "/2)\nConverting to Square Hitbox.");
-			this.hitboxPoints = SceneTile.squareHitbox;
+			this.hitboxPoints = HitboxManager.squareHitbox;
 		} else {
 			this.hitboxPoints = hitboxPoints;
 		}

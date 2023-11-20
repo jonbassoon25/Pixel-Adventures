@@ -4,7 +4,7 @@ import { PhysicsObject } from "./PhysicsObject.js";
 
 export class Player extends PhysicsObject {
 	constructor(x, y) {
-		super("placeholder", x, y, 50)
+		super("placeholder", x, y, 50, 50, 50)
 		//Speed in px/sec
 		this.speed = 400;
 		//Jump speed in px/sec
