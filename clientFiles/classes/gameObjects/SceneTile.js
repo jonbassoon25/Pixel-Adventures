@@ -6,7 +6,7 @@ import { UI } from "../UIObjects/UI.js";
 import { UIObject } from "../UIObjects/UIObject.js";
 
 export class SceneTile extends UIObject {
-	constructor(image, x, y, hitboxPoints = SceneTile.squareHitbox, collides = true) {
+	constructor(image, x, y, hitboxPoints = SceneTile.squareHitbox) {
 		//Calculate absolute values of x
 		super(x * Scene.tileSize - Scene.scrollAmount + Scene.tileSize / 2, y * Scene.tileSize + Scene.tileSize / 2, Scene.tileSize, Scene.tileSize);
 		//Coordinates of the GameObject, expressed relative to coordinte system array
@@ -15,7 +15,7 @@ export class SceneTile extends UIObject {
 		//Assign image
 		this.image = image;
 		//Does this object have collision
-		this.collides = collides;
+		this.collides = image != "none";
 		//Hitbox points, expressed relative to the individual coordinate square: 0 = left / up, 1 = right / down. Decimal values to express any value in between. Hitbox points is an 2d array
 		if (hitboxPoints.length < 2 && this.collides) {
 			console.warn("HitboxPoints in SceneTile is too short (" + hitboxPoints.length + "/2)\nConverting to Square Hitbox.");

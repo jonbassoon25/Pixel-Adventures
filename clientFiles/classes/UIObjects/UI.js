@@ -15,6 +15,10 @@ export class UI {
 	static flipped = false;
 	//Draws an image onto the canvas, can take a image string or image, can take relative or absolute values
 	static draw(image, x, y, width, height, resize = false) {
+		//If there is no image to draw, return
+		if (image == "none") {
+			return;
+		}
 		//If the coordinates passed in are absolute (they need to be resized)
 		if (resize) {
 			//Calculate the new element dimensions

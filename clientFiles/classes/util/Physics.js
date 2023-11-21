@@ -1,6 +1,7 @@
 //Util Imports
 import { Util } from "./Util.js";
 import { HitboxManager } from "./HitboxManager.js";
+import { Scene } from "./Scene.js";
 
 //UI Object Imports
 import { PauseMenu } from "../UIObjects/PauseMenu.js";
@@ -148,6 +149,20 @@ export class Physics {
 					[this.physicsObjects[obj1Index], this.physicsObjects[obj2Index]] = [...this.collide(physicsObj1, physicsObj2)];
 				}
 			}
+			//Loop through all scene objects
+			for (let sceneCol = 0; sceneCol < Scene.structure.length; sceneCol++) {
+				for (let sceneRow = 0; sceneRow < Scene.structure[sceneCol].length; sceneRow++) {
+					//Check for collisions
+					//If the scene tile doesn't have collision
+					if(!Scene.structure[sceneCol][sceneRow].collides) {
+						continue;
+					}
+					//If there is a collision
+					if (this.isCollision(this.physicsObjects[obj1Index], Scene.structure[sceneCol][sceneRow])) {
+						this.physicsObjects[obj1Index] = this.staticCollide(this.physicsObjects[obj1Index], false);
+					}
+				}
+			}
 		}
 	}
 
@@ -155,8 +170,12 @@ export class Physics {
 	static staticCollide(physicsObj, horizontalImpact, collisionEnergyTransfer = this.collisionEnergyTransfer) {
 		if (horizontalImpact) {
 			physicsObj.velocityVector[0] *= -collisionEnergyTransfer;
+			//Friction drag
+			physicsObj.velocityVector[1] *= collisionEnergyTransfer;
 		} else {
 			physicsObj.velocityVector[1] *= -collisionEnergyTransfer;
+			//Friction drag
+			physicsObj.velocityVector[0] *= collisionEnergyTransfer;
 		}
 		return physicsObj;
 	}
@@ -165,6 +184,13 @@ export class Physics {
 	static #updatePhysicsObjects() {
 		for (let i = 0; i < this.physicsObjects.length; i++) {
 			this.physicsObjects[i].update();
+		}
+	}
+
+	//Deletes all known physics objects
+	static clearAll() {
+		for (let i = this.physicsObjects.length - 1; i >= 0; i--) {
+			this.physicsObjects[i].delete();
 		}
 	}
 

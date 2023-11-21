@@ -84,17 +84,14 @@ function updateGame() {
  	*/
 
 	//Update Scene
-	//Scene.update();
+	Scene.update();
 
 	if (Keyboard.isKeyPressed("r")) {
 		obj1 = new PhysicsObject("placeholder", 570, 100, 50, 50, 50);
-		obj2 = new PhysicsObject("placeholder", 1350, 100, 50, 50, 50);
+		//obj2 = new PhysicsObject("placeholder", 1350, 100, 50, 50, 50);
 
-		obj1.mass = 500;
-		console.log(HitboxManager.getEquations(obj1));
-
-		obj1.velocityVector = [250, 0];
-		obj2.velocityVector = [-250, 0];
+		obj1.velocityVector = [600, 0];
+		//obj2.velocityVector = [-200, 0];
 		//[obj1, obj2] = [...Physics.collide(obj1, obj2)];
 	} 
 	if (Keyboard.isKeyPressed("c")) {
@@ -105,6 +102,9 @@ function updateGame() {
 	}
 	if (Keyboard.isKeyPressed("v")) {
 		obj1 = Physics.staticCollide(obj1, false);
+	}
+	if (Keyboard.isKeyPressed("c")) {
+		Physics.clearAll();
 	}
 	
 

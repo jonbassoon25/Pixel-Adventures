@@ -4,10 +4,7 @@ class ComplexHitbox {
 		this.y = y;
 		this.hitboxPoints = hitboxPoints;
 		//Build the complex hitbox
-		this.complexHitbox = [];
-		for (let hitboxPointIndex = 0; hitboxPointIndex < hitboxPoints.length - 1; hitboxPointIndex++) {
-			
-		}
+		
 	}
 
 	updatePosition(x, y) {

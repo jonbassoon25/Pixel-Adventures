@@ -17,8 +17,6 @@ export class PhysicsObject extends UIObject {
 		this.mass = mass;
 		//Velocity vector of the object expressed in px/sec, positive is right and down
 		this.velocityVector = [0, 0];
-		//Rotation in degrees, 0 is up, increasing value represents clockwise rotation
-		this.rotation = 0;
 		//Assign image
 		this.image = image;
 		//Assign hitboxPoints
