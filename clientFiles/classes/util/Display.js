@@ -25,10 +25,18 @@ export class Display {
 	}
 
 	//Returns the actual size of an element for a given absolute size with respect to player screen dimensions. (0, 0) now represents left corner instead of middle. Returns 4 elements, should be called as [...screen.calcElementDimensions(x, y, w, h)]
-	static * calcElementDimenstions(x, y, width, height) {
+	static * calcElementDimensions(x, y, width, height) {
 		yield (x - width/2) * this.sizeMult + this.horizontalOffset;
 		yield (y - height/2) * this.sizeMult + this.verticalOffset;
 		yield width * this.sizeMult;
 		yield height * this.sizeMult;
+	}
+
+	//The inverse of calcElementDimensions
+	static * inverseCalcElementDimenstions(x, y, width, height) {
+		yield (x - this.horizontalOffset) / this.sizeMult + width/2;
+		yield (y - this.verticalOffset) / this.sizeMult + height/2;
+		yield width / this.sizeMult;
+		yield height / this.sizeMult;
 	}
 }

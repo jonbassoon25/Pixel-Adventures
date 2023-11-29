@@ -22,7 +22,7 @@ export class UI {
 		//If the coordinates passed in are absolute (they need to be resized)
 		if (resize) {
 			//Calculate the new element dimensions
-			[x, y, width, height] = [...Display.calcElementDimenstions(x, y, width, height)];
+			[x, y, width, height] = [...Display.calcElementDimensions(x, y, width, height)];
 		}
 		//Determine if the image given needs to be taken from textures
 		if (typeof image === "string") {
@@ -39,7 +39,7 @@ export class UI {
 		if (resize) {
 			//Use trash variable to store the unneeded return from Display.calcElementDimensions
 			let trash;
-			[x, y, trash, size] = [...Display.calcElementDimenstions(x, y, 0, size)];
+			[x, y, trash, size] = [...Display.calcElementDimensions(x, y, 0, size)];
 		}
 		//Set the font size to fill the textbox from top to bottom
 		ctx.font = size.toString() + "px Monospace";

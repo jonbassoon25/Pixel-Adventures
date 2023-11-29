@@ -88,23 +88,16 @@ function updateGame() {
 
 	if (Keyboard.isKeyPressed("r")) {
 		obj1 = new PhysicsObject("placeholder", 570, 100, 50, 50, 50);
-		//obj2 = new PhysicsObject("placeholder", 1350, 100, 50, 50, 50);
+		obj2 = new PhysicsObject("placeholder", 1350, 100, 50, 50, 50);
 
 		obj1.velocityVector = [600, 0];
-		//obj2.velocityVector = [-200, 0];
-		//[obj1, obj2] = [...Physics.collide(obj1, obj2)];
+		obj2.velocityVector = [-200, 0];
 	} 
 	if (Keyboard.isKeyPressed("c")) {
-		[obj1, obj2] = [...Physics.collide(obj1, obj2)];
-	}
-	if (Keyboard.isKeyPressed("h")) {
-		obj1 = Physics.staticCollide(obj1, true);
-	}
-	if (Keyboard.isKeyPressed("v")) {
-		obj1 = Physics.staticCollide(obj1, false);
-	}
-	if (Keyboard.isKeyPressed("c")) {
 		Physics.clearAll();
+	}
+	if (Keyboard.isKeyPressed("p")) {
+		console.log(Util.clone(obj1));
 	}
 	
 
@@ -125,7 +118,7 @@ function updateGame() {
 //------------------------------------------------------------------------------------//
 //Intervals
 
-//Update Interval, fires 30 times per second
+//Update Interval, fires 60 times per second
 setInterval(() => {
 	//Display the game if the page is completely loaded
 	if (document.readyState === "complete") {

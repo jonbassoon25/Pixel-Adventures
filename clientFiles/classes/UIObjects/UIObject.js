@@ -10,11 +10,11 @@ export class UIObject {
 		this.absWidth = width;
 		this.absHeight = height;
 		//Set relative position values
-		[this.x, this.y, this.width, this.height] = [...Display.calcElementDimenstions(x, y, width, height)];
+		[this.x, this.y, this.width, this.height] = [...Display.calcElementDimensions(x, y, width, height)];
 	}
 
 	//Returns the relative position values of the given absolute position values
 	updatePosition() {
-		[this.x, this.y, this.width, this.height] = [...Display.calcElementDimenstions(this.absX, this.absY, this.absWidth, this.absHeight)];
+		[this.x, this.y, this.width, this.height] = [...Display.calcElementDimensions(this.absX, this.absY, this.absWidth, this.absHeight)];
 	}
 }
