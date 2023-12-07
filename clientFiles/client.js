@@ -27,6 +27,7 @@ import { Scene } from "./classes/util/Scene.js";
 import { SceneCreator } from "./classes/util/SceneCreator.js";
 import { textures } from "./classes/util/Textures.js";
 import { Util } from "./classes/util/Util.js";
+import { Vector } from "./classes/util/Vector.js";
 
 //UI Object Imports
 
@@ -65,6 +66,16 @@ let testSlider = new Slider(500, 200, 500, 50, 0, 100, 5);
 let obj1;
 let obj2;
 
+console.log(new Vector("test", 5, 5));
+
+console.log(new Vector("test", [5, 5]));
+
+console.log(new Vector(5, 5));
+
+console.log(new Vector([5, 5]))
+
+console.log(Vector.toString());
+
 function updateGame() {
 	Display.calcScreenSize();
 
@@ -87,11 +98,11 @@ function updateGame() {
 	Scene.update();
 
 	if (Keyboard.isKeyPressed("r")) {
-		obj1 = new PhysicsObject("placeholder", 570, 100, 50, 50, 50);
-		obj2 = new PhysicsObject("placeholder", 1350, 100, 50, 50, 50);
+		obj1 = new PhysicsObject("placeholder", 900, 50, 50, 50, 50);
+		obj2 = new PhysicsObject("placeholder", 900, 150, 50, 50, 50);
 
-		obj1.velocityVector = [600, 0];
-		obj2.velocityVector = [-200, 0];
+		obj1.velocityVector = [300, 0];
+		obj2.velocityVector = [0, 0];
 	} 
 	if (Keyboard.isKeyPressed("c")) {
 		Physics.clearAll();
@@ -101,7 +112,8 @@ function updateGame() {
 	}
 	
 
-	
+	//Update All Vectors
+	Vector.updateAll();
 
 	//Update Physics Objects
 	Physics.update();

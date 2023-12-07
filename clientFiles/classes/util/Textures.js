@@ -1,3 +1,4 @@
+//Loads All Image Assets
 function loadAssets() {
 	let foldersToLoad = {};
 	let textures = {};
@@ -22,7 +23,7 @@ function loadAssets() {
 	return textures;
 }
 
-//Assign textures
+/** Dictionary of all game textures. Formatted as: {"name": img} */
 let textures = loadAssets();
 
 //Export textures

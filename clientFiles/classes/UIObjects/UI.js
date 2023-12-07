@@ -6,14 +6,26 @@ import { textures } from "../util/Textures.js";
 const canvas = document.getElementById("gameScreen");
 const ctx = canvas.getContext("2d");
 
-
-
 //UI Class
 export class UI {
+	//Static Variables
+	
 	//-1 is flipped, 1 is normal
-	static flipPercent = 1;
+	static #flipPercent = 1;
 	static flipped = false;
-	//Draws an image onto the canvas, can take a image string or image, can take relative or absolute values
+
+	//*********************************************************************//
+	//Public Static Methods
+	
+	/** 
+  	Draws a given image onto the canvas, pulls from textures for image strings, can take relative or absolute values
+  	@param {string} image - The image to draw
+	@param {number} x - The x position of the object
+  	@param {number} y - The y position of the object
+	@param {number} width - The width of the object
+  	@param {number} height - The height of the object
+	@param {boolean} resize - Are the passed in values absolute (true) or relative (false) (optional)
+ 	*/
 	static draw(image, x, y, width, height, resize = false) {
 		//If there is no image to draw, return
 		if (image == "none") {
@@ -34,6 +46,15 @@ export class UI {
 	}
 
 	//Draws specified text onto the canvas, can take relative or absolute values
+	/** 
+  	Draws text onto the canvas, can take relative or absolute values
+	@param {string} text - The text to draw
+  	@param {number} x - The x position of the text
+  	@param {number} y - The y position of the text
+	@param {number} size - The height of the text
+  	@param {boolean} resize - Are the passed in values absolute (true) or relative (false) (optional)
+  	@param {string} color - The color of the text (optional)
+ 	*/
 	static drawText(text, x, y, size, resize = false, color = "#ffffff") {
 		//If the coordinates passed in are absolute (they need to be resized)
 		if (resize) {
@@ -49,11 +70,18 @@ export class UI {
 		ctx.fillText(text, x, y);
 	}
 
+	/** 
+  	Flips the scene, left become right and background is now the other wall
+	@returns {boolean} True when the scene has been flipped
+ 	*/
 	static flipScene() {
-		if (this.flipped && this.flipPercent > -1) {
-			this.flipPercent -= 0.05;
+		if (this.flipped && this.#flipPercent > -1) {
+			this.#flipPercent -= 0.05;
 		} else if (this.flipPercent < 1) {
-			this.flipPercent += 0.05;
+			this.#flipPercent += 0.05;
+		} else {
+			return true;
 		}
+		return false;
 	}
 }

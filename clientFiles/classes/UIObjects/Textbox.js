@@ -7,10 +7,16 @@ import { Button } from "./Button.js";
 import { UI } from "./UI.js";
 import { UIObject } from "./UIObject.js";
 
-
-
 //Textbox Class
 export class Textbox extends UIObject {
+	//Constructor
+
+	/** 
+	@param {number} x - The x position of the textbox
+	@param {number} y - The y position of the textbox
+	@param {number} width - The width of the textbox
+	@param {number} height - The height of the textbox
+	*/
 	constructor(x, y, width, height) {
 		//Call super constructor to assign absolute and relative values of: x, y, width, height
 		super(x, y, width, height);
@@ -22,7 +28,10 @@ export class Textbox extends UIObject {
 		this.charLimit = Math.floor((2 * this.absWidth) / (this.absHeight + 5));
 	}
 
-	//Logs text input from the Keyboard object
+	//*********************************************************************//
+	//Private Methods
+
+	//Logs text input from the Keyboard object in this.text
 	#logInput() {
 		//If backspace is pressed
 		if (Keyboard.backspacePressed) {
@@ -39,7 +48,7 @@ export class Textbox extends UIObject {
 		}
 	}
 
-	//Checks to see if the textbox has been selected or deselected
+	//Checks to see if the textbox has been selected or deselected and updates the isSelected variable
 	#checkIsSelected() {
 		//If the textbox is clicked
 		if (Button.simpleButton(this.x, this.y, this.width, this.height)) {
@@ -52,7 +61,12 @@ export class Textbox extends UIObject {
 		}
 	}
 
-	//Draws the object and updates it with new values
+	//*********************************************************************//
+	//Public Methods
+
+	/** 
+  	Draws the Textbox and updates it with new values
+ 	*/
 	update() {
 		//Update relative position values with respect to current screen size
 		super.updatePosition();

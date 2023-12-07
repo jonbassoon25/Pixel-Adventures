@@ -1,4 +1,7 @@
+//Keyboard Class
 export class Keyboard {
+	//Static Variables
+	
 	//Keyboard vars
 	static keysDown = [];
 	static shiftDown = false;
@@ -11,26 +14,46 @@ export class Keyboard {
 	static backspacePressed = false;
 	static escapePressed = false;
 
-	//Returns if a specified key is down
-
+	//*********************************************************************//
+	//Public Static Methods 
+	
+	/** 
+ 	@param {string} key - The key to check
+ 	@returns {boolean} - True if the specified key is down (held)
+  	*/
 	static isKeyDown(key) {
 		return Keyboard.keysDown.includes(key);
 	}
 
+	/** 
+ 	@param {string} key - The key to check
+  	@returns {boolean} - True if the specified key is pressed (single frame)
+  	*/
 	static isKeyPressed(key) {
 		return Keyboard.keysPressed.includes(key);
 	}
 
+	/** 
+ 	@param {string} key - The key to check
+  	@returns {boolean} - True if the specified key is released (single frame)
+  	*/
 	static isKeyReleased(key) {
 		return Keyboard.keysReleased.includes(key);
 	}
-	//"Presses" a keyboard key
+	
+	/** 
+ 	"Presses" a keyboard key
+  	@param {string} key - The key to press
+ 	*/
 	static keyDown(key) {
 		this.keysPressed.push(key);
 		this.keysDown = Array.from(new Set([...this.keysDown, key]));
 	}
 
-	//"Releases" a keyboard key
+	/**
+ 	"Releases" a keyboard key
+  	@param {string} key - The key to release
+  	*/
 	static keyUp(key) {
 		this.keysReleased.push(key);
 		for (let keyIndex = 0; keyIndex < this.keysDown.length; keyIndex++) {
@@ -42,7 +65,9 @@ export class Keyboard {
 		}
 	}
 
-	//Resets all single frame Keyboard variables
+	/** 
+	Resets all single frame Keyboard variables
+  	*/
 	static resetVars() {
 		this.keysPressed = [];
 		this.keysReleased = [];

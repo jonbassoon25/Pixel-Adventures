@@ -1,4 +1,7 @@
+//Mouse Class
 export class Mouse {
+	//Static Variables
+	
 	//x and y position of the mouse
 	static x = 0;
 	static y = 0;
@@ -12,7 +15,12 @@ export class Mouse {
 	static button2Pressed = false;
 	static button2Released = false;
 
-	//Reset all single frame Mouse variables
+	//*********************************************************************//
+	//Public Static Methods
+	
+	/** 
+	Resets all single frame Mouse variables
+	*/
 	static resetVars() {
 		this.button1Pressed = false;
 		this.button1Released = false;

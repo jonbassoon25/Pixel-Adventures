@@ -2,12 +2,18 @@
 const canvas = document.getElementById("gameScreen");
 
 export class Display {
-	//Define intial variables
+	//Static Variables
+	
 	static sizeMult = 1;
 	static horizontalOffset = 0;
 	static verticalOffset = 0;
 
-	//Updates screen variables to reflect whatever the user has for their screen
+	//*********************************************************************//
+	//Public Static Methods
+
+	/** 
+  	Updates Display variables to reflect whatever the user's screen diminsions are
+  	*/
 	static calcScreenSize() {
 		//Make sure that the canvas covers the whole screen
 		canvas.width = window.innerWidth;
@@ -24,7 +30,14 @@ export class Display {
 		}
 	}
 
-	//Returns the actual size of an element for a given absolute size with respect to player screen dimensions. (0, 0) now represents left corner instead of middle. Returns 4 elements, should be called as [...screen.calcElementDimensions(x, y, w, h)]
+	/** 
+  	Calculates the relative dimensions of an element based on the screen dimensions
+	@param {number} x - The absolute x position of the element
+  	@param {number} y - The absolute y position of the element
+	@param {number} width - The absolute width of the element
+  	@param {number} height - The absolute height of the element
+	@returns {number[]} The relative dimensions of the element [x, y, width, height]
+ 	*/
 	static * calcElementDimensions(x, y, width, height) {
 		yield (x - width/2) * this.sizeMult + this.horizontalOffset;
 		yield (y - height/2) * this.sizeMult + this.verticalOffset;
@@ -32,7 +45,14 @@ export class Display {
 		yield height * this.sizeMult;
 	}
 
-	//The inverse of calcElementDimensions
+	/** 
+  	Calculates the absolute dimensions of an element based on the screen dimensions
+	@param {number} x - The relative x position of the element
+  	@param {number} y - The relative y position of the element
+	@param {number} width - The relative width of the element
+  	@param {number} height - The relative height of the element
+	@returns {number[]} The absolute dimensions of the element [x, y, width, height]
+ 	*/
 	static * inverseCalcElementDimenstions(x, y, width, height) {
 		yield (x - this.horizontalOffset) / this.sizeMult + width/2;
 		yield (y - this.verticalOffset) / this.sizeMult + height/2;

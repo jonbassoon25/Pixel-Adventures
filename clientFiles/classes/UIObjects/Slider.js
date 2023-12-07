@@ -1,16 +1,27 @@
 //Util Imports
 import { Display } from "../util/Display.js";
 import { Mouse } from "../util/Mouse.js";
+import { Util } from "../util/Util.js"
 
 //UIObject Imports
 import { UI } from "./UI.js";
 import { UIObject } from "./UIObject.js";
 
-
-
 //Slider Class
 export class Slider extends UIObject {
-	constructor(x, y, width, height, minValue, maxValue, snapValue) {
+	//*********************************************************************//
+	//Constructor
+
+	/** 
+  	@param {number} x - The x position of the slider
+	@param {number} y - The y position of the slider
+  	@param {number} width - The width of the slider
+	@param {number} height - The height of the slider
+  	@param {number} minValue - The minimum value of the slider
+	@param {number} maxValue - The maximum value of the slider
+  	@param {number} snapValue - The incriments that the slider value will snap to (optional)
+ 	*/
+	constructor(x, y, width, height, minValue, maxValue, snapValue = 1) {
 		//Call super constructor to assign absolute and relative values of: x, y, width, height
 		super(x, y, width, height);
 		//Initalize sliderX to the starting relative x value of the slider object
@@ -24,23 +35,34 @@ export class Slider extends UIObject {
 		this.output = minValue;
 	}
 
-	//Returns a boolean of if the slider is being selected by the user (mouse over slider area and down)
+	//*********************************************************************//
+	//Private Methods
+	
+	/** 
+  	@returns {boolean} True if slider is being selected by the user (mouse down over slider area)
+	*/
 	#isSelected() {
 		return Mouse.x > this.x && Mouse.x < this.x + this.width && Mouse.y > this.y && Mouse.y < this.y + this.height && Mouse.button1Down;
 	}
 
-	//Returns the calculated output of the slider based on its position
+	/** 
+  	@returns {number} The output of the slider
+ 	*/
 	#calcSliderOutput() {
 		return ((Mouse.x - this.x) / this.width) * (this.maxValue - this.minValue) + this.minValue;
 	}
 
-	//Returns the calcualated X position of the slider value indicator based on the given slider output
+	/** 
+  	@returns {number} The X position of the slider value indicator
+ 	*/
 	#calcSliderXPosition() {
 		this.sliderX = this.x + ((this.output - this.minValue) / (this.maxValue - this.minValue)) * this.width;
 	}
 
-	//Returns the value of the slider output when snapped to the closest snap value
-	snapOutput() {
+	/** 
+  	@returns {number} The snapped output of the slider
+ 	*/
+	#calcSnapOutput() {
 		//Find the output of the slider when moved to the closest snap value
 		let snappedOutput = Math.round(this.output / this.snapValue) * this.snapValue;
 		//If the snapped output is lower than the minimum slider value, set the output to the min value
@@ -51,11 +73,16 @@ export class Slider extends UIObject {
 		if (snappedOutput > this.maxValue) {
 			snappedOutput = this.maxValue;
 		}
-		//Return the snapped output rounded to the 100,000th decimal place to remove floating point errors
-		return Math.round(snappedOutput * 100000) / 100000;
+		//Return the snapped output rounded to the 5th decimal place to remove floating point errors
+		return Util.round(snappedOutput, 5);
 	}
 
-	//Draws the slider and updates it with new values
+	//*********************************************************************//
+	//Public Methods
+
+	/** 
+  	Draws the slider and updates it's values
+  	*/
 	update() {
 		//Update relative position values with respect to current screen size
 		super.updatePosition();
@@ -65,7 +92,7 @@ export class Slider extends UIObject {
 			this.#calcSliderXPosition();
 		//Else the slider has been released, so snap the output value to and calculate the final X position
 		} else {
-			this.output = this.snapOutput();
+			this.output = this.#calcSnapOutput();
 			this.#calcSliderXPosition();
 		}
 		//Draw the slider body
