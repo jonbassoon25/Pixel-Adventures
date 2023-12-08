@@ -26,12 +26,22 @@ export class Vector {
 	@returns {number[]} The calculated normal vector
 	*/
 	static * calcNormalVector(componatizedVector) {
+		if (componatizedVector[0] == 0 && componatizedVector[1] == 0) {
+			yield 0;
+			yield 0;
+			return;
+		}
 		yield Util.round(Math.sqrt(componatizedVector[0] ** 2 + componatizedVector[1] ** 2), 5);
-		yield Util.round(Math.atan(componatizedVector[1] / componatizedVector[0]) * 180 / Math.PI, 5)
+		yield Util.round(Math.atan(componatizedVector[1] / componatizedVector[0]) * 180 / Math.PI, 5);
 	}
 
 	//Splits a given simple vector into component form. simple vector formatted as [maginitude, degrees from 0 (right)]]
 	static * componatizeVector(normalVector) {
+		if (normalVector[0] == 0 && normalVector[1] == 0) {
+			yield 0;
+			yield 0;
+			return;
+		}
 		yield Util.round(Math.cos(normalVector[1] * Math.PI / 180) * normalVector[0], 5);
 		yield Util.round(Math.sin(normalVector[1] * Math.PI / 180) * normalVector[0], 5);
 	}
@@ -98,7 +108,12 @@ export class Vector {
 		//Force Vectors that need to be added to this Vector every time it is updated. All in units/sec not units/frame
 		this.forces = [];
 		//Add this Vector to a list of all vectors
-		Vector.allVectors.push(this);
+		if (typeof Vector.allVectors == "undefined") {
+			Vector.allVectors = [this];
+		} else {
+			Vector.allVectors.push(this);
+		}
+		
 	}
 
 	//*********************************************************************//
@@ -139,8 +154,17 @@ export class Vector {
 	*/
 	limitComponatizedValues(maxX, maxY) {
 		//Assign x and y, account for sign of x and y
-		this.x = Util.absMin(this.x, maxX) * (this.x / Math.abs(this.x));
-		this.y = Util.absMin(this.y, maxY) * (this.y / Math.abs(this.y));
+		if (this.x < 1) {
+			this.x = -Util.absMin(this.x, maxX);
+		} else {
+			this.x = Util.absMin(this.x, maxX);
+		}
+
+		if (this.y < 1) {
+			this.y = -Util.absMin(this.y, maxY);
+		} else {
+			this.y = Util.absMin(this.y, maxY);
+		}
 		//Assign other values
 		[this.magnitude, this.direction] = Vector.calcNormalVector([this.x, this.y]);
 	}
@@ -179,13 +203,14 @@ export class Vector {
 
 	//Returns a string of this vector's values
 	/** 
+	@param {number} indentationLevel - Additional tabs to add to the output (optional)
 	@returns {string} A string of this vector's values
 	*/
-	toString(indentationLevel = 1) {
-		let tab = "\t".repeat(indentationLevel);
+	toString(indentationLevel = 0) {
+		let tab = "\t".repeat(indentationLevel + 1);
 		let output = this.name + ":\n" + tab + "Magnitude: " + this.magnitude + "\n" + tab + "Direction: " + this.direction + "\u00B0\n" + tab + "X Component: " + this.x + "\n" + tab + "Y Component: " + this.y + "\n" + tab + "Forces:";
 		for (let i = 0; i < this.forces.length; i++) {
-			output += "\n" + tab + "\t" + this.forces[i].toString(indentationLevel + 1);
+			output += "\n" + tab + "\t" + this.forces[i].toString(indentationLevel + 2);
 		}
 		if (this.forces.length == 0) {
 			output += "\n" + tab + "\t" + "None";
@@ -196,7 +221,7 @@ export class Vector {
 	/** Updates the vector, adding all the forces exerted on it */
 	update() {
 		for (let i = 0; i < this.forces.length; i++) {
-			this.add(this.forces[i]);
+			this.add(this.forces[i], 1/60);
 		}
 		this.forces = [];
 	}

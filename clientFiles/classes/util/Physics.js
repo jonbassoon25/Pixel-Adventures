@@ -15,7 +15,7 @@ export class Physics {
 	static gravity = new Vector("Gravity", [0, 600]);
 	
 	/** Maximum falling speed in px/sec */
-	static maxFallingSpeed = 900;
+	static maxFallingSpeed = 1800;
 	
 	/** Maximum lateral movement speed in px/sec */
 	static maxLateralSpeed = 300;
@@ -44,6 +44,7 @@ export class Physics {
 				//Check if the physics objects are colliding
 				if (HitboxManager.collision(physicsObj1, physicsObj2)) {
 					//Calculate the collision
+					console.log("collision");
 					[this.physicsObjects[obj1Index], this.physicsObjects[obj2Index]] = [...this.collide(physicsObj1, physicsObj2)];
 					//Make sure the objects aren't intersecting
 					[this.physicsObjects[obj1Index], this.physicsObjects[obj2Index]] = HitboxManager.amendIntersect(physicsObj1, physicsObj2);
@@ -71,6 +72,7 @@ export class Physics {
 	static #updatePhysicsObjects() {
 		for (let i = 0; i < this.physicsObjects.length; i++) {
 			this.physicsObjects[i].update();
+			//Error before this line
 		}
 	}
 
@@ -83,15 +85,15 @@ export class Physics {
 	@returns {PhysicsObject} The updated physics object
 	*/
 	static simulate(physicsObj) {
+		//Below this line
+		
 		//If the game is paused, don't update the object's position
 		if (PauseMenu.paused) {
 			return physicsObj;
 		}
 		
-  		//Clear all outside forces from the physics object
-		physicsObj.forces = [];
   		//Apply gravity to the phyisics object
-		physicsObj.forces.push(Physics.gravity);
+		physicsObj.velocity.forces.push(Physics.gravity);
 		
 		//Zac's Normal Forces, pre-Vector
 		/*
@@ -127,11 +129,9 @@ export class Physics {
 			}
 		}
   		*/
-		
-  		//Apply all forces to the physics object
-  		for (let i = 0; i < physicsObj.forces.length; i++) {
-			physicsObj.velocity.add(physicsObj.forces[i]);
-		}
+
+		//Update the vector
+		physicsObj.velocity.update();
 		
 		//Constrain the x velocity vector of the physics object within max values
 		physicsObj.velocity.limitComponatizedValues(this.maxLateralSpeed, this.maxFallingSpeed);
@@ -142,6 +142,8 @@ export class Physics {
 		//Move the physics object based on the velocity vectors, divide by 60 to get to units/frame instead of units/sec
 		physicsObj.absX += physicsObj.velocity.x / 60;
 		physicsObj.absY += physicsObj.velocity.y / 60;
+
+		console.log("4: " + physicsObj.absX);
 		
 		//Return the physics object
 		return physicsObj;

@@ -29,8 +29,6 @@ export class PhysicsObject extends UIObject {
 		this.mass = mass;
 		//Velocity vector of the object expressed in px/sec, positive is right and down
 		this.velocity = new Vector("Velocity of " + this.name, [0, 0]);
-		//Array of all forces acting upon the object, all in units/sec not units/frame
-		this.forces = [];
 		//Assign image
 		this.image = image;
 		//Assign hitboxPoints
@@ -51,6 +49,7 @@ export class PhysicsObject extends UIObject {
 	Destroys all refrences to this physicsObject
  	*/
 	delete() {
+		console.log("PhysicsObject " + this.name + " deleted");
 		Physics.physicsObjects = Util.delValue(Physics.physicsObjects, this);
 		this.velocity.delete();
 	}
@@ -59,8 +58,7 @@ export class PhysicsObject extends UIObject {
   	@returns {boolean} - True if the object is out of bounds
  	*/
 	isOutOfBounds() {
-		return false;
-		//return this.absX < 0 || this.absX > 1920 || this.absY < 0 || this.absY > 1080;
+		return this.absX < -100 || this.absX > 2020 || this.absY < -100 || this.absY > 1180;
 	}
 
 	/** 
@@ -68,6 +66,7 @@ export class PhysicsObject extends UIObject {
 	@param {PhysicsObject} physicsObj - Physics object to copy the values from
 	*/
 	updatePhysicsValues(physicsObj) {
+		//Error in physicsObj
 		this.x = physicsObj.x;
 		this.y = physicsObj.y;
 		this.velocityVector = physicsObj.velocityVector;
@@ -78,7 +77,9 @@ export class PhysicsObject extends UIObject {
   	*/
 	update() {
 		super.updatePosition();
+		//Error after this line
 		this.updatePhysicsValues(Physics.simulate(this));
+		//Error above this line
 		if (this.isOutOfBounds()) {
 			this.delete();
 			return;

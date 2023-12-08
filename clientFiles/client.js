@@ -63,16 +63,8 @@ let testButton = new Button("placeholder", 100, 100, 100, 100);
 let testTextbox = new Textbox(500, 100, 500, 50);
 let testSlider = new Slider(500, 200, 500, 50, 0, 100, 5);
 
-let obj1;
-let obj2;
-
-console.log(new Vector("test", 5, 5));
-
-console.log(new Vector("test", [5, 5]));
-
-console.log(new Vector(5, 5));
-
-console.log(new Vector([5, 5]))
+var obj1;
+var obj2;
 
 console.log(Vector.toString());
 
@@ -101,8 +93,8 @@ function updateGame() {
 		obj1 = new PhysicsObject("placeholder", 900, 50, 50, 50, 50);
 		obj2 = new PhysicsObject("placeholder", 900, 150, 50, 50, 50);
 
-		obj1.velocityVector = [300, 0];
-		obj2.velocityVector = [0, 0];
+		obj1.velocity.componatizedVector = [300, 0];
+		obj2.velocity.componatizedVector = [0, 0];
 	} 
 	if (Keyboard.isKeyPressed("c")) {
 		Physics.clearAll();
