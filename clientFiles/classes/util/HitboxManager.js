@@ -95,7 +95,7 @@ export class HitboxManager {
 		let otherObject = physicsObj1;
 
 		//Calculate if object 1 should be the moving object
-		if (Vector.calcVector(physicsObj1.velocityVector) >= Vector.calcVector(physicsObj2.velocityVector)) {
+		if (physicsObj1.velocity.magnitude >= physicsObj2.velocity.magnitude) {
 			movingObject = physicsObj1;
 			otherObject = physicsObj2;
 			obj1Moved = true;

@@ -42,7 +42,7 @@ export class Physics {
 					continue;
 				}
 				//Check if the physics objects are colliding
-				if (HitboxManager.collision(physicsObj1, physicsObj2)) {
+				if (HitboxManager.physicsCollision(physicsObj1, physicsObj2)) {
 					//Calculate the collision
 					console.log("collision");
 					[this.physicsObjects[obj1Index], this.physicsObjects[obj2Index]] = [...this.collide(physicsObj1, physicsObj2)];
@@ -142,8 +142,6 @@ export class Physics {
 		//Move the physics object based on the velocity vectors, divide by 60 to get to units/frame instead of units/sec
 		physicsObj.absX += physicsObj.velocity.x / 60;
 		physicsObj.absY += physicsObj.velocity.y / 60;
-
-		console.log("4: " + physicsObj.absX);
 		
 		//Return the physics object
 		return physicsObj;
@@ -238,8 +236,9 @@ export class Physics {
 		}
 		//Check if there is a collision with object 1 on the top
 		if (physicsObj1.absY - physicsObj1.absHeight/2 <= physicsObj2.absY + physicsObj2.absHeight/2 && physicsObj1.absY >= physicsObj2.absY) {
-			xCollision = true;
+			yCollision = true;
 		}
+		console.log("X: " + xCollision + " Y: " + yCollision);
 		return xCollision && yCollision;
 	}
 	
@@ -253,10 +252,11 @@ export class Physics {
 		let yCollision = false;
 		if ((physicsObj1.absX - physicsObj1.absWidth/2 <= obj2.absX + obj2.absWidth/2 && physicsObj1.absX + physicsObj1.absWidth/2 >= obj2.absX - obj2.absWidth/2) || (physicsObj1.absX - physicsObj1.absWidth/2 >= obj2.absX + obj2.absWidth/2 && physicsObj1.absX - physicsObj1.absWidth/2 <= obj2.absX + obj2.absWidth/2)) {
 			xCollision = true;
-		} 
-		if ((physicsObj1.absY - physicsObj1.absHeight/2 <= obj2.absY + obj2.absHeight/2 && physicsObj1.absY + physicsObj1.absHeight/2 >= obj2.absY - obj2.absHeight/2) || (physicsObj1.absY - physicsObj1.absHeight/2 >= obj2.absY + obj2.absHeight/2 && physicsObj1.absY - physicsObj1.absHeight/2 <= obj2.absY + obj2.absHeight/2)) {
-		return xCollision && yCollision;
 		}
+		if ((physicsObj1.absY - physicsObj1.absHeight/2 <= obj2.absY + obj2.absHeight/2 && physicsObj1.absY + physicsObj1.absHeight/2 >= obj2.absY - obj2.absHeight/2) || (physicsObj1.absY - physicsObj1.absHeight/2 >= obj2.absY + obj2.absHeight/2 && physicsObj1.absY - physicsObj1.absHeight/2 <= obj2.absY + obj2.absHeight/2)) {
+			yCollision = true;
+		}
+		return xCollision && yCollision;
 	}
 
 	/** 
