@@ -154,13 +154,13 @@ export class Vector {
 	*/
 	limitComponatizedValues(maxX, maxY) {
 		//Assign x and y, account for sign of x and y
-		if (this.x < 1) {
+		if (this.x < 0) {
 			this.x = -Util.absMin(this.x, maxX);
 		} else {
 			this.x = Util.absMin(this.x, maxX);
 		}
 
-		if (this.y < 1) {
+		if (this.y < 0) {
 			this.y = -Util.absMin(this.y, maxY);
 		} else {
 			this.y = Util.absMin(this.y, maxY);

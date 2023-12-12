@@ -100,9 +100,15 @@ export class HitboxManager {
 			otherObject = physicsObj2;
 			obj1Moved = true;
 		}
-		
-		//Calulate if the collision should be represented as horizontal (middle of moving object is lower than top of other object and higher than the bottom)
-		let isHorizontalCollision = movingObject.absY >= otherObject.absY - otherObject.height/2 && movingObject.absY <= otherObject.absY + otherObject.height/2;
+		//Calulate if the collision should be represented as horizontal (middle of moving object is lower than top of other object and higher than the bottom) and (right side of moving object is to the left of the middle of the other object or the left side of the moving object is to the right of the middle of the other object)
+		let isHorizontalCollision = 
+			(
+				movingObject.absY >= otherObject.absY - otherObject.height/2 && 
+				 movingObject.absY <= otherObject.absY + otherObject.height/2
+			) && (
+				movingObject.absX + movingObject.width/2 <= otherObject.absX || 
+				movingObject.absX - movingObject.width/2 >= otherObject.absX
+			);
 
 		//Use the amendStaticIntersect method to move the moving object
 		movingObject = this.amendStaticIntersect(movingObject, otherObject, isHorizontalCollision);
@@ -144,7 +150,7 @@ export class HitboxManager {
 				//Move the physicsObj up
 				physicsObj.absY = staticObj.absY - staticObj.absHeight/2 - physicsObj.absHeight/2 - buffer;
 			//If the physics obj is below the static obj
-			} else if (physicsObj.y >= staticObj.y) {
+			} else if (physicsObj.absY > staticObj.absY) {
 				//Move the physicsObj down
 				physicsObj.absY = staticObj.absY + staticObj.absHeight/2 + physicsObj.absHeight/2 + buffer;
 			}

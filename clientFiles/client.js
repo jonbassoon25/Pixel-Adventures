@@ -66,7 +66,6 @@ let testSlider = new Slider(500, 200, 500, 50, 0, 100, 5);
 var obj1;
 var obj2;
 
-console.log(Vector.toString());
 
 function updateGame() {
 	Display.calcScreenSize();
@@ -90,11 +89,12 @@ function updateGame() {
 	Scene.update();
 
 	if (Keyboard.isKeyPressed("r")) {
-		obj1 = new PhysicsObject("placeholder", 900, 50, 50, 50, 50);
-		obj2 = new PhysicsObject("placeholder", 900, 150, 50, 50, 50);
+		//obj1 = new PhysicsObject("placeholder", 900, 150, 50, 50, 50);
+		obj1 = new Player(900, 150);
+		obj2 = new PhysicsObject("placeholder", 700, 150, 50, 50, 50);
 
-		obj1.velocity.componatizedVector = [300, 0];
-		obj2.velocity.componatizedVector = [0, 0];
+		obj1.velocity.componatizedVector = [-300, 0];
+		obj2.velocity.componatizedVector = [300, 0];
 	} 
 	if (Keyboard.isKeyPressed("c")) {
 		Physics.clearAll();

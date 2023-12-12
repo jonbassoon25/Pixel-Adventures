@@ -44,7 +44,6 @@ export class Physics {
 				//Check if the physics objects are colliding
 				if (HitboxManager.physicsCollision(physicsObj1, physicsObj2)) {
 					//Calculate the collision
-					console.log("collision");
 					[this.physicsObjects[obj1Index], this.physicsObjects[obj2Index]] = [...this.collide(physicsObj1, physicsObj2)];
 					//Make sure the objects aren't intersecting
 					[this.physicsObjects[obj1Index], this.physicsObjects[obj2Index]] = HitboxManager.amendIntersect(physicsObj1, physicsObj2);
@@ -85,8 +84,6 @@ export class Physics {
 	@returns {PhysicsObject} The updated physics object
 	*/
 	static simulate(physicsObj) {
-		//Below this line
-		
 		//If the game is paused, don't update the object's position
 		if (PauseMenu.paused) {
 			return physicsObj;
@@ -230,15 +227,14 @@ export class Physics {
 	static isPhysicsCollision(physicsObj1, physicsObj2) {
 		let xCollision = false;
 		let yCollision = false;
-		//Check if there is a collision with object 1 on the left side
-		if (physicsObj1.absX - physicsObj1.absWidth/2 <= physicsObj2.absX + physicsObj2.absWidth/2 && physicsObj1.absX >= physicsObj2.absX) {
+		//Check if there is a collision with object 1 on the left or right side
+		if ((physicsObj1.absX - physicsObj1.absWidth/2 <= physicsObj2.absX + physicsObj2.absWidth/2 && physicsObj1.absX + physicsObj1.absWidth/2 >= physicsObj2.absX - physicsObj2.absWidth/2) || (physicsObj1.absX - physicsObj1.absWidth/2 >= physicsObj2.absX + physicsObj2.absWidth/2 && physicsObj1.absX - physicsObj1.absWidth/2 <= physicsObj2.absX + physicsObj2.absWidth/2)) {
 			xCollision = true;
 		}
 		//Check if there is a collision with object 1 on the top
 		if (physicsObj1.absY - physicsObj1.absHeight/2 <= physicsObj2.absY + physicsObj2.absHeight/2 && physicsObj1.absY >= physicsObj2.absY) {
 			yCollision = true;
 		}
-		console.log("X: " + xCollision + " Y: " + yCollision);
 		return xCollision && yCollision;
 	}
 	
@@ -269,13 +265,16 @@ export class Physics {
 	static staticCollide(physicsObj, horizontalImpact, collisionEnergyTransfer = this.collisionEnergyTransfer) {
 		if (horizontalImpact) {
 			physicsObj.velocity.componatizedVector = [
-				physicsObj.velocity.x * -collisionEnergyTransfer, 
+				physicsObj.velocity.x * -collisionEnergyTransfer,
 				physicsObj.velocity.y * collisionEnergyTransfer
 			];
+			//physicsObj.velocity.forces.push(new Vector("Friction", [0, (collisionEnergyTransfer - 1) * physicsObj.velocity.y]));
 		} else {
-			physicsObj.velocity.y *= -collisionEnergyTransfer;
-			//Friction drag
-			physicsObj.velocity.x *= collisionEnergyTransfer;
+			physicsObj.velocity.componatizedVector = [
+				physicsObj.velocity.x * collisionEnergyTransfer,
+				physicsObj.velocity.y * -collisionEnergyTransfer
+			];
+			//physicsObj.velocity.forces.push(new Vector("Friction", [(collisionEnergyTransfer - 1) * physicsObj.velocity.x, 0]));
 		}
 		return physicsObj;
 	}

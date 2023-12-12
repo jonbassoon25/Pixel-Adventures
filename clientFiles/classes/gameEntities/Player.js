@@ -45,14 +45,14 @@ export class Player extends PhysicsObject {
 
 	//Takes the player input to move the player object
 	#takeInput() {
-		this.velocityVector.componatizedVector = [0, this.velocityVector.y];
+		this.velocity.componatizedVector = [0, this.velocity.y];
 		if (Keyboard.isKeyDown("a")) {
-			this.velocityVector.add(Player.leftMovementVector);
+			this.velocity.add(Player.leftMovementVector);
 		} else if (Keyboard.isKeyDown("d")) {
-			this.velocityVector.add(Player.rightMovementVector);
+			this.velocity.add(Player.rightMovementVector);
 		}
 		if (Keyboard.isKeyDown("w") || Keyboard.isKeyDown(" ")) {
-			this.velocityVector.add(Player.jumpMovementVector);
+			this.velocity.add(Player.jumpMovementVector);
 		}
 	}
 
