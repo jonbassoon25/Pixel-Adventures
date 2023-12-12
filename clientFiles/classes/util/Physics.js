@@ -59,8 +59,9 @@ export class Physics {
 					}
 					//If there is a collision
 					if (this.isStaticCollision(this.physicsObjects[obj1Index], Scene.structure[sceneCol][sceneRow])) {
-						this.physicsObjects[obj1Index] = this.staticCollide(this.physicsObjects[obj1Index], false);
-						this.physicsObjects[obj1Index] = HitboxManager.amendStaticIntersect(this.physicsObjects[obj1Index], Scene.structure[sceneCol][sceneRow], false);
+						let trash;
+						this.physicsObjects[obj1Index] = this.staticCollide(this.physicsObjects[obj1Index], this.calcCollisionDirection(this.physicsObjects[obj1Index], Scene.structure[sceneCol][sceneRow]));
+						[this.physicsObjects[obj1Index], trash] = HitboxManager.amendIntersect(this.physicsObjects[obj1Index], Scene.structure[sceneCol][sceneRow], false);
 					}
 				}
 			}
@@ -71,13 +72,33 @@ export class Physics {
 	static #updatePhysicsObjects() {
 		for (let i = 0; i < this.physicsObjects.length; i++) {
 			this.physicsObjects[i].update();
-			//Error before this line
 		}
 	}
 
 	//*********************************************************************//
 	//Public Static Methods
-	
+
+	/** 
+	Calculates if a collision should be represented as horizontal or not
+	@param {PhysicsObject} physicsObj - Physics object to calculate the direction of
+	@param {UIObject} otherObj - Other object that the object is colliding with
+	@returns {boolean} is the collision horizontal
+	*/
+	static calcCollisionDirection(physicsObj, otherObj) {
+		let slope;
+		try {
+			//Create the slope based on the difference in positions between the objects (if they're in the same position it is 0/0 and errors)
+			slope = (physicsObj.absY - otherObj.absY) / (physicsObj.absX - otherObj.absX);
+		} catch {
+			console.warn("Objects in Same Position. Collision assumed to be vertical");
+			slope = Number.MAX_VALUE;
+		}
+		if (Math.abs(slope) >= 1) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 	/** 
 	Updates the values of the physics object to represent it as time moves forward
 	@param {PhysicsObject} physicsObj - The physics object to update

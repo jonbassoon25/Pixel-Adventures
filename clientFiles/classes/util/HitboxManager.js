@@ -10,6 +10,7 @@ export class HitboxManager {
 	static squareHitbox = [[0, 0], [1, 0], [1, 1], [0, 1]];
 	static triangleHitbox = [[0.5, 0], [1, 1], [0, 1]];
 
+
 	//*********************************************************************//
 	//Public Static Methods
 	
@@ -132,7 +133,24 @@ export class HitboxManager {
 	@param {number} buffer - Amount of pixels to buffer the collision by
  	@returns {PhysicsObject} Updated physicsObj after collision
   	*/
-	static amendStaticIntersect(physicsObj, staticObj, horizontalImpact, buffer = 0) {
+	static * amendIntersect(physicsObj, otherObj, isHorizontalImpact) {
+		let slope;
+		try {
+			//Create the slope based on the faster object's velocity (if the faster object isn't moving it will equate to 0/0, which errors)
+			slope = (physicsObj.velocity.y / physicsObj.velocity.x);
+		} catch {
+			//The objects are in the same position and neither is moving
+			console.warn("0/0 error, using standard amendIntersect");
+			return decrepitAmendIntersect(physicsObj, otherObj, isHorizontalImpact);
+		}
+		if (isHorizontalImpact) {
+			
+		}
+		yield physicsObj;
+		yield otherObj;
+	}
+
+	static decrepitAmendIntersect(physicsObj, staticObj, horizontalImpact, buffer = 0) {
 		//If the collison was horizontal
 		if (horizontalImpact) {
 			//If the physics obj is to the left of the static obj
