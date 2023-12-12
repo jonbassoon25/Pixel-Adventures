@@ -10,16 +10,16 @@ import { PauseMenu } from "../UIObjects/PauseMenu.js";
 export class Physics {
 	/** Amount of converted energy in a collision, 1 is 100% */
 	static collisionEnergyTransfer = 0.9;
-	
+
 	/** Gravitational acceleration (px/sec^2) */
 	static gravity = new Vector("Gravity", [0, 600]);
-	
+
 	/** Maximum falling speed in px/sec */
 	static maxFallingSpeed = 1800;
-	
+
 	/** Maximum lateral movement speed in px/sec */
 	static maxLateralSpeed = 300;
-	
+
 	/** Array of all PhysicsObjects that currently exist */
 	static physicsObjects = [];
 
@@ -54,7 +54,7 @@ export class Physics {
 				for (let sceneRow = 0; sceneRow < Scene.structure[sceneCol].length; sceneRow++) {
 					//Check for collisions
 					//If the scene tile doesn't have collision
-					if(!Scene.structure[sceneCol][sceneRow].collides) {
+					if (!Scene.structure[sceneCol][sceneRow].collides) {
 						continue;
 					}
 					//If there is a collision
@@ -88,7 +88,7 @@ export class Physics {
 		let slope;
 		try {
 			//Create the slope based on the difference in positions between the objects (if they're in the same position it is 0/0 and errors)
-			slope = (physicsObj.absY - otherObj.absY) / (physicsObj.absX - otherObj.absX);
+			slope = (physicsObj.y - otherObj.y) / (physicsObj.x - otherObj.x);
 		} catch {
 			console.warn("Objects in Same Position. Collision assumed to be vertical");
 			slope = Number.MAX_VALUE;
@@ -109,23 +109,23 @@ export class Physics {
 		if (PauseMenu.paused) {
 			return physicsObj;
 		}
-		
-  		//Apply gravity to the phyisics object
+
+		//Apply gravity to the phyisics object
 		physicsObj.velocity.forces.push(Physics.gravity);
-		
+
 		//Zac's Normal Forces, pre-Vector
 		/*
-  		//Check for normal forces
+			//Check for normal forces
 		for (let i = 0; i < physicsObjects.length; i++) {
-  			if (physicsObject.absX + physicsObj.absWidth/2 == physicsObjects[i].absX - physicsObjects[i].absWidth/2
-	 			&& physicsObj.absY - physicsObj.absHeight/2 < physicsObjects[i].absY + physicsObjects[i].absHeight/2
-	 			&& physicsObj.absY + physicsObj.absHeight/2 > physicsObjects[i].absY - physicsObjects[i].absHeight/2
-	 			) {
-	 			//physicsObj's right side is in contact with physicsObjects[i]'s left side
-	 			//Normal force from the left opposes net force in the positive x direction (will need to be adjusted if rotation is added)
-	 			let sumForces = 0;
-	 			for (int j = 0; j < physicsObj.forces.length; j++) {
-	 				sumForces += physicsObj.forces[j].xComponent;
+				if (physicsObject.x + physicsObj.width/2 == physicsObjects[i].x - physicsObjects[i].width/2
+					&& physicsObj.y - physicsObj.height/2 < physicsObjects[i].y + physicsObjects[i].height/2
+					&& physicsObj.y + physicsObj.height/2 > physicsObjects[i].y - physicsObjects[i].height/2
+					) {
+					//physicsObj's right side is in contact with physicsObjects[i]'s left side
+					//Normal force from the left opposes net force in the positive x direction (will need to be adjusted if rotation is added)
+					let sumForces = 0;
+					for (int j = 0; j < physicsObj.forces.length; j++) {
+						sumForces += physicsObj.forces[j].xComponent;
 				}
 				if (sumForces > 0) {
 					physicsObj.forces.append("normal force", -sumForces);
@@ -133,38 +133,38 @@ export class Physics {
 					//Do nothing since the net force does not cause any normal force
 				}
 			}
-			if (physicsObject.absX - physicsObj.absWidth/2 == physicsObjects[i].absX + physicsObjects[i].absWidth/2) {
+			if (physicsObject.x - physicsObj.width/2 == physicsObjects[i].x + physicsObjects[i].width/2) {
 				//Normal force from the right opposes all movement in the negative x direction
 				physicsObj.forces.append("normal force", -Math.abs(physicsObject.velocity.x));
 			}
-			if (physicsObject.absY + physicsObj.absHeight/2 == physicsObjects[i].absY - physicsObjects[i].absHeight/2) {
+			if (physicsObject.y + physicsObj.height/2 == physicsObjects[i].y - physicsObjects[i].height/2) {
 				//Normal force from below opposes all movement in the positive y direction
 				physicsObj.forces.append("normal force", -Math.abs(physicsObject.velocity.y));
 			}
-			if (physicsObject.absY - physicsObj.absHeight/2 == physicsObjects[i].absY + physicsObjects[i].absHeight/2) {
+			if (physicsObject.y - physicsObj.height/2 == physicsObjects[i].y + physicsObjects[i].height/2) {
 				//Normal force from above opposes all movement in the negative y direction
 				physicsObj.forces.append("normal force", Math.abs(physicsObject.velocity.y));
 			}
 		}
-  		*/
+			*/
 
 		//Update the vector
 		physicsObj.velocity.update();
-		
+
 		//Constrain the x velocity vector of the physics object within max values
 		physicsObj.velocity.limitComponatizedValues(this.maxLateralSpeed, this.maxFallingSpeed);
-		
+
 		//Round the values of the velocity vector and add their values to the absolute X and Y values
 		physicsObj.velocity.round(5);
 
 		//Move the physics object based on the velocity vectors, divide by 60 to get to units/frame instead of units/sec
-		physicsObj.absX += physicsObj.velocity.x / 60;
-		physicsObj.absY += physicsObj.velocity.y / 60;
-		
+		physicsObj.x += physicsObj.velocity.x / 60;
+		physicsObj.y += physicsObj.velocity.y / 60;
+
 		//Return the physics object
 		return physicsObj;
 	}
-	
+
 	/** 
 	Simulates the 2D collision of two physics objects
 	@param {PhysicsObject} physicsObj1 - The first physics object to collide
@@ -191,41 +191,41 @@ export class Physics {
 		//Calculate the collision for the x velocity vector
 		let temp = physicsObj1.velocity.x;
 		physicsObj1.velocity.x = (
-				physicsObj2.velocity.x
-				* collisionEnergyTransfer
-				* physicsObj2.mass
-				) 
-				/ physicsObj1.mass;
-		
+			physicsObj2.velocity.x
+			* collisionEnergyTransfer
+			* physicsObj2.mass
+		)
+			/ physicsObj1.mass;
+
 		physicsObj2.velocity.x = (
-				temp 
-				* collisionEnergyTransfer
-				* physicsObj1.mass
-				)
-				/ physicsObj2.mass
-				+ (
+			temp
+			* collisionEnergyTransfer
+			* physicsObj1.mass
+		)
+			/ physicsObj2.mass
+			+ (
 				physicsObj2.velocity.x * (1 - collisionEnergyTransfer)
 			);
-		
+
 		physicsObj1.velocity.x += (temp * (1 - collisionEnergyTransfer));
 		//Calculate the collision for the y velocity vector
 		temp = physicsObj1.velocity.y;
 		physicsObj1.velocity.y = (
-				physicsObj2.velocity.y
-				* collisionEnergyTransfer/collisionEnergyTransfer //Zac: I don't think vertical collisions should lose any energy (makes midair horizontal collisions really janky)
-				* physicsObj2.mass
-				) 
+			physicsObj2.velocity.y
+			* collisionEnergyTransfer / collisionEnergyTransfer //Zac: I don't think vertical collisions should lose any energy (makes midair horizontal collisions really janky)
+			* physicsObj2.mass
+		)
 			/ physicsObj1.mass;
 
 		physicsObj2.velocity.y = (
-				(temp * collisionEnergyTransfer/collisionEnergyTransfer * physicsObj1.mass) 
-				/ physicsObj2.mass
-			) 
+			(temp * collisionEnergyTransfer / collisionEnergyTransfer * physicsObj1.mass)
+			/ physicsObj2.mass
+		)
 			+ (
-				physicsObj2.velocity.y * (1 - collisionEnergyTransfer/collisionEnergyTransfer)
+				physicsObj2.velocity.y * (1 - collisionEnergyTransfer / collisionEnergyTransfer)
 			);
 
-		physicsObj1.velocity.y += (temp * (1 - collisionEnergyTransfer/collisionEnergyTransfer));
+		physicsObj1.velocity.y += (temp * (1 - collisionEnergyTransfer / collisionEnergyTransfer));
 
 		//Round the physics objects' velocites to the 5th decimal place
 		physicsObj1.velocity.round(5);
@@ -249,16 +249,16 @@ export class Physics {
 		let xCollision = false;
 		let yCollision = false;
 		//Check if there is a collision with object 1 on the left or right side
-		if ((physicsObj1.absX - physicsObj1.absWidth/2 <= physicsObj2.absX + physicsObj2.absWidth/2 && physicsObj1.absX + physicsObj1.absWidth/2 >= physicsObj2.absX - physicsObj2.absWidth/2) || (physicsObj1.absX - physicsObj1.absWidth/2 >= physicsObj2.absX + physicsObj2.absWidth/2 && physicsObj1.absX - physicsObj1.absWidth/2 <= physicsObj2.absX + physicsObj2.absWidth/2)) {
+		if ((physicsObj1.x - physicsObj1.width / 2 <= physicsObj2.x + physicsObj2.width / 2 && physicsObj1.x + physicsObj1.width / 2 >= physicsObj2.x - physicsObj2.width / 2) || (physicsObj1.x - physicsObj1.width / 2 >= physicsObj2.x + physicsObj2.width / 2 && physicsObj1.x - physicsObj1.width / 2 <= physicsObj2.x + physicsObj2.width / 2)) {
 			xCollision = true;
 		}
 		//Check if there is a collision with object 1 on the top
-		if (physicsObj1.absY - physicsObj1.absHeight/2 <= physicsObj2.absY + physicsObj2.absHeight/2 && physicsObj1.absY >= physicsObj2.absY) {
+		if (physicsObj1.y - physicsObj1.height / 2 <= physicsObj2.y + physicsObj2.height / 2 && physicsObj1.y >= physicsObj2.y) {
 			yCollision = true;
 		}
 		return xCollision && yCollision;
 	}
-	
+
 	/** 
 	@param {PhysicsObject} physicsObj1 - The physics object to check for collision
 	@param {SceneTile} obj2 - The static object to check for collision
@@ -267,10 +267,10 @@ export class Physics {
 	static isStaticCollision(physicsObj1, obj2) {
 		let xCollision = false;
 		let yCollision = false;
-		if ((physicsObj1.absX - physicsObj1.absWidth/2 <= obj2.absX + obj2.absWidth/2 && physicsObj1.absX + physicsObj1.absWidth/2 >= obj2.absX - obj2.absWidth/2) || (physicsObj1.absX - physicsObj1.absWidth/2 >= obj2.absX + obj2.absWidth/2 && physicsObj1.absX - physicsObj1.absWidth/2 <= obj2.absX + obj2.absWidth/2)) {
+		if ((physicsObj1.x - physicsObj1.width / 2 <= obj2.x + obj2.width / 2 && physicsObj1.x + physicsObj1.width / 2 >= obj2.x - obj2.width / 2) || (physicsObj1.x - physicsObj1.width / 2 >= obj2.x + obj2.width / 2 && physicsObj1.x - physicsObj1.width / 2 <= obj2.x + obj2.width / 2)) {
 			xCollision = true;
 		}
-		if ((physicsObj1.absY - physicsObj1.absHeight/2 <= obj2.absY + obj2.absHeight/2 && physicsObj1.absY + physicsObj1.absHeight/2 >= obj2.absY - obj2.absHeight/2) || (physicsObj1.absY - physicsObj1.absHeight/2 >= obj2.absY + obj2.absHeight/2 && physicsObj1.absY - physicsObj1.absHeight/2 <= obj2.absY + obj2.absHeight/2)) {
+		if ((physicsObj1.y - physicsObj1.height / 2 <= obj2.y + obj2.height / 2 && physicsObj1.y + physicsObj1.height / 2 >= obj2.y - obj2.height / 2) || (physicsObj1.y - physicsObj1.height / 2 >= obj2.y + obj2.height / 2 && physicsObj1.y - physicsObj1.height / 2 <= obj2.y + obj2.height / 2)) {
 			yCollision = true;
 		}
 		return xCollision && yCollision;

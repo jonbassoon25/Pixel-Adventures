@@ -26,7 +26,7 @@ export class UI {
   	@param {number} height - The height of the object
 	@param {boolean} resize - Are the passed in values absolute (true) or relative (false) (optional)
  	*/
-	static draw(image, x, y, width, height, resize = false) {
+	static draw(image, x, y, width, height, resize = true) {
 		//If there is no image to draw, return
 		if (image == "none") {
 			return;
@@ -55,7 +55,7 @@ export class UI {
   	@param {boolean} resize - Are the passed in values absolute (true) or relative (false) (optional)
   	@param {string} color - The color of the text (optional)
  	*/
-	static drawText(text, x, y, size, resize = false, color = "#ffffff") {
+	static drawText(text, x, y, size, resize = true, color = "#ffffff") {
 		//If the coordinates passed in are absolute (they need to be resized)
 		if (resize) {
 			//Use trash variable to store the unneeded return from Display.calcElementDimensions

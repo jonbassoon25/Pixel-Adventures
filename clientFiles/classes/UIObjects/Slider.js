@@ -4,6 +4,7 @@ import { Mouse } from "../util/Mouse.js";
 import { Util } from "../util/Util.js"
 
 //UIObject Imports
+import { Button } from "./Button.js";
 import { UI } from "./UI.js";
 import { UIObject } from "./UIObject.js";
 
@@ -24,6 +25,8 @@ export class Slider extends UIObject {
 	constructor(x, y, width, height, minValue, maxValue, snapValue = 1) {
 		//Call super constructor to assign absolute and relative values of: x, y, width, height
 		super(x, y, width, height);
+		//Initalize this slider's button
+		this.button = new Button("placeholder", x, y, width, height);
 		//Initalize sliderX to the starting relative x value of the slider object
 		this.sliderX = this.x;
 		//Assign the min and max values of the slider
@@ -42,7 +45,7 @@ export class Slider extends UIObject {
   	@returns {boolean} True if slider is being selected by the user (mouse down over slider area)
 	*/
 	#isSelected() {
-		return Mouse.x > this.x && Mouse.x < this.x + this.width && Mouse.y > this.y && Mouse.y < this.y + this.height && Mouse.button1Down;
+		return this.button.isPressed();
 	}
 
 	/** 
@@ -84,8 +87,6 @@ export class Slider extends UIObject {
   	Draws the slider and updates it's values
   	*/
 	update() {
-		//Update relative position values with respect to current screen size
-		super.updatePosition();
 		//If the slider is selected, calculate the slider output and the slider x position
 		if (this.#isSelected()) {
 			this.output = this.#calcSliderOutput();
@@ -98,6 +99,6 @@ export class Slider extends UIObject {
 		//Draw the slider body
 		UI.draw("placeholder", this.x, this.y, this.width, this.height - 10);
 		//Draw the slider value indicator
-		UI.draw("placeholder", this.sliderX - (25 * Display.sizeMult) / 2, this.y - 5, 25 * Display.sizeMult, this.height);
+		UI.draw("placeholder", this.sliderX - 25 / 2, this.y - 5, 25, this.height);
 	}
 }

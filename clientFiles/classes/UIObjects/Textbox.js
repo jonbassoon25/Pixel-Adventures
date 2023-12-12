@@ -25,7 +25,7 @@ export class Textbox extends UIObject {
 		//The textbox is not selected by the user
 		this.isSelected = false;
 		//Calculate and set the character limit of the textbox
-		this.charLimit = Math.floor((2 * this.absWidth) / (this.absHeight + 5));
+		this.charLimit = Math.floor((2 * this.width) / (this.height + 5));
 	}
 
 	//*********************************************************************//
@@ -68,8 +68,6 @@ export class Textbox extends UIObject {
   	Draws the Textbox and updates it with new values
  	*/
 	update() {
-		//Update relative position values with respect to current screen size
-		super.updatePosition();
 		//Check to see if the textbox has been selected or deselected this frame
 		this.#checkIsSelected();
 		//If the textbox is selected
@@ -78,8 +76,8 @@ export class Textbox extends UIObject {
 			this.#logInput();
 		}
 		//Draw the textbox
-		UI.draw("placeholder", this.x, this.y, this.width, this.height, false);
+		UI.draw("placeholder", this.x, this.y, this.width, this.height);
 		//Draw the textbox text
-		UI.drawText(this.text, this.absX - this.absWidth / 2 + 2.5, this.absY + this.absHeight / 2 + 10, this.absHeight - 5, true);
+		UI.drawText(this.text, this.x - this.width / 2 + 2.5, this.y + this.height / 2 + 10, this.height - 5);
 	}
 }

@@ -19,7 +19,7 @@ export class Button extends UIObject {
   	@param {boolean} resize - If the button should be resized to fit the text (optional)
  	@returns {boolean} Is the button clicked
   	*/
-	static simpleButton(x, y, width, height, resize = false) {
+	static simpleButton(x, y, width, height, resize = true) {
 		//If the passed in values are absolute (need to be resized)
 		if (resize) {
 			//Convert the absolute values to be relative (to current screen size)
@@ -53,7 +53,12 @@ export class Button extends UIObject {
   	@returns {boolean} Is the mouse over the button
  	*/
 	#isHovered() {
-		return Mouse.x > this.x && Mouse.x < this.x + this.width && Mouse.y > this.y && Mouse.y < this.y + this.height;
+		let relX;
+		let relY;
+		let relWidth;
+		let relHeight;
+		[relX, relY, relWidth, relHeight] = Display.calcElementDimensions(this.x, this.y, this.width, this.height);
+		return Mouse.x > relX && Mouse.x < relX + relWidth && Mouse.y > relY && Mouse.y < relY + relHeight;
 	}
 
 
@@ -87,8 +92,6 @@ export class Button extends UIObject {
   	Draws the button and updates button values
  	*/
 	update() {
-		//Update relative position values with respect to current screen size
-		super.updatePosition();
 		//Draw the base button image
 		UI.draw(this.image, this.x, this.y, this.width, this.height);
 		//If the button is pressed

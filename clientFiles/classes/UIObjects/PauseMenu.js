@@ -19,8 +19,8 @@ export class PauseMenu {
 			this.paused = !this.paused;
 		}
 		if (this.paused) {
-			UI.draw("buttonPressed", 960, 540, 1920, 1080, true);
-			UI.draw("placeholder", 960, 540, 400, 600, true);
+			UI.draw("buttonPressed", 960, 540, 1920, 1080);
+			UI.draw("placeholder", 960, 540, 400, 600);
 		}
 	}
 }

@@ -54,7 +54,6 @@ export class SceneTile extends UIObject {
   	Updates this SceneTiles's position and draws it to the screen
  	*/
 	update() {
-		super.updatePosition();
 		UI.draw(this.image, this.x, this.y, this.width, this.height);
 	}
 }

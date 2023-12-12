@@ -13,21 +13,9 @@ export class UIObject {
  	*/
 	constructor(x, y, width, height) {
 		//Set absolute position values
-		this.absX = x;
-		this.absY = y;
-		this.absWidth = width;
-		this.absHeight = height;
-		//Set relative position values
-		[this.x, this.y, this.width, this.height] = [...Display.calcElementDimensions(x, y, width, height)];
-	}
-	
-	//*********************************************************************//
-	//Public Methods
-
-	/** 
-  	Updates the relative position values of the UIObject through calculations of the absolute ones
- 	*/
-	updatePosition() {
-		[this.x, this.y, this.width, this.height] = [...Display.calcElementDimensions(this.absX, this.absY, this.absWidth, this.absHeight)];
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
 	}
 }

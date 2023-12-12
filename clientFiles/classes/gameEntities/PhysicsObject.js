@@ -58,7 +58,7 @@ export class PhysicsObject extends UIObject {
   	@returns {boolean} - True if the object is out of bounds
  	*/
 	isOutOfBounds() {
-		return this.absX < -100 || this.absX > 2020 || this.absY < -100 || this.absY > 1180;
+		return this.x < -100 || this.x > 2020 || this.y < -100 || this.y > 1180;
 	}
 
 	/** 
@@ -66,7 +66,6 @@ export class PhysicsObject extends UIObject {
 	@param {PhysicsObject} physicsObj - Physics object to copy the values from
 	*/
 	updatePhysicsValues(physicsObj) {
-		//Error in physicsObj
 		this.x = physicsObj.x;
 		this.y = physicsObj.y;
 		this.velocityVector = physicsObj.velocityVector;
@@ -76,7 +75,6 @@ export class PhysicsObject extends UIObject {
  	Updates this physicsObject and draws it onto the screen
   	*/
 	update() {
-		super.updatePosition();
 		//Error after this line
 		this.updatePhysicsValues(Physics.simulate(this));
 		//Error above this line

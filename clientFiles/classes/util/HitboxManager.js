@@ -1,5 +1,4 @@
 //Util Imports
-import { Display } from "./Display.js";
 import { Vector } from "./Vector.js";
 
 //HitboxManager Class
@@ -104,11 +103,11 @@ export class HitboxManager {
 		//Calulate if the collision should be represented as horizontal (middle of moving object is lower than top of other object and higher than the bottom) and (right side of moving object is to the left of the middle of the other object or the left side of the moving object is to the right of the middle of the other object)
 		let isHorizontalCollision = 
 			(
-				movingObject.absY >= otherObject.absY - otherObject.height/2 && 
-				 movingObject.absY <= otherObject.absY + otherObject.height/2
+				movingObject.y >= otherObject.y - otherObject.height/2 && 
+				 movingObject.y <= otherObject.y + otherObject.height/2
 			) && (
-				movingObject.absX + movingObject.width/2 <= otherObject.absX || 
-				movingObject.absX - movingObject.width/2 >= otherObject.absX
+				movingObject.x + movingObject.width/2 <= otherObject.x || 
+				movingObject.x - movingObject.width/2 >= otherObject.x
 			);
 
 		//Use the amendStaticIntersect method to move the moving object
@@ -154,27 +153,25 @@ export class HitboxManager {
 		//If the collison was horizontal
 		if (horizontalImpact) {
 			//If the physics obj is to the left of the static obj
-			if (physicsObj.absX <= staticObj.absX) {
+			if (physicsObj.x <= staticObj.x) {
 				//Move the physicsObj to the left
-				physicsObj.absX = staticObj.absX - staticObj.absWidth/2 - physicsObj.absWidth/2 - buffer;
+				physicsObj.x = staticObj.x - staticObj.width/2 - physicsObj.width/2 - buffer;
 			//If the physics obj is to the right of the static obj
-			} else if (physicsObj.absX >= staticObj.absX) {
+			} else if (physicsObj.x >= staticObj.x) {
 				//Move the physicsObj to the right
-				physicsObj.absX = staticObj.absX + staticObj.absWidth/2 + physicsObj.absWidth/2 + buffer;
+				physicsObj.x = staticObj.x + staticObj.width/2 + physicsObj.width/2 + buffer;
 			}
 		} else {
 			//If the physics obj is above the static obj
-			if (physicsObj.absY <= staticObj.absY) {
+			if (physicsObj.y <= staticObj.y) {
 				//Move the physicsObj up
-				physicsObj.absY = staticObj.absY - staticObj.absHeight/2 - physicsObj.absHeight/2 - buffer;
+				physicsObj.y = staticObj.y - staticObj.height/2 - physicsObj.height/2 - buffer;
 			//If the physics obj is below the static obj
-			} else if (physicsObj.absY > staticObj.absY) {
+			} else if (physicsObj.y > staticObj.y) {
 				//Move the physicsObj down
-				physicsObj.absY = staticObj.absY + staticObj.absHeight/2 + physicsObj.absHeight/2 + buffer;
+				physicsObj.y = staticObj.y + staticObj.height/2 + physicsObj.height/2 + buffer;
 			}
 		}
-		let trash;
-		[physicsObj.x, physicsObj.y, trash, trash] = [...Display.calcElementDimensions(physicsObj.absX, physicsObj.absY, 0, 0)];
 		return physicsObj;
 	}
 }
