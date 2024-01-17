@@ -1,10 +1,12 @@
 //Util Imports
-import { HitboxManager } from "./HitboxManager.js";
 import { Scene } from "./Scene.js";
 import { Vector } from "./Vector.js";
+import { Util } from "./Util.js";
 
 //UI Object Imports
+import { DynamicUIObject } from "../UIObjects/DynamicUIObject.js";
 import { PauseMenu } from "../UIObjects/PauseMenu.js";
+import { HitboxManager } from "./HitboxManager.js";
 
 //Physics Class
 export class Physics {
@@ -14,20 +16,28 @@ export class Physics {
 	/** Gravitational acceleration (px/sec^2) */
 	static gravity = new Vector("Gravity", [0, 600]);
 
+	/** Maximum calculations per frame for Physics.update() */
+	static maxCalculations = 100;
+	
 	/** Maximum falling speed in px/sec */
-	static maxFallingSpeed = 1800;
+	//Allows for max speed of 20px / frame
+	static maxFallingSpeed = 1200;
 
 	/** Maximum lateral movement speed in px/sec */
 	static maxLateralSpeed = 300;
 
+	static pastValues = [];
+
 	/** Array of all PhysicsObjects that currently exist */
 	static physicsObjects = [];
+	
 
 	//*********************************************************************//
 	//Private Static Methods
-
+	
 	//Check all physics objects for collisions with one another
-	static #checkForCollisions() {
+	static #findCollisions() {
+		let collisions = [];
 		//Loop through all physics objects
 		for (let obj1Index = 0; obj1Index < this.physicsObjects.length; obj1Index++) {
 			//Loop through all other physics objects
@@ -38,15 +48,14 @@ export class Physics {
 					continue;
 				}
 				//Check if the physics objects don't have the possibility of colliding
-				if (!this.isPhysicsCollision(physicsObj1, physicsObj2)) {
+				if (!Physics.isPhysicsCollision(physicsObj1, physicsObj2)) {
 					continue;
 				}
 				//Check if the physics objects are colliding
 				if (HitboxManager.physicsCollision(physicsObj1, physicsObj2)) {
 					//Calculate the collision
-					[this.physicsObjects[obj1Index], this.physicsObjects[obj2Index]] = [...this.collide(physicsObj1, physicsObj2)];
-					//Make sure the objects aren't intersecting
-					[this.physicsObjects[obj1Index], this.physicsObjects[obj2Index]] = HitboxManager.amendIntersect(physicsObj1, physicsObj2);
+					console.log(":0 PHYSICS COLLISION!!!")
+					collisions.push([this.physicsObjects[obj1Index], this.physicsObjects[obj2Index]]);
 				}
 			}
 			//Loop through all scene objects
@@ -54,34 +63,36 @@ export class Physics {
 				for (let sceneRow = 0; sceneRow < Scene.structure[sceneCol].length; sceneRow++) {
 					//Check for collisions
 					//If the scene tile doesn't have collision
-					if (!Scene.structure[sceneCol][sceneRow].collides) {
+					if (this.isStaticCollision(this.physicsObjects[obj1Index], Scene.structure[sceneCol][sceneRow])) {
 						continue;
 					}
 					//If there is a collision
-					if (this.isStaticCollision(this.physicsObjects[obj1Index], Scene.structure[sceneCol][sceneRow])) {
-						let trash;
-						this.physicsObjects[obj1Index] = this.staticCollide(this.physicsObjects[obj1Index], this.calcCollisionDirection(this.physicsObjects[obj1Index], Scene.structure[sceneCol][sceneRow]));
-						[this.physicsObjects[obj1Index], trash] = HitboxManager.amendIntersect(this.physicsObjects[obj1Index], Scene.structure[sceneCol][sceneRow], false);
+					if (Physics.isStaticCollision(this.physicsObjects[obj1Index], Scene.structure[sceneCol][sceneRow])) {
+						collisions.push([this.physicsObjects[obj1Index]]);
+						console.log("Static collision :3");
 					}
 				}
 			}
 		}
+		return collisions;
 	}
 
-	//Updates all physics objects
-	static #updatePhysicsObjects() {
+	/** 
+	Simulates the next physics frame
+	*/
+	static #simulateNextFrame() {
 		for (let i = 0; i < this.physicsObjects.length; i++) {
 			this.physicsObjects[i].update();
 		}
 	}
-
+	
 	//*********************************************************************//
 	//Public Static Methods
 
 	/** 
 	Calculates if a collision should be represented as horizontal or not
 	@param {PhysicsObject} physicsObj - Physics object to calculate the direction of
-	@param {UIObject} otherObj - Other object that the object is colliding with
+	@param {CollisionObject} otherObj - Other object that the object is colliding with
 	@returns {boolean} is the collision horizontal
 	*/
 	static calcCollisionDirection(physicsObj, otherObj) {
@@ -99,71 +110,16 @@ export class Physics {
 			return true;
 		}
 	}
+
+	static clearAll() {
+		this.physicsObjects = [];
+	}
+	
 	/** 
 	Updates the values of the physics object to represent it as time moves forward
 	@param {PhysicsObject} physicsObj - The physics object to update
 	@returns {PhysicsObject} The updated physics object
 	*/
-	static simulate(physicsObj) {
-		//If the game is paused, don't update the object's position
-		if (PauseMenu.paused) {
-			return physicsObj;
-		}
-
-		//Apply gravity to the phyisics object
-		physicsObj.velocity.forces.push(Physics.gravity);
-
-		//Zac's Normal Forces, pre-Vector
-		/*
-			//Check for normal forces
-		for (let i = 0; i < physicsObjects.length; i++) {
-				if (physicsObject.x + physicsObj.width/2 == physicsObjects[i].x - physicsObjects[i].width/2
-					&& physicsObj.y - physicsObj.height/2 < physicsObjects[i].y + physicsObjects[i].height/2
-					&& physicsObj.y + physicsObj.height/2 > physicsObjects[i].y - physicsObjects[i].height/2
-					) {
-					//physicsObj's right side is in contact with physicsObjects[i]'s left side
-					//Normal force from the left opposes net force in the positive x direction (will need to be adjusted if rotation is added)
-					let sumForces = 0;
-					for (int j = 0; j < physicsObj.forces.length; j++) {
-						sumForces += physicsObj.forces[j].xComponent;
-				}
-				if (sumForces > 0) {
-					physicsObj.forces.append("normal force", -sumForces);
-				} else {
-					//Do nothing since the net force does not cause any normal force
-				}
-			}
-			if (physicsObject.x - physicsObj.width/2 == physicsObjects[i].x + physicsObjects[i].width/2) {
-				//Normal force from the right opposes all movement in the negative x direction
-				physicsObj.forces.append("normal force", -Math.abs(physicsObject.velocity.x));
-			}
-			if (physicsObject.y + physicsObj.height/2 == physicsObjects[i].y - physicsObjects[i].height/2) {
-				//Normal force from below opposes all movement in the positive y direction
-				physicsObj.forces.append("normal force", -Math.abs(physicsObject.velocity.y));
-			}
-			if (physicsObject.y - physicsObj.height/2 == physicsObjects[i].y + physicsObjects[i].height/2) {
-				//Normal force from above opposes all movement in the negative y direction
-				physicsObj.forces.append("normal force", Math.abs(physicsObject.velocity.y));
-			}
-		}
-			*/
-
-		//Update the vector
-		physicsObj.velocity.update();
-
-		//Constrain the x velocity vector of the physics object within max values
-		physicsObj.velocity.limitComponatizedValues(this.maxLateralSpeed, this.maxFallingSpeed);
-
-		//Round the values of the velocity vector and add their values to the absolute X and Y values
-		physicsObj.velocity.round(5);
-
-		//Move the physics object based on the velocity vectors, divide by 60 to get to units/frame instead of units/sec
-		physicsObj.x += physicsObj.velocity.x / 60;
-		physicsObj.y += physicsObj.velocity.y / 60;
-
-		//Return the physics object
-		return physicsObj;
-	}
 
 	/** 
 	Simulates the 2D collision of two physics objects
@@ -212,7 +168,7 @@ export class Physics {
 		temp = physicsObj1.velocity.y;
 		physicsObj1.velocity.y = (
 			physicsObj2.velocity.y
-			* collisionEnergyTransfer / collisionEnergyTransfer //Zac: I don't think vertical collisions should lose any energy (makes midair horizontal collisions really janky)
+			* collisionEnergyTransfer / collisionEnergyTransfer
 			* physicsObj2.mass
 		)
 			/ physicsObj1.mass;
@@ -249,11 +205,11 @@ export class Physics {
 		let xCollision = false;
 		let yCollision = false;
 		//Check if there is a collision with object 1 on the left or right side
-		if ((physicsObj1.x - physicsObj1.width / 2 <= physicsObj2.x + physicsObj2.width / 2 && physicsObj1.x + physicsObj1.width / 2 >= physicsObj2.x - physicsObj2.width / 2) || (physicsObj1.x - physicsObj1.width / 2 >= physicsObj2.x + physicsObj2.width / 2 && physicsObj1.x - physicsObj1.width / 2 <= physicsObj2.x + physicsObj2.width / 2)) {
+		if ((physicsObj1.x - physicsObj1.width / 2 < physicsObj2.x + physicsObj2.width / 2 && physicsObj1.x + physicsObj1.width / 2 > physicsObj2.x - physicsObj2.width / 2) || (physicsObj1.x - physicsObj1.width / 2 > physicsObj2.x + physicsObj2.width / 2 && physicsObj1.x - physicsObj1.width / 2 < physicsObj2.x + physicsObj2.width / 2)) {
 			xCollision = true;
 		}
 		//Check if there is a collision with object 1 on the top
-		if (physicsObj1.y - physicsObj1.height / 2 <= physicsObj2.y + physicsObj2.height / 2 && physicsObj1.y >= physicsObj2.y) {
+		if (physicsObj1.y - physicsObj1.height / 2 < physicsObj2.y + physicsObj2.height / 2 && physicsObj1.y > physicsObj2.y) {
 			yCollision = true;
 		}
 		return xCollision && yCollision;
@@ -267,10 +223,10 @@ export class Physics {
 	static isStaticCollision(physicsObj1, obj2) {
 		let xCollision = false;
 		let yCollision = false;
-		if ((physicsObj1.x - physicsObj1.width / 2 <= obj2.x + obj2.width / 2 && physicsObj1.x + physicsObj1.width / 2 >= obj2.x - obj2.width / 2) || (physicsObj1.x - physicsObj1.width / 2 >= obj2.x + obj2.width / 2 && physicsObj1.x - physicsObj1.width / 2 <= obj2.x + obj2.width / 2)) {
+		if ((physicsObj1.x - physicsObj1.width / 2 < obj2.x + obj2.width / 2 && physicsObj1.x + physicsObj1.width / 2 > obj2.x - obj2.width / 2) || (physicsObj1.x - physicsObj1.width / 2 > obj2.x + obj2.width / 2 && physicsObj1.x - physicsObj1.width / 2 < obj2.x + obj2.width / 2)) {
 			xCollision = true;
 		}
-		if ((physicsObj1.y - physicsObj1.height / 2 <= obj2.y + obj2.height / 2 && physicsObj1.y + physicsObj1.height / 2 >= obj2.y - obj2.height / 2) || (physicsObj1.y - physicsObj1.height / 2 >= obj2.y + obj2.height / 2 && physicsObj1.y - physicsObj1.height / 2 <= obj2.y + obj2.height / 2)) {
+		if ((physicsObj1.y - physicsObj1.height / 2 < obj2.y + obj2.height / 2 && physicsObj1.y + physicsObj1.height / 2 > obj2.y - obj2.height / 2) || (physicsObj1.y - physicsObj1.height / 2 > obj2.y + obj2.height / 2 && physicsObj1.y - physicsObj1.height / 2 < obj2.y + obj2.height / 2)) {
 			yCollision = true;
 		}
 		return xCollision && yCollision;
@@ -300,19 +256,132 @@ export class Physics {
 		return physicsObj;
 	}
 
-	/** Deletes all known PhysicsObjects */
-	static clearAll() {
-		for (let i = this.physicsObjects.length - 1; i >= 0; i--) {
-			this.physicsObjects[i].delete();
+	static amendIntersects(collisions) {
+		let reps = 0;
+		while (collisions.length > 0 && reps < this.maxCalculations) {
+			//Amend the position of the two objects involved in the collision
+			for (let i = 0; i < collisions.length; i++) {
+				if (collisions[i][1].velocity != undefined) {
+					[collisions[i][0], collisions[i][1]] = HitboxManager.amendIntersect(collisions[i][0], collisions[i][1]);
+				} else if (collisions[i][0].velocity != undefined) {
+					collisions[i][0] = HitboxManager.amendStaticIntersect(collisions[i][0], collisions[i][1], calcCollisionDirection(collisions[i][0], collisions[i][1]));
+				} else {
+					console.warn("Invalid Collision Array:\n\t" + collisions[i] + ". No intersect amended");
+				}
+			}
+
+			collisions = this.#findCollisions();
+
+			reps++;
 		}
+		if (reps >= this.maxCalculations) {
+			console.warn("Ininite Recursion Detected");
+		}
+		return collisions;
 	}
 
-	/** Updates all known PhysicsObjects */
-	static update() {
-		if (PauseMenu.paused) {
-			return;
+	static applyCollisions(collisions) {
+		for (let i = 0; i < collisions.length; i++) {
+			if (collisions[i][1].velocity != undefined) {
+				[collisions[i][0], collisions[i][1]] = this.collide(collisions[i][0], collisions[i][1]);
+			} else if (collisions[i][0].velocity != undefined) {
+				collisions[i][0] = this.staticCollide(collisions[i][0], calcCollisionDirection(collisions[i][0], collisions[i][1]));
+			} else {
+				console.warn("Invalid Collision Array:\n\t" + collisions[i] + ". No Collision Applied");
+			}
 		}
-		this.#updatePhysicsObjects();
-		this.#checkForCollisions();
+		return collisions;
+	}
+
+	static clonePhysicsObjects() {
+		return Util.clone(this.physicsObjects);
+	}
+
+	//Zac's method
+	static async update2() {
+		this.pastValues = [];
+		this.pastValues = this.clonePhysicsObjects();
+		
+		//Step 1: Clear all forces and apply constant forces to every object
+		for (let i = 0; i < this.physicsObjects.length; i++) {
+			this.physicsObjects[i].forces = [this.gravity];
+		}
+		//Step 2: Move all the physics objects
+		this.#simulateNextFrame();
+		
+		//Step 3: Find all collisions between objects occuring
+		let collisions = this.#findCollisions();
+
+		//Step 4: Apply collision forces
+		this.applyCollisions(collisions);
+		//Step 5: Amend intersects
+		this.amendIntersects(collisions);
+		
+		while (this.pastValues == []) {
+			//Do nothing
+		}
+		//Step 6: Reassign past position values
+		for (let i = 0; i < this.pastValues.length; i++) {
+			this.physicsObjects[i].x = pastValues[i].x;
+			this.physicsObjects[i].y = pastValues[i].y;
+		}
+
+		//Step 7: Move
+		
+	}
+
+	//New method
+	static update3() {
+		//Step 1: Copy current object values
+		this.pastValues = [];
+		this.pastValues = this.clonePhysicsObjects();
+		
+		//Step 2: Clear all forces and apply constant forces to every object
+		for (let i = 0; i < this.physicsObjects.length; i++) {
+			this.physicsObjects[i].forces = [this.gravity];
+		}
+
+		//Step 3: Simulate the next frame to find collisions
+		this.#simulateNextFrame();
+		
+		//Step 4: Find all collisions between objects (dynamic and static)
+		let collisions = this.#findCollisions();
+
+		//Step 4: Reassign past position values
+		for (let i = 0; i < this.pastValues.length; i++) {
+			this.physicsObjects[i].x = pastValues[i].x;
+			this.physicsObjects[i].y = pastValues[i].y;
+		}
+
+		//Step 4: Assign collision data to colliding objects
+		collisions = this.assignCollisionData(collisions);
+
+		//Step 5: Simulate the next frame
+		this.#simulateNextFrame();
+		
+		
+	}
+
+	//Assigns collision data to all objects colliding
+	static assignCollisionData(collisions) {
+		for (let i = 0; i < collisions.length; i++) {
+			//If neither veloicty is undefined (dynamic collision)
+			if (collisions[i][1].velocity != undefined) {
+				//Do nothing for now
+			//If second velocity is undefined (static collision)
+			} else if (collisions[i][0].velocity != undefined) {
+				//Assign collision data to the dynamic object
+				
+			} else {
+				console.warn("Invalid Collision Array:\n\t" + collisions[i] + ". No Collision Applied");
+			}
+		}
+		return collisions;
+	}
+
+	//Update function
+	static update() {
+		//this.update2();
+		this.update3();
 	}
 }

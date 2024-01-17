@@ -5,7 +5,7 @@ import { Util } from "./Util.js";
 export class Vector {
 	/*
 	Notes:
-		- Normal vector formatted as [magnitude, degrees]
+		- Standard Vector formatted as [magnitude, degrees]
 		- Componatized vector formatted as [x, y]
 	*/
 	
@@ -21,29 +21,45 @@ export class Vector {
 	//Public Static Methods
 	
 	/** 
-	Calculates a normal vector based on a resolved vector 
+	Calculates a Standard Vector based on a resolved vector 
 	@param {number[]} componatizedVector - The componatized vector to convert
-	@returns {number[]} The calculated normal vector
+	@returns {number[]} The calculated Standard Vector
 	*/
-	static * calcNormalVector(componatizedVector) {
+	static * calcStandardVector(componatizedVector) {
 		if (componatizedVector[0] == 0 && componatizedVector[1] == 0) {
 			yield 0;
 			yield 0;
 			return;
 		}
+		//yield the vector's magnitude
 		yield Util.round(Math.sqrt(componatizedVector[0] ** 2 + componatizedVector[1] ** 2), 5);
-		yield Util.round(Math.atan(componatizedVector[1] / componatizedVector[0]) * 180 / Math.PI, 5);
+		//yield the vector's direction
+		//If the vector should be going to the right
+		if (componatizedVector[0] > 0) {
+			yield Util.round(Math.atan(componatizedVector[1] / componatizedVector[0]) * 180 / Math.PI, 5);
+		//If the vector should be going to the left
+		} else if (componatizedVector[0] < 0) {
+			yield Util.round(Math.atan(componatizedVector[1] / componatizedVector[0]) * 180 / Math.PI, 5) + 180;
+		} else {
+			//If the vector should be going down
+			if (componatizedVector[1] > 0) {
+				yield 90;
+			//If the vector should be going up
+			} else if (componatizedVector[1] < 0) {
+				yield 270;
+			}
+		}
 	}
 
 	//Splits a given simple vector into component form. simple vector formatted as [maginitude, degrees from 0 (right)]]
-	static * componatizeVector(normalVector) {
-		if (normalVector[0] == 0 && normalVector[1] == 0) {
+	static * componatizeVector(standardVector) {
+		if (standardVector[0] == 0 && standardVector[1] == 0) {
 			yield 0;
 			yield 0;
 			return;
 		}
-		yield Util.round(Math.cos(normalVector[1] * Math.PI / 180) * normalVector[0], 5);
-		yield Util.round(Math.sin(normalVector[1] * Math.PI / 180) * normalVector[0], 5);
+		yield Util.round(Math.cos(standardVector[1] * Math.PI / 180) * standardVector[0], 5);
+		yield Util.round(Math.sin(standardVector[1] * Math.PI / 180) * standardVector[0], 5);
 	}
 
 	//Returns a string of all of the vectors contained in this object
@@ -53,13 +69,6 @@ export class Vector {
 			output += "\n\t" + this.allVectors[i].toString(2);
 		}
 		return output;
-	}
-
-	//Updates all known Vectors
-	static updateAll() {
-		for (let i = 0; i < this.allVectors.length; i++) {
-			this.allVectors[i].update();
-		}
 	}
 
 	//*********************************************************************//
@@ -93,7 +102,7 @@ export class Vector {
 		if (arguments.length == 1 + add) {
 			this.x = arguments[add][0];
 			this.y = arguments[add][1];
-			[this.magnitude, this.direction] = Vector.calcNormalVector([this.x, this.y]);
+			[this.magnitude, this.direction] = Vector.calcStandardVector([this.x, this.y]);
 		} else if (arguments.length == 2 + add) {
 			this.magnitude = arguments[add];
 			this.direction = arguments[add + 1];
@@ -105,8 +114,6 @@ export class Vector {
 			this.magnitude = 0;
 			this.direction = 0;
 		}
-		//Force Vectors that need to be added to this Vector every time it is updated. All in units/sec not units/frame
-		this.forces = [];
 		//Add this Vector to a list of all vectors
 		if (typeof Vector.allVectors == "undefined") {
 			Vector.allVectors = [this];
@@ -127,7 +134,7 @@ export class Vector {
 	add(otherVector, multiplier = 1) {
 		this.x += otherVector.x * multiplier;
 		this.y += otherVector.y * multiplier;
-		[this.magnitude, this.direction] = Vector.calcNormalVector([this.x, this.y]);
+		[this.magnitude, this.direction] = Vector.calcStandardVector([this.x, this.y]);
 	}
 
 	/** 
@@ -153,20 +160,20 @@ export class Vector {
 	@param {number} maxY - The maximum value of this vector in the y direction
 	*/
 	limitComponatizedValues(maxX, maxY) {
+		
 		//Assign x and y, account for sign of x and y
 		if (this.x < 0) {
 			this.x = -Util.absMin(this.x, maxX);
 		} else {
 			this.x = Util.absMin(this.x, maxX);
 		}
-
 		if (this.y < 0) {
 			this.y = -Util.absMin(this.y, maxY);
 		} else {
 			this.y = Util.absMin(this.y, maxY);
 		}
 		//Assign other values
-		[this.magnitude, this.direction] = Vector.calcNormalVector([this.x, this.y]);
+		[this.magnitude, this.direction] = Vector.calcStandardVector([this.x, this.y]);
 	}
 
 	/** 
@@ -186,7 +193,7 @@ export class Vector {
 	multiply(scalarValue) {
 		this.x *= scalarValue;
 		this.y *= scalarValue;
-		[this.magnitude, this.direction] = Vector.calcNormalVector([this.x, this.y]);
+		[this.magnitude, this.direction] = Vector.calcStandardVector([this.x, this.y]);
 	}
 
 	//Rounds the vector values to specified decimal places
@@ -208,29 +215,15 @@ export class Vector {
 	*/
 	toString(indentationLevel = 0) {
 		let tab = "\t".repeat(indentationLevel + 1);
-		let output = this.name + ":\n" + tab + "Magnitude: " + this.magnitude + "\n" + tab + "Direction: " + this.direction + "\u00B0\n" + tab + "X Component: " + this.x + "\n" + tab + "Y Component: " + this.y + "\n" + tab + "Forces:";
-		for (let i = 0; i < this.forces.length; i++) {
-			output += "\n" + tab + "\t" + this.forces[i].toString(indentationLevel + 2);
-		}
-		if (this.forces.length == 0) {
-			output += "\n" + tab + "\t" + "None";
-		}
+		let output = this.name + ":\n" + tab + "Magnitude: " + this.magnitude + "\n" + tab + "Direction: " + this.direction + "\u00B0\n" + tab + "X Component: " + this.x + "\n" + tab + "Y Component: " + this.y;
 		return output + "\n";
-	}
-
-	/** Updates the vector, adding all the forces exerted on it */
-	update() {
-		for (let i = 0; i < this.forces.length; i++) {
-			this.add(this.forces[i], 1/60);
-		}
-		this.forces = [];
 	}
 
 	//*********************************************************************//
 	//Getters
 
-	/** @returns {number[]} The normal vector of this object */
-	get normalVector() {
+	/** @returns {number[]} The Standard Vector of this object */
+	get standardVector() {
 		return [this.magnitude, this.direction];
 	}
 
@@ -243,13 +236,13 @@ export class Vector {
 	//Setters 
 	
 	/** 
-	Sets the values of this object to those of a given normal vector
-	@param {number[]} normalVector - The normal vector to set this object to
+	Sets the values of this object to those of a given Standard Vector
+	@param {number[]} standardVector - The Standard Vector to set this object to
 	*/
-	set normalVector(normalVector) {
-		this.magnitude = normalVector[0];
-		this.direction = normalVector[1];
-		[this.x, this.y] = Vector.componatizeVector(normalVector);
+	set standardVector(standardVector) {
+		this.magnitude = standardVector[0];
+		this.direction = standardVector[1];
+		[this.x, this.y] = Vector.componatizeVector(standardVector);
 	}
 
 	/** 
@@ -259,6 +252,6 @@ export class Vector {
 	set componatizedVector(componatizedVector) {
 		this.x = componatizedVector[0];
 		this.y = componatizedVector[1];
-		[this.magnitude, this.direction] = Vector.calcNormalVector(componatizedVector);
+		[this.magnitude, this.direction] = Vector.calcStandardVector(componatizedVector);
 	}
 }

@@ -1,11 +1,11 @@
 //Util Imports
-import { Display } from "../util/Display.js";
 import { Mouse } from "../util/Mouse.js";
 import { Util } from "../util/Util.js"
+import { UI } from "../util/UI.js";
 
 //UIObject Imports
 import { Button } from "./Button.js";
-import { UI } from "./UI.js";
+
 import { UIObject } from "./UIObject.js";
 
 //Slider Class

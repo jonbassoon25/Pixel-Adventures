@@ -53,10 +53,24 @@ export class Display {
   	@param {number} height - The relative height of the element
 	@returns {number[]} The absolute dimensions of the element [x, y, width, height]
  	*/
-	static * inverseCalcElementDimenstions(x, y, width, height) {
+	static * inverseCalcElementDimensions(x, y, width, height) {
 		yield (x - this.horizontalOffset) / this.sizeMult + width/2;
 		yield (y - this.verticalOffset) / this.sizeMult + height/2;
 		yield width / this.sizeMult;
 		yield height / this.sizeMult;
+	}
+
+	/** 
+	@param {number[]} point - point to check
+	@param {boolean} absCoord - are the given coordinates absolute
+	@param {number} padding - how many pixels outside of the display area can the object be before it is out of bounds
+	@returns {boolean} True if the point is outside the display area
+	*/
+	static isOutOfBounds(point, absCoord = true, padding = 50) {
+		if (absCoord) {
+			let trash;
+			[point[0], point[1], trash, trash] = this.calcElementDimensions(point[0], point[1], 0, 0);
+		}
+		return point[0] < 0 - padding || point[0] > canvas.width + padding || point[1] < 0 - padding || point[1] > canvas.height + padding;
 	}
 }

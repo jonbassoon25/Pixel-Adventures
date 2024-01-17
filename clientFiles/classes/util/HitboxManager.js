@@ -12,7 +12,20 @@ export class HitboxManager {
 
 	//*********************************************************************//
 	//Public Static Methods
-	
+
+	/** 
+	Checks to see if the given hitbox points are valid
+	@param {Number[][]} hitboxPoints - Array of hitbox points
+	@returns {Number[][]} hitboxPoints - Checked hitbox points
+	*/
+	static assignHitboxPoints(hitboxPoints) {
+		if (hitboxPoints.length < 2) {
+			console.warn("Too few hitboxPoints in hitbox\n\tConverting hitbox to standard box");
+			return this.squareHitbox;
+		} else {
+			return hitboxPoints;
+		}
+	}
 	/** 
  	@param {PhysicsObject} physicsObject1 - Main object that is being checked for collision}
   	@param {PhysicsObject} physicsObject2 - Other object that could be colliding with the main object
@@ -94,7 +107,7 @@ export class HitboxManager {
 		let movingObject = physicsObj2;
 		let otherObject = physicsObj1;
 
-		//Calculate if object 1 should be the moving object
+		//Calculate if object 1 should be the adjusted object
 		if (physicsObj1.velocity.magnitude >= physicsObj2.velocity.magnitude) {
 			movingObject = physicsObj1;
 			otherObject = physicsObj2;
@@ -132,21 +145,74 @@ export class HitboxManager {
 	@param {number} buffer - Amount of pixels to buffer the collision by
  	@returns {PhysicsObject} Updated physicsObj after collision
   	*/
-	static * amendIntersect(physicsObj, otherObj, isHorizontalImpact) {
+	static amendStaticIntersect(physicsObj, otherObj, isHorizontalImpact) {
 		let slope;
+		let relVelocity;
+
+		//If the other object has a velocity
+		if (otherObj.velocity !== undefined) {
+			//Create new relative velocity
+			relVelocity = new Vector(physicsObj.velocity.componatizedVector);
+			//Subtract the other object's velocity
+			relVelocity.add(otherObj.velocity, -1);
+		} else {
+			//Set the relative velocity to the physicsObj's velocity
+			relVelocity = physicsObj.velocity;
+		}
+
+		
 		try {
 			//Create the slope based on the faster object's velocity (if the faster object isn't moving it will equate to 0/0, which errors)
-			slope = (physicsObj.velocity.y / physicsObj.velocity.x);
+			slope = relVelocity.y / relVelocity.x
+			//console.log("Slope: " + slope);
 		} catch {
-			//The objects are in the same position and neither is moving
+			//Neither object is moving
 			console.warn("0/0 error, using standard amendIntersect");
 			return decrepitAmendIntersect(physicsObj, otherObj, isHorizontalImpact);
 		}
+
+		
 		if (isHorizontalImpact) {
+			let newX;
+			//If the physics object is on the left
+			if (physicsObj.x < otherObj.x) {
+				//Calculate the new x value that is on the left of the otherObj
+				newX = otherObj.x - otherObj.width/2 - physicsObj.width/2;
+			} else { //The physics object is on the right
+				//Calculate the new x value that is on the right of the otherObj
+				newX = otherObj.x + otherObj.width/2 + physicsObj.width/2;
+			}
+			//Calculate the new y and assign the newX to x
+			//y = m(x - x1) + y1
+			if (Math.abs(slope) <= 1000) {
+				physicsObj.y = slope * (newX - physicsObj.x) + physicsObj.y;
+			//If the slope is too big
+			} else if (physicsObj.y < otherObj.y) {
+				physicsObj.y = otherObj.y - otherObj.height/2 - physicsObj.height/2;
+			} else {
+				physicsObj.y = otherObj.y + otherObj.height/2 + physicsObj.height/2;
+			}
 			
+			physicsObj.x = newX;
+			//console.log("Moving to " + [physicsObj.x, physicsObj.y] + " Horizontal");
+		} else { //The impact was vertical
+			let newY;
+			//If the physics object is on the top
+			if (physicsObj.y < otherObj.y) {
+				//Caculate the new y value that is above the otherObj
+				newY = otherObj.y - otherObj.height/2 - physicsObj.height/2;
+			} else { //The physics object is on the bottom
+				//Calculate the new y value that is below the otherObj
+				newY = otherObj.y + otherObj.height/2 + physicsObj.height/2;
+			}
+			//Calculate the new x and assign the newY to y
+			//y = 1/m (x - y1) + x1
+			physicsObj.x = 1/slope * (newY - physicsObj.y) + physicsObj.x;
+			physicsObj.y = newY;
+			//console.log("Moving to " + [physicsObj.x, physicsObj.y] + " Vertical");
 		}
-		yield physicsObj;
-		yield otherObj;
+		
+		return physicsObj;
 	}
 
 	static decrepitAmendIntersect(physicsObj, staticObj, horizontalImpact, buffer = 0) {
@@ -174,4 +240,6 @@ export class HitboxManager {
 		}
 		return physicsObj;
 	}
+
+	
 }

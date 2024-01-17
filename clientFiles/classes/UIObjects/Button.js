@@ -1,9 +1,9 @@
 //Util Imports
 import { Display } from "../util/Display.js";
 import { Mouse } from "../util/Mouse.js";
+import { UI } from "../util/UI.js";
 
 //UI Object Imports
-import { UI } from "./UI.js"
 import { UIObject } from "./UIObject.js";
 
 //Button Class
@@ -22,8 +22,7 @@ export class Button extends UIObject {
 	static simpleButton(x, y, width, height, resize = true) {
 		//If the passed in values are absolute (need to be resized)
 		if (resize) {
-			//Convert the absolute values to be relative (to current screen size)
-			[x, y, width, height] = [...Display.calcElementDimenstions(x, y, width, height)];
+			[x, y, width, height] = Display.calcElementDimensions(x, y, width, height);
 		}
 		//Return if the mouse is over the simpleButton area and the mouse is released
 		return Mouse.x > x && Mouse.x < x + width && Mouse.y > y && Mouse.y < y + height && Mouse.button1Released;

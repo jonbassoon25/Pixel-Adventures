@@ -36,6 +36,7 @@ export class UI {
 			//Calculate the new element dimensions
 			[x, y, width, height] = [...Display.calcElementDimensions(x, y, width, height)];
 		}
+		//y = canvas.height - y;
 		//Determine if the image given needs to be taken from textures
 		if (typeof image === "string") {
 			ctx.drawImage(textures[image], x, y, width, height);

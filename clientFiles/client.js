@@ -8,7 +8,7 @@ Main client side javascript file for FBLA Game 2023 - 2024
 Created: 11.4.23
 */
 
-//Page Link: https://fbla-game.jonbassoon25.repl.co/
+//Page Link: https://fbla-game-v2.jonbassoon25.repl.co/
 
 //To kick random users to google
 //window.location.replace("http://www.google.com");
@@ -27,21 +27,23 @@ import { Scene } from "./classes/util/Scene.js";
 import { SceneCreator } from "./classes/util/SceneCreator.js";
 import { textures } from "./classes/util/Textures.js";
 import { Util } from "./classes/util/Util.js";
+import { UI } from "./classes/util/UI.js";
 import { Vector } from "./classes/util/Vector.js";
 
 //UI Object Imports
 
 import { Button } from "./classes/UIObjects/Button.js";
+import { DynamicUIObject } from "./classes/UIObjects/DynamicUIObject.js";
 import { PauseMenu } from "./classes/UIObjects/PauseMenu.js";
 import { Slider } from "./classes/UIObjects/Slider.js";
+import { StaticUIObject } from "./classes/UIObjects/StaticUIObject.js";
 import { Textbox } from "./classes/UIObjects/Textbox.js";
-import { UI } from "./classes/UIObjects/UI.js";
+
 
 //Game Object Imports
 import { SceneTile } from "./classes/gameObjects/SceneTile.js";
 
 //Game Entity Imports
-import { PhysicsObject } from "./classes/gameEntities/PhysicsObject.js";
 import { Player } from "./classes/gameEntities/Player.js";
 
 Scene.initScene(SceneCreator.createPlaceholderScene(48, 27));
@@ -89,12 +91,12 @@ function updateGame() {
 	Scene.update();
 
 	if (Keyboard.isKeyPressed("r")) {
-		//obj1 = new PhysicsObject("placeholder", 900, 150, 50, 50, 50);
-		obj1 = new Player(900, 150);
-		obj2 = new PhysicsObject("placeholder", 700, 150, 50, 50, 50);
-
-		obj1.velocity.componatizedVector = [-300, 0];
-		obj2.velocity.componatizedVector = [300, 0];
+		obj1 = new DynamicUIObject("placeholder", 700, 150, 50, 50, 50);
+		//obj1 = new Player(900, 150);
+		obj2 = new DynamicUIObject("placeholder", 900, 150, 50, 50, 50);
+		
+		obj1.velocity.componatizedVector = [150, 0];
+		obj2.velocity.componatizedVector = [-150, 0];
 	} 
 	if (Keyboard.isKeyPressed("c")) {
 		Physics.clearAll();
@@ -103,13 +105,10 @@ function updateGame() {
 		console.log(Util.clone(obj1));
 	}
 	
-
-	//Update All Vectors
-	Vector.updateAll();
-
-	//Update Physics Objects
+	//Update dynamic objects
 	Physics.update();
 
+	
 	//Update Pause Menu
 	PauseMenu.update();
 	

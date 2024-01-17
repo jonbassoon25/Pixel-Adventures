@@ -1,8 +1,7 @@
 //Util Imports
 import { Keyboard } from "../util/Keyboard.js";
+import { UI } from "../util/UI.js";
 
-//UI Object Imports
-import { UI } from "./UI.js";
 
 //PauseMenu Class
 export class PauseMenu {

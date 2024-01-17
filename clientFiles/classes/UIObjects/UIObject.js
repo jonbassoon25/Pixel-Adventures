@@ -1,21 +1,34 @@
 //Util Imports
-import { Display } from "../util/Display.js";
+import { UI } from "../util/UI.js";
 
 //UIObject Class
 export class UIObject {
 	//Constructor
 
 	/** 
-  	@param {number} x - The absolute x position of the UIObject
-	@param {number} y - The absolute y position of the UIObject
-  	@param {number} width - The absolute width of the UIObject
-	@param {number} height - The absolute height of the UIObject
- 	*/
-	constructor(x, y, width, height) {
+	@param {string} image
+	@param {number} x - Absolue x position of the button
+	@param {number} y - Absolue y position of the button
+	@param {number} width - Absolute width of the button
+	@param {number} height - Absolute height of the button
+	*/
+	constructor(image, x, y, width, height) {
+		//Set name
+		this.name = "UIObject";
+		//Set image
+		this.image = image;
 		//Set absolute position values
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
+	}
+
+	//*********************************************************************//
+	//Public Methods
+	
+	/** Updates and draws this UI object */
+	update() {
+		UI.draw(this.image, this.x, this.y, this.width, this.height);
 	}
 }

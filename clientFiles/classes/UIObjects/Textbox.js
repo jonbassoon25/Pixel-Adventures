@@ -1,10 +1,11 @@
 //Util Imports
 import { Keyboard } from "../util/Keyboard.js";
 import { Mouse } from "../util/Mouse.js";
+import { UI } from "../util/UI.js";
 
 //UI Object Imports
 import { Button } from "./Button.js";
-import { UI } from "./UI.js";
+
 import { UIObject } from "./UIObject.js";
 
 //Textbox Class

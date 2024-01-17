@@ -17,7 +17,12 @@ export class Util {
 
 	//Creates a deep copy of an object, array1 == array2 without array1 === array2
 	/** 
-	Creates a deep copy of an object, output is stored at a different location than input
+	Creates a deep copy of a simple object, output is stored at a different location than input
+	<br>
+	<br>
+	Does not copy class methods
+	<br>
+	<br>
 	@param {any} input - The object to be copied
 	@returns {any} The copied object
 	*/
