@@ -1,6 +1,6 @@
-import { Player } from "../gameEntities/Player.js";
 
-export class Stark extends Player {
+
+export class Stark {
 	constructor() {
 		super(1920/2, 1080/2);
 		//Additional Stats

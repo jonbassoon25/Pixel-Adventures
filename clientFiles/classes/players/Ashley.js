@@ -1,6 +1,6 @@
-import { Player } from "../gameEntities/Player.js";
 
-export class Ashley extends Player {
+
+export class Ashley {
 	constructor() {
 		super(1920/2, 1080/2);
 		//Additional Stats

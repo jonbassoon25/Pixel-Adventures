@@ -21,13 +21,11 @@ Created: 11.4.23
 import { Display } from "./classes/util/Display.js"
 import { Keyboard } from "./classes/util/Keyboard.js"
 import { Mouse } from "./classes/util/Mouse.js";
-import { HitboxManager } from "./classes/util/HitboxManager.js";
 import { Physics } from "./classes/util/Physics.js";
 import { Scene } from "./classes/util/Scene.js";
 import { SceneCreator } from "./classes/util/SceneCreator.js";
 import { textures } from "./classes/util/Textures.js";
 import { Util } from "./classes/util/Util.js";
-import { UI } from "./classes/util/UI.js";
 import { Vector } from "./classes/util/Vector.js";
 
 //UI Object Imports
@@ -36,15 +34,12 @@ import { Button } from "./classes/UIObjects/Button.js";
 import { DynamicUIObject } from "./classes/UIObjects/DynamicUIObject.js";
 import { PauseMenu } from "./classes/UIObjects/PauseMenu.js";
 import { Slider } from "./classes/UIObjects/Slider.js";
-import { StaticUIObject } from "./classes/UIObjects/StaticUIObject.js";
 import { Textbox } from "./classes/UIObjects/Textbox.js";
 
 
 //Game Object Imports
-import { SceneTile } from "./classes/gameObjects/SceneTile.js";
 
 //Game Entity Imports
-import { Player } from "./classes/gameEntities/Player.js";
 
 Scene.initScene(SceneCreator.createPlaceholderScene(48, 27));
 
