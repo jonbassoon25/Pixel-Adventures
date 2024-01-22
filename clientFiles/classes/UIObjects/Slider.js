@@ -1,7 +1,7 @@
 //Util Imports
+import { Display } from "../util/Display.js";
 import { Mouse } from "../util/Mouse.js";
 import { Util } from "../util/Util.js"
-import { UI } from "../util/UI.js";
 
 //UIObject Imports
 import { Button } from "./Button.js";
@@ -97,8 +97,8 @@ export class Slider extends UIObject {
 			this.#calcSliderXPosition();
 		}
 		//Draw the slider body
-		UI.draw("placeholder", this.x, this.y, this.width, this.height - 10);
+		Display.draw("placeholder", this.x, this.y, this.width, this.height - 10);
 		//Draw the slider value indicator
-		UI.draw("placeholder", this.sliderX - 25 / 2, this.y - 5, 25, this.height);
+		Display.draw("placeholder", this.sliderX - 25 / 2, this.y - 5, 25, this.height);
 	}
 }

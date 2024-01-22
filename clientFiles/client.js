@@ -8,7 +8,7 @@ Main client side javascript file for FBLA Game 2023 - 2024
 Created: 11.4.23
 */
 
-//Page Link: https://fbla-game-v2.jonbassoon25.repl.co/
+//Page Link: https://d80c44ec-f284-4dc2-9448-f7794e4564a2-00-rpr7p62yh9tn.picard.replit.dev/
 
 //To kick random users to google
 //window.location.replace("http://www.google.com");
@@ -21,7 +21,6 @@ Created: 11.4.23
 import { Display } from "./classes/util/Display.js"
 import { Keyboard } from "./classes/util/Keyboard.js"
 import { Mouse } from "./classes/util/Mouse.js";
-import { Physics } from "./classes/util/Physics.js";
 import { Scene } from "./classes/util/Scene.js";
 import { SceneCreator } from "./classes/util/SceneCreator.js";
 import { textures } from "./classes/util/Textures.js";
@@ -31,7 +30,6 @@ import { Vector } from "./classes/util/Vector.js";
 //UI Object Imports
 
 import { Button } from "./classes/UIObjects/Button.js";
-import { DynamicUIObject } from "./classes/UIObjects/DynamicUIObject.js";
 import { PauseMenu } from "./classes/UIObjects/PauseMenu.js";
 import { Slider } from "./classes/UIObjects/Slider.js";
 import { Textbox } from "./classes/UIObjects/Textbox.js";
@@ -41,7 +39,7 @@ import { Textbox } from "./classes/UIObjects/Textbox.js";
 
 //Game Entity Imports
 
-Scene.initScene(SceneCreator.createPlaceholderScene(48, 27));
+Scene.initScene(SceneCreator.createPlaceholderScene(48, 27), 40);
 
 //------------------------------------------------------------------------------------//
 //Constants

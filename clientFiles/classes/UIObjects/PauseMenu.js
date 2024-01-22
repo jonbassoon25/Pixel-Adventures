@@ -1,6 +1,6 @@
 //Util Imports
+import { Display } from "../util/Display.js";
 import { Keyboard } from "../util/Keyboard.js";
-import { UI } from "../util/UI.js";
 
 
 //PauseMenu Class
@@ -18,8 +18,8 @@ export class PauseMenu {
 			this.paused = !this.paused;
 		}
 		if (this.paused) {
-			UI.draw("buttonPressed", 960, 540, 1920, 1080);
-			UI.draw("placeholder", 960, 540, 400, 600);
+			Display.draw("buttonPressed", 960, 540, 1920, 1080);
+			Display.draw("placeholder", 960, 540, 400, 600);
 		}
 	}
 }

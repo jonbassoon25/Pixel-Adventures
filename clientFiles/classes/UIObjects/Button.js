@@ -1,7 +1,6 @@
 //Util Imports
 import { Display } from "../util/Display.js";
 import { Mouse } from "../util/Mouse.js";
-import { UI } from "../util/UI.js";
 
 //UI Object Imports
 import { UIObject } from "./UIObject.js";
@@ -92,15 +91,15 @@ export class Button extends UIObject {
  	*/
 	update() {
 		//Draw the base button image
-		UI.draw(this.image, this.x, this.y, this.width, this.height);
+		Display.draw(this.image, this.x, this.y, this.width, this.height);
 		//If the button is pressed
 		if (this.isPressed()) {
 			//Draw the partially transparent "buttonPressed" image over the button
-			UI.draw("buttonPressed", this.x, this.y, this.width, this.height);
+			Display.draw("buttonPressed", this.x, this.y, this.width, this.height);
 		//Else if the button is hovered
 		} else if (this.#isHovered()) {
 			//Draw the partially transparent "buttonHovered" image over the button
-			UI.draw("buttonHovered", this.x, this.y, this.width, this.height);
+			Display.draw("buttonHovered", this.x, this.y, this.width, this.height);
 		}
 		//Else do nothing
 	}

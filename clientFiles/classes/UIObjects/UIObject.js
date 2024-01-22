@@ -1,5 +1,5 @@
 //Util Imports
-import { UI } from "../util/UI.js";
+import { Display } from "../util/Display.js";
 
 //UIObject Class
 export class UIObject {
@@ -29,6 +29,6 @@ export class UIObject {
 	
 	/** Updates and draws this UI object */
 	update() {
-		UI.draw(this.image, this.x, this.y, this.width, this.height);
+		Display.draw(this.image, this.x, this.y, this.width, this.height);
 	}
 }

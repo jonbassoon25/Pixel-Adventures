@@ -1,7 +1,7 @@
 //Util Imports
+import { Display } from "../util/Display.js";
 import { Keyboard } from "../util/Keyboard.js";
 import { Mouse } from "../util/Mouse.js";
-import { UI } from "../util/UI.js";
 
 //UI Object Imports
 import { Button } from "./Button.js";
@@ -77,8 +77,8 @@ export class Textbox extends UIObject {
 			this.#logInput();
 		}
 		//Draw the textbox
-		UI.draw("placeholder", this.x, this.y, this.width, this.height);
+		Display.draw("placeholder", this.x, this.y, this.width, this.height);
 		//Draw the textbox text
-		UI.drawText(this.text, this.x - this.width / 2 + 2.5, this.y + this.height / 2 + 10, this.height - 5);
+		Display.drawText(this.text, this.x - this.width / 2 + 2.5, this.y + this.height / 2 + 10, this.height - 5);
 	}
 }
