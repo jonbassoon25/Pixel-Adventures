@@ -12,54 +12,44 @@ export class Vector {
 	//*********************************************************************//
 	//Static Variables
 
-	static ZERO = new Vector(0, 0);
-	
-	/** Array of all known Vectors */
-	static allVectors = [];
+	static ZERO = new Vector([0, 0]);
 
 	//*********************************************************************//
 	//Public Static Methods
 	
 	/** 
-	Calculates a Standard Vector based on a resolved vector 
+	Calculates a Standard Vector [magnitude, direction (clockwise from right)] based on a componatized vector
 	@param {number[]} componatizedVector - The componatized vector to convert
 	@returns {number[]} The calculated Standard Vector
 	*/
 	static * calcStandardVector(componatizedVector) {
+		//If the componatized vector represents 0 movement
 		if (componatizedVector[0] == 0 && componatizedVector[1] == 0) {
 			yield 0;
 			yield 0;
 			return;
 		}
-		//yield the vector's magnitude
-		yield Util.round(Math.sqrt(componatizedVector[0] ** 2 + componatizedVector[1] ** 2), 5);
-		//yield the vector's direction
-		//If the vector should be going to the right
-		if (componatizedVector[0] > 0) {
-			yield Util.round(Math.atan(componatizedVector[1] / componatizedVector[0]) * 180 / Math.PI, 5);
-		//If the vector should be going to the left
-		} else if (componatizedVector[0] < 0) {
-			yield Util.round(Math.atan(componatizedVector[1] / componatizedVector[0]) * 180 / Math.PI, 5) + 180;
+		
+		//Yield Magnitude
+		yield Util.round(Math.sqrt(Math.pow(componatizedVector[0], 2) + Math.pow(componatizedVector[1], 2)), 3);
+		
+		//If the componatized vector's x is in the + region
+		if (componatizedVector[0] >= 0) {
+			yield Util.round(Math.atan(componatizedVector[1]/componatizedVector[0]) * 180/Math.PI, 3);
+		//The componatized vector's x is in the - region
 		} else {
-			//If the vector should be going down
-			if (componatizedVector[1] > 0) {
-				yield 90;
-			//If the vector should be going up
-			} else if (componatizedVector[1] < 0) {
-				yield 270;
-			}
+			yield Util.round(180 + Math.atan(componatizedVector[1]/componatizedVector[0]) * 180/Math.PI, 3);
 		}
 	}
 
-	//Splits a given simple vector into component form. simple vector formatted as [maginitude, degrees from 0 (right)]]
+	/**
+	Calculates a Componatized Vector [xComponent, yComponent] based on a standard vector
+	@param {number[]} standardVector - The standard vector to convert
+	@returns {number[]} The calculated componatized vector
+	*/
 	static * componatizeVector(standardVector) {
-		if (standardVector[0] == 0 && standardVector[1] == 0) {
-			yield 0;
-			yield 0;
-			return;
-		}
-		yield Util.round(Math.cos(standardVector[1] * Math.PI / 180) * standardVector[0], 5);
-		yield Util.round(Math.sin(standardVector[1] * Math.PI / 180) * standardVector[0], 5);
+		yield Util.round(standardVector[0] * Math.cos(standardVector[1]), 3);
+		yield Util.round(standardVector[0] * Math.sin(standardVector[1]), 3);
 	}
 
 	//Returns a string of all of the vectors contained in this object
@@ -102,25 +92,13 @@ export class Vector {
 		if (arguments.length == 1 + add) {
 			this.x = arguments[add][0];
 			this.y = arguments[add][1];
-			[this.magnitude, this.direction] = Vector.calcStandardVector([this.x, this.y]);
 		} else if (arguments.length == 2 + add) {
-			this.magnitude = arguments[add];
-			this.direction = arguments[add + 1];
-			[this.x, this.y] = Vector.componatizeVector([this.magnitude, this.direction]);
+			[this.x, this.y] = Vector.componatizeVector([arguments[add], arguments[add + 1]]);
 		} else {
 			console.warn("\nInvalid number of arguments in constructor for Vector:\n\t" + this.name + ": " + arguments.length + ".\nCreating Default Vector");
 			this.x = 0;
 			this.y = 0;
-			this.magnitude = 0;
-			this.direction = 0;
 		}
-		//Add this Vector to a list of all vectors
-		if (typeof Vector.allVectors == "undefined") {
-			Vector.allVectors = [this];
-		} else {
-			Vector.allVectors.push(this);
-		}
-		
 	}
 
 	//*********************************************************************//
@@ -134,14 +112,6 @@ export class Vector {
 	add(otherVector, multiplier = 1) {
 		this.x += otherVector.x * multiplier;
 		this.y += otherVector.y * multiplier;
-		[this.magnitude, this.direction] = Vector.calcStandardVector([this.x, this.y]);
-	}
-
-	/** 
-	Deletes all refrences to this vector
-	*/
-	delete() {
-		Vector.allVectors = Util.delValue(Vector.allVectors, this);
 	}
 
 	/** 
@@ -150,17 +120,15 @@ export class Vector {
 	@returns {boolean} True if this vector is equal to the other vector
 	*/
 	equals(otherVector) {
-		return (this.x == otherVector.x && this.y == otherVector.y) || (this.magnitude == otherVector.magnitude && this.direction == otherVector.direction);
+		return (this.x == otherVector.x && this.y == otherVector.y);
 	}
 
-	//Limits the max and min values of the vector using componatized values
 	/** 
 	Limits the max and min values of this vector using componatezed values
 	@param {number} maxX - The maximum value of this vector in the x direction
 	@param {number} maxY - The maximum value of this vector in the y direction
 	*/
 	limitComponatizedValues(maxX, maxY) {
-		
 		//Assign x and y, account for sign of x and y
 		if (this.x < 0) {
 			this.x = -Util.absMin(this.x, maxX);
@@ -172,8 +140,6 @@ export class Vector {
 		} else {
 			this.y = Util.absMin(this.y, maxY);
 		}
-		//Assign other values
-		[this.magnitude, this.direction] = Vector.calcStandardVector([this.x, this.y]);
 	}
 
 	/** 
@@ -181,11 +147,10 @@ export class Vector {
 	@param {number} maxMagnitude - The maximum magnitude of this vector
 	*/
 	limitNormalValues(maxMagnitude) {
-		this.magnitude = Util.absMin(this.magnitude, maxMagnitude);
-		[this.x, this.y] = Vector.componatizeVector([this.magnitude, this.direction]);
+		magnitude = Util.absMin(this.magnitude, maxMagnitude);
+		[this.x, this.y] = Vector.componatizeVector([magnitude, this.direction]);
 	}
 
-	//Multiplies this vector by a scalar
 	/** 
 	Multiplies this vector's values by a scalar quantity
 	@param {number} scalar - The scalar quantity to multiply this vector by
@@ -193,10 +158,14 @@ export class Vector {
 	multiply(scalarValue) {
 		this.x *= scalarValue;
 		this.y *= scalarValue;
-		[this.magnitude, this.direction] = Vector.calcStandardVector([this.x, this.y]);
 	}
 
-	//Rounds the vector values to specified decimal places
+	/** Normailized this vector: sets magnitude to 1 */
+	normalize() {
+		this.x = this.x / this.magnitude;
+		this.y = this.y / this.magnitude;
+	}
+
 	/** 
 	Rounds all of this vector's values to the specified number of decimal places
 	@param {number} decimalPlaces - The number of decimal places to round to (optional)
@@ -204,11 +173,18 @@ export class Vector {
 	round(decimalPlaces = 0) {
 		this.x = Util.round(this.x, decimalPlaces);
 		this.y = Util.round(this.y, decimalPlaces);
-		this.magnitude = Util.round(this.magnitude, decimalPlaces);
-		this.direction = Util.round(this.direction, decimalPlaces);
 	}
 
-	//Returns a string of this vector's values
+	/** 
+	Scales the magnitude of the vector to the given quanitiy
+	@param {number} scale - Number to scale the magnitude of the vector to
+	*/
+	scaleTo(scale) {
+		this.normalize();
+		this.x *= scale;
+		this.y *= scale;
+	}
+
 	/** 
 	@param {number} indentationLevel - Additional tabs to add to the output (optional)
 	@returns {string} A string of this vector's values
@@ -222,9 +198,19 @@ export class Vector {
 	//*********************************************************************//
 	//Getters
 
+	/** @returns {number} The magnitude of this vector */
+	get magnitude() {
+		return this.standardVector[0];
+	}
+
+	/** @returns {number} The direction of this vector */
+	get direction() {
+		return this.standardVector[1];
+	}
+
 	/** @returns {number[]} The Standard Vector of this object */
 	get standardVector() {
-		return [this.magnitude, this.direction];
+		return [...Vector.calcStandardVector(this.x, this.y)];
 	}
 
 	/** @returns {number[]} The componatized vector of this object */
@@ -240,8 +226,6 @@ export class Vector {
 	@param {number[]} standardVector - The Standard Vector to set this object to
 	*/
 	set standardVector(standardVector) {
-		this.magnitude = standardVector[0];
-		this.direction = standardVector[1];
 		[this.x, this.y] = Vector.componatizeVector(standardVector);
 	}
 
@@ -252,6 +236,5 @@ export class Vector {
 	set componatizedVector(componatizedVector) {
 		this.x = componatizedVector[0];
 		this.y = componatizedVector[1];
-		[this.magnitude, this.direction] = Vector.calcStandardVector(componatizedVector);
 	}
 }

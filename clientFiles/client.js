@@ -22,6 +22,7 @@ import { Display } from "./classes/util/Display.js"
 import { Keyboard } from "./classes/util/Keyboard.js"
 import { Mouse } from "./classes/util/Mouse.js";
 import { Scene } from "./classes/util/Scene.js";
+import { SceneBuilder } from "./classes/util/SceneBuilder.js";
 import { SceneCreator } from "./classes/util/SceneCreator.js";
 import { textures } from "./classes/util/Textures.js";
 import { Util } from "./classes/util/Util.js";
@@ -36,15 +37,21 @@ import { Textbox } from "./classes/UIObjects/Textbox.js";
 
 
 //Game Object Imports
+import { SceneTile } from "./classes/gameObjects/SceneTile.js";
+import { LightTile } from "./classes/gameObjects/LightTile.js";
+import { ShaderTile } from "./classes/gameObjects/ShaderTile.js";
 
 //Game Entity Imports
+import { DynamicObject } from "./classes/gameEntities/DynamicObject.js";
+import { Player } from "./classes/gameEntities/Player.js";
 
-Scene.initScene(SceneCreator.createPlaceholderScene(48, 27), 40);
+Scene.initScene(SceneCreator.createTestScene(48, 27), 40);
+//Scene.initScene(SceneCreator.createPlaceholderScene(48, 27), 40);
+console.log(Scene.tileSize);
 
 //------------------------------------------------------------------------------------//
 //Constants
 
-//Define the canvas
 const canvas = document.getElementById("gameScreen");
 
 //Initalize the server communication handler
@@ -53,58 +60,47 @@ const socket = io();
 //------------------------------------------------------------------------------------//
 //Main Function
 
-//Define test classes
-let testButton = new Button("placeholder", 100, 100, 100, 100);
-let testTextbox = new Textbox(500, 100, 500, 50);
-let testSlider = new Slider(500, 200, 500, 50, 0, 100, 5);
-
-var obj1;
-var obj2;
-
+//Switch variable
+let scene = "menu";
 
 function updateGame() {
+	//Update Display values
 	Display.calcScreenSize();
 
-	//For UI Element Testing
-	/*
-	//Test button class using subsistAsButton() method
-	if (testButton.subsistAsButton()) {
-		console.log("Button Released");
-	}
-
-	//Test textbox class, currently textbox char limit and text y position aren't calculated correctly
-	testTextbox.update();
-
-	//Test slider class
-	testSlider.update();
-	UI.drawText(testSlider.snapOutput().toString(), 800, 230, 50, true);
- 	*/
-
 	//Update Scene
-	Scene.update();
+	Scene.updateTiles();
 
-	if (Keyboard.isKeyPressed("r")) {
-		obj1 = new DynamicUIObject("placeholder", 700, 150, 50, 50, 50);
-		//obj1 = new Player(900, 150);
-		obj2 = new DynamicUIObject("placeholder", 900, 150, 50, 50, 50);
-		
-		obj1.velocity.componatizedVector = [150, 0];
-		obj2.velocity.componatizedVector = [-150, 0];
-	} 
-	if (Keyboard.isKeyPressed("c")) {
-		Physics.clearAll();
+	switch (scene) {
+		case "menu":
+			if (Keyboard.isKeyPressed("r")) {
+				new Player(180, 20);
+			}
+			if (Keyboard.isKeyPressed("c")) {
+				DynamicObject.clear();
+			}
+			if (Keyboard.shiftPressed) {
+				DynamicObject.clear();
+				console.log("Scene builder");
+				console.log("Controls:\n\tWASD to move\n\tEnable mouse control by pressing 'm'\n\tPress 'c' to clear current scene\n\tPress 'k' to save current scene\n\tPress 'l' to load last saved scene\n\tPress '1' to replace tile with air\n\tPress '=' to replace tile with placeholder");
+				SceneBuilder.init();
+				scene = "sceneCreator";
+			}
+			break;
+		case "sceneCreator":
+			if (Keyboard.shiftPressed) {
+				scene = "menu";
+			}
+			SceneBuilder.update();
+			break;
 	}
-	if (Keyboard.isKeyPressed("p")) {
-		console.log(Util.clone(obj1));
-	}
-	
-	//Update dynamic objects
-	Physics.update();
 
-	
+	DynamicObject.updateObjects();
+
+	Scene.updateShaders();
+
 	//Update Pause Menu
 	PauseMenu.update();
-	
+
 	//Reset single frame input varialbes
 	Mouse.resetVars();
 	Keyboard.resetVars();
@@ -126,7 +122,7 @@ setInterval(() => {
 	}
 	//Incriment frames once per frame
 	frames++;
-}, 1000/60);
+}, 1000 / 60);
 
 //------------------------------------------------------------------------------------//
 //Event Listeners
@@ -190,6 +186,18 @@ document.addEventListener("keydown", (event) => {
 			Keyboard.escapeDown = true;
 			Keyboard.escapePressed = true;
 			break;
+		case "ArrowUp":
+			Keyboard.keyDown("up");
+			break;
+		case "ArrowDown":
+			Keyboard.keyDown("down");
+			break;
+		case "ArrowLeft":
+			Keyboard.keyDown("left");
+			break;
+		case "ArrowRight":
+			Keyboard.keyDown("right");
+			break;
 		default:
 			if (event.key.length !== 1) {
 				console.log("Unsupported Key Pressed: " + event.key);
@@ -208,11 +216,23 @@ document.addEventListener("keyup", (event) => {
 		case "Shift":
 			Keyboard.shiftDown = false;
 			break;
-		case "Backspace": 
+		case "Backspace":
 			Keyboard.backspaceDown = false;
 			break;
 		case "Escape":
 			Keyboard.escapeDown = false;
+			break;
+		case "ArrowUp":
+			Keyboard.keyUp("up");
+			break;
+		case "ArrowDown":
+			Keyboard.keyUp("down");
+			break;
+		case "ArrowLeft":
+			Keyboard.keyUp("left");
+			break;
+		case "ArrowRight":
+			Keyboard.keyUp("right");
 			break;
 		default:
 			if (event.key.length !== 1) {
@@ -224,7 +244,47 @@ document.addEventListener("keyup", (event) => {
 //------------------------------------------------------------------------------------//
 //Server Events
 
+export function sendRequest(name, data) {
+	socket.emit(name, data);
+}
+
+//Catch scene from server
+socket.on("scene", (data) => {
+	let structure = [];
+	let shaderStructure = [];
+	//Create SceneTiles from scene title values
+	for (let i = 0; i < data[0].length; i++) {
+		structure.push([]);
+		for (let j = 0; j < data[0][i].length; j++) {
+			if (data[0][i][j]["type"] == "SceneTile") {
+				structure[i].push(new SceneTile(data[0][i][j]["image"], data[0][i][j]["col"], data[0][i][j]["row"], data[0][i][j]["hasCollision"]));
+			} else if (data[0][i][j]["type"] == "LightTile") {
+				structure[i].push(new LightTile(data[0][i][j]["image"], data[0][i][j]["col"], data[0][i][j]["row"], data[0][i][j]["str"], data[0][i][j]["rad"]));
+			} else {
+				console.warn("Undetermined SceneTile type. Creating with default values")
+				structure[i].push(new SceneTile(data[0][i][j]["image"], data[0][i][j]["col"], data[0][i][j]["row"], data[0][i][j]["hasCollision"]));
+			}
+			
+		}
+	}
+
+	for (let i = 0; data[1] != null && i < data[1].length; i++) {
+		shaderStructure.push([]);
+		for (let j = 0; j < data[1][i].length; j++) {
+			shaderStructure[i].push(new ShaderTile(data[1][i][j]["col"], data[1][i][j]["row"]));
+			shaderStructure[i][j].shaderLevel = data[1][i][j]["level"];
+		}
+	}
+	Scene.structure = structure;
+	Scene.shaderStructure = shaderStructure;
+	console.log("recieved");
+});
+
+socket.on("log", (msg) => {
+	console.log(msg);
+});
+
 //Log any recieved server errors
 socket.on("error", (msg) => {
-	console.log(msg);
+	console.warn("Server Error:\n\t" + msg);
 });

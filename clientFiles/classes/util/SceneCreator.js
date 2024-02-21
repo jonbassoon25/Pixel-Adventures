@@ -1,4 +1,5 @@
 import { SceneTile } from "../gameObjects/SceneTile.js";
+import { ShaderTile } from "../gameObjects/ShaderTile.js";
 
 //SceneCreator Class
 export class SceneCreator {
@@ -11,20 +12,67 @@ export class SceneCreator {
 	@returns {SceneTile[][]} The new scene
 	*/
 	static createPlaceholderScene(width, height) {
-		let output = [];
+		let structure = [];
 		
-		for (let col = 0; col < height - 1; col++) {
-			output.push([]);
-			for (let row = 0; row < width; row++) {
-				output[col].push(new SceneTile("none", row, col, [[0, 0], [1, 0], [1, 1], [0, 1]]));
+		for (let row = 0; row < height - 1; row++) {
+			structure.push([]);
+			for (let col = 0; col < width; col++) {
+				structure[col].push(new SceneTile("none", col, row));
 			}
 		}
 		
-		output.push([]);
-		for (let row = 0; row < width; row++) {
-			output[height - 1].push(new SceneTile("placeholder", row, height - 1, [[0, 0], [1, 0], [1, 1], [0, 1]]));
+		structure.push([]);
+		for (let col = 0; col < width; col++) {
+			structure[height - 1].push(new SceneTile("placeholder", col, height - 1, true));
 		}
 		
-		return output;
+		return structure;
+	}
+
+	static createTestScene(width, height) {
+		let structure = [];
+
+		for (let row = 0; row < height; row++) {
+			structure.push([]);
+			for (let col = 0; col < width; col++) {
+				if (row == col) {
+					structure[row].push(new SceneTile("placeholder", col, row, true));
+				} else {
+					structure[row].push(new SceneTile("none", col, row));
+				}
+			}
+		}
+		return structure;
+	}
+
+	static createEmptyScene(width, height) {
+		let structure = [];
+
+		for (let row = 0; row < height; row++) {
+			structure.push([]);
+			for (let col = 0; col < width; col++) {
+				structure[row].push(new SceneTile("none", col, row));
+			}
+		}
+
+		return structure;
+	}
+
+	/** Creates an empty shader scene with the specified with and height (in scene tile blocks) */
+	static createShaderStructure(width, height) {
+		let structure = [];
+			
+		for (let row = 0; row < height * 2; row++) {
+			structure.push([]);
+			for (let col = 0; col < width * 2; col++) {
+				structure[row].push(new ShaderTile(col, row));
+			}
+		}
+
+		return structure;
+	}
+
+	static createEmptyShadedScene(width, height) {
+		return [this.createEmptyScene(width, height), this.createShaderStructure(width, height)];
 	}
 }

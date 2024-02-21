@@ -26,7 +26,7 @@ const path = require('path');
 //------------------------------------------------------------------------------------//
 //Local Imports
 
-
+let scenes = require("./serverFiles/scenes.json");
 
 //------------------------------------------------------------------------------------//
 //Variables
@@ -36,13 +36,13 @@ const path = require('path');
 //Functions
 
 //deletes a array element at specified index
-function del(array, index){
+function del(array, index) {
 	return array.splice(index, 1);
 };
 
 //returns a random integer between min and max (inclusive), if max is not defined then it is 0 - min
-function randint(min, max = "none"){
-	if (max === "none"){
+function randint(min, max = "none") {
+	if (max === "none") {
 		max = min;
 		min = 0;
 	}
@@ -50,7 +50,7 @@ function randint(min, max = "none"){
 };
 
 //Saves JSON data to selected file
-function save(data, file){
+function save(data, file) {
 	let saveData = JSON.stringify(data);
 	fs.writeFile("./serverFiles/" + file + ".json", saveData, (err) => {
 		if (err) {
@@ -74,7 +74,7 @@ function roomEmit(roomName, socket, event, data) {
 app.use(express.static(path.join(__dirname, 'clientFiles')));
 
 //Send user index.html when they load the url
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
 	//__dirname is the name of the current directory
 	res.sendFile(__dirname + '/clientFiles/index.html');
 });
@@ -88,6 +88,16 @@ io.on('connection', (socket) => {
 	connections = io.engine.clientsCount;
 	console.log("\nConnected Users: " + connections.toString());
 
+	socket.on("saveScene", (data) => {
+		scenes[data[0]] = data[1];
+		save(scenes, "scenes");
+		socket.emit("log", "Scene saved");
+	});
+
+	socket.on("loadScene", (name) => {
+		socket.emit("scene", scenes[name]);
+	});
+
 	//When a user has disconnected
 	socket.on('disconnect', () => {
 		connections = io.engine.clientsCount;
@@ -99,7 +109,7 @@ io.on('connection', (socket) => {
 //Host server on port 8000
 
 http.listen(8000, () => {
-   console.log('Server Started');
+	console.log('Server Started');
 });
 
 //Wait 5 seconds to tell the clients that the server died (allow for them to reconnect to the server)

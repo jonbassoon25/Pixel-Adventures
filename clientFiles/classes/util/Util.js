@@ -86,4 +86,24 @@ export class Util {
 		if (num1 > num2) return num1;
 		return num2;
 	}
+
+	/** 
+	@param {Array} array1 - The first array to combine
+	@param {Array} array2 - The second array to combine
+	@returns {Array} The combined first and second arrays without duplicates
+	*/
+	static combine(array1, array2) {
+		let endArray = [];
+		for (let i = 0; i < array1.length; i++) {
+			if (!endArray.includes(array1[i])) {
+				endArray.push(array1[i]);
+			}
+		}
+		for (let i = 0; i < array2.length; i++) {
+			if (!endArray.includes(array2[i])) {
+				endArray.push(array2[i]);
+			}
+		}
+		return endArray;
+	}
 }
