@@ -110,6 +110,9 @@ function updateGame() {
 			break;
 		case "sceneCreator":
 			if (Keyboard.shiftPressed) {
+				Display.clear();
+				Scene.displayAll();
+				Scene.background = Display.imageData;
 				scene = "game";
 			}
 			SceneBuilder.update();

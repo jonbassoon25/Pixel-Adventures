@@ -81,6 +81,11 @@ export class Scene {
 	static update() {
 		for (let i = 0; i < DynamicObject.dynamicObjects.length; i++) {
 			for (let j = 0; j < this.structure.length; j++) {
+				//If not the top of the dynamic object is above the bottom of the first structure tile in the row and the bottom of the dynamic object is below the top of the first structure tile in the row
+				if (!(DynamicObject.dynamicObjects[i].y - DynamicObject.dynamicObjects[i].height/2 < this.structure[j][0].y + this.structure[j][0].height/2 && DynamicObject.dynamicObjects[i].y + DynamicObject.dynamicObjects[i].height/2 > this.structure[j][0].y - this.structure[j][0].height/2)) {
+					//The dynamic object won't collide with any tiles in that row
+					continue;
+				}
 				for (let k = 0; k < this.structure[j].length; k++) {
 					if (DynamicObject.dynamicObjects[i].isColliding(this.structure[j][k])) {
 						this.structure[j][k].update();
