@@ -14,6 +14,12 @@ export class DynamicObject {
 		}
 	}
 
+	static drawObjects() {
+		for (let i = 0; i < this.dynamicObjects.length; i++) {
+			this.dynamicObjects[i].draw();
+		}
+	}
+
 	static clear() {
 		this.dynamicObjects = [];
 	}
@@ -137,7 +143,6 @@ export class DynamicObject {
 		this.x += this.velocity.x;
 		this.y += this.velocity.y;
 		this.collide();
-		this.draw();
 	}
 
 	//*********************************************************************//

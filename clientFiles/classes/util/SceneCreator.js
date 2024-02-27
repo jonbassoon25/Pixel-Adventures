@@ -1,5 +1,6 @@
 import { SceneTile } from "../gameObjects/SceneTile.js";
 import { ShaderTile } from "../gameObjects/ShaderTile.js";
+import { LightTile } from "../gameObjects/LightTile.js";
 
 //SceneCreator Class
 export class SceneCreator {
@@ -42,6 +43,8 @@ export class SceneCreator {
 				}
 			}
 		}
+		structure[0][0] = new LightTile("none", 0, 0, 10, 30);
+		structure[Math.round(height/2)][Math.floor(width/2)] = new LightTile("none", Math.round(width/2), Math.round(height/2), 20, ((width > height)? width : height) / 2);
 		return structure;
 	}
 

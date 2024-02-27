@@ -17,7 +17,7 @@ export class ShaderTile {
 
 	update() {
 		let shaderString = "shader_" + ((this.shaderLevel < 10)? "0" + this.shaderLevel.toString() : this.shaderLevel.toString());
-		Display.draw(shaderString, this.x, this.y, this.width, this.height);
+		Display.draw(shaderString, this.x, this.y, this.width + 0, this.height + 0);
 	}
 
 	//*********************************************************************//

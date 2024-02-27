@@ -1,9 +1,10 @@
 //Util Imports
 import { textures } from "./Textures.js";
+import { Scene } from "./Scene.js";
 
 //Define the canvas
 const canvas = document.getElementById("gameScreen");
-const ctx = canvas.getContext("2d");
+const ctx = canvas.getContext("2d", {willReadFrequently: true});
 
 export class Display {
 	//Static Variables
@@ -11,6 +12,7 @@ export class Display {
 	static sizeMult = 1;
 	static horizontalOffset = 0;
 	static verticalOffset = 0;
+	static resized = false;
 	
 
 	//*********************************************************************//
@@ -20,6 +22,7 @@ export class Display {
   	Updates Display variables to reflect whatever the user's screen diminsions are
   	*/
 	static calcScreenSize() {
+		let prevValues = [this.sizeMult, this.horizontalOffset, this.verticalOffset];
 		//Make sure that the canvas covers the whole screen
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
@@ -32,6 +35,9 @@ export class Display {
 			this.sizeMult = canvas.width/1920;
 			this.verticalOffset = (canvas.height / 9 - canvas.width / 16) * 9 / 2;
 			this.horizontalOffset = 0;
+		}
+		if (this.sizeMult != prevValues[0] || this.horizontalOffset != prevValues[1] || this.verticalOffset != prevValues[2]) {
+			this.resized = true;
 		}
 	}
 
@@ -79,6 +85,10 @@ export class Display {
 		return point[0] < 0 - padding || point[0] > canvas.width + padding || point[1] < 0 - padding || point[1] > canvas.height + padding;
 	}
 
+	static clear() {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+	}
+
 	/** 
 	Draws a given image onto the canvas, pulls from textures for image strings, can take relative or absolute values
 	@param {string} image - The image to draw
@@ -91,7 +101,7 @@ export class Display {
 	static draw(image, x, y, width, height, resize = true) {
 		//If there is no image to draw, return
 		if (image == "none") {
-			return;
+			image = "blackTile";
 		}
 		//If the coordinates passed in are absolute (they need to be resized)
 		if (resize) {
@@ -105,6 +115,19 @@ export class Display {
 		//The image is a plain image
 		} else {
 			ctx.drawImage(image, x, y, width, height);
+		}
+	}
+
+	static drawData(imageData, x, y, resize = true) {
+		if (resize) {
+			let newX;
+			let newY;
+			let trash;
+			[newX, newY, trash, trash] = Display.calcElementDimensions(x, y, 0, 0);
+			ctx.putImageData(imageData, Math.round(newX), Math.round(newY));
+		} else {
+			console.log("no resize");
+			ctx.putImageData(imageData, Math.round(x), Math.round(y));
 		}
 	}
 
@@ -131,5 +154,19 @@ export class Display {
 		ctx.fillStyle = color;
 		//Draw the text onto the canvas
 		ctx.fillText(text, x, y);
+	}
+
+	//*********************************************************************//
+	//Getters
+
+	static get imageData() {
+		let x;
+		let y;
+		let width;
+		let height;
+		[x, y, width, height] = this.calcElementDimensions(1920/2, 1080/2, 1920, 1080);
+		x = Math.round(x);
+		y = Math.round(y);
+		return ctx.getImageData(x, y, width, height);
 	}
 }

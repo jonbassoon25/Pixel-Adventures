@@ -26,7 +26,9 @@ const path = require('path');
 //------------------------------------------------------------------------------------//
 //Local Imports
 
-let scenes = require("./serverFiles/scenes.json");
+let scenes = {
+	"lastSaved": require("./serverFiles/lastSaved.json")
+};
 
 //------------------------------------------------------------------------------------//
 //Variables
@@ -50,7 +52,7 @@ function randint(min, max = "none") {
 };
 
 //Saves JSON data to selected file
-function save(data, file) {
+function save(file, data) {
 	let saveData = JSON.stringify(data);
 	fs.writeFile("./serverFiles/" + file + ".json", saveData, (err) => {
 		if (err) {
@@ -90,10 +92,10 @@ io.on('connection', (socket) => {
 
 	socket.on("saveScene", (data) => {
 		scenes[data[0]] = data[1];
-		save(scenes, "scenes");
+		save(data[0], data[1]);
 		socket.emit("log", "Scene saved");
 	});
-
+	
 	socket.on("loadScene", (name) => {
 		socket.emit("scene", scenes[name]);
 	});

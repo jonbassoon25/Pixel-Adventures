@@ -24,8 +24,27 @@ export class SceneBuilder {
 	static structure = [[]];
 	static shaderStructure = null;
 	static mouseControlsEnabled = false;
-	static collision = false;
+	static collisionEditor = false;
 	static shaderEditor = false;
+	static instructions = 
+	"Controls:\n" + 
+	"	WASD to move\n" + 
+	"	Use arrow keys to edit block specific properties\n" +
+	"	Press 'b' to bake scene lighting\n" +
+	"	Press 'c' to clear current scene\n" + 
+	"	Press 'k' to save current scene\n" + 
+	"	Press 'l' to load last saved scene\n" +
+	"	Press 'm' to enable mouse controls\n" + 
+	"	Press 'n' to toggle collision for placed blocks\n" +
+	"	Press 'o' to toggle collision editor\n" +
+	"	Press 'p' to toggle shader editor\n" +
+	"	Press 'z' to log the currently selected tile\n" +
+	"	Press '1' to replace tile with air\n" + 
+	"	Press '2' to replace tile with stone bricks\n" + 
+	"	Press '4' to replace tile with rotten wood\n" + 
+	"	Press '6' to place light\n" + 
+	"	Press '=' to replace tile with placeholder\n" + 
+  "\n	Press 'h' to relog instructions";
 
 	//*********************************************************************//
 	//Private Static Methods
@@ -60,19 +79,19 @@ export class SceneBuilder {
 
 	static #setLight() {
 		let background = this.structure[this.cursorY][this.cursorX].image;
-		this.structure[this.cursorY][this.cursorX] = new LightTile(background, this.cursorX, this.cursorY, 15, 10, this.collision);
+		this.structure[this.cursorY][this.cursorX] = new LightTile(background, this.cursorX, this.cursorY, 15, 10, false);
 	}
 
 	static #setPlaceholder() {
-		this.structure[this.cursorY][this.cursorX] = new SceneTile("placeholder", this.cursorX, this.cursorY, this.collision);
+		this.structure[this.cursorY][this.cursorX] = new SceneTile("placeholder", this.cursorX, this.cursorY, false);
 	}
 
 	static #setStone() {
-		this.structure[this.cursorY][this.cursorX] = new SceneTile("stoneBrick", this.cursorX, this.cursorY, this.collision);
+		this.structure[this.cursorY][this.cursorX] = new SceneTile("stoneBrick", this.cursorX, this.cursorY, false);
 	}
 
 	static #setRottenWood() {
-		this.structure[this.cursorY][this.cursorX] = new SceneTile("rottedWoodPlanks", this.cursorX, this.cursorY, this.collision);
+		this.structure[this.cursorY][this.cursorX] = new SceneTile("rottedWoodPlanks", this.cursorX, this.cursorY, false);
 	}
 
 	static #setVines() {
@@ -80,7 +99,7 @@ export class SceneBuilder {
 	}
 
 	static #save() {
-		SocketCommunicator.send("saveScene", ["lastSaved", [this.structure, this.shaderStructure]]);
+		SocketCommunicator.send("saveScene", ["lastSaved", this.structure]);
 		console.log("saving scene");
 	}
 
@@ -160,9 +179,13 @@ export class SceneBuilder {
 			this.#bakeLighting();
 		}
 
-		if (Keyboard.isKeyPressed("f")) {
-			this.collision = !this.collision;
-			console.log("Collision " + ((this.collision)? "enabled" : "disabled"));
+		if (Keyboard.isKeyPressed("o")) {
+			this.collisionEditor = !this.collisionEditor;
+			console.log("Collision editor " + ((this.collisionEditor)? "enabled" : "disabled"));
+		}
+
+		if (Keyboard.isKeyPressed("h")) {
+			this.printInstructions();
 		}
 
 		//Movement inputs
@@ -238,6 +261,12 @@ export class SceneBuilder {
 			return;
 		}
 
+		//Toggle collision for sceneTile
+		if (Keyboard.isKeyPressed("n")) {
+			this.structure[this.cursorY][this.cursorX].hasCollision = !this.structure[this.cursorY][this.cursorX].hasCollision;
+			console.log("Collision " + ((this.structure[this.cursorY][this.cursorX].hasCollision)? "enabled" : "disabled"));
+		}
+
 		//Tile placing inputs
 		if (Keyboard.isKeyDown("1")) {
 			this.#setNone();
@@ -256,13 +285,10 @@ export class SceneBuilder {
 		}
 	}
 
-	static #drawCursor() {
-		Display.draw("placeholder", (this.cursorX * Scene.tileSize + Scene.tileSize/2)  / ((this.shaderEditor)? 2 : 1), (this.cursorY * Scene.tileSize + 20)  / ((this.shaderEditor)? 2 : 1), Scene.tileSize / ((this.shaderEditor)? 2 : 1), Scene.tileSize / ((this.shaderEditor)? 2 : 1));
-	}
-
 	static #bakeLighting() {
 		let lightTiles = [];
-		//find light tiles
+		let collisionTiles = [];
+		//find light and collision tiles
 		for (let i = 0; i < this.structure.length; i++) {
 			for (let j = 0; j < this.structure[i].length; j++) {
 				if (this.structure[i][j] instanceof LightTile) {
@@ -285,8 +311,22 @@ export class SceneBuilder {
 			for (let j = Math.max(2 * (light.row - light.radius + 1), 0); j < this.shaderStructure.length && j < 2 * (light.row + light.radius); j++) {
 				for (let i = Math.max(2 * (light.col - light.radius + 1), 0); i < this.shaderStructure[j].length && i < 2 * (light.col + light.radius); i++) {
 					let shaderTile = this.shaderStructure[j][i];
+					
 					let shaderLevel = Math.min(-1 + (20 - light.strength) + Math.round(20 * (Math.sqrt(Math.pow((0.5 * (shaderTile.col - 1/2)) - light.col, 2) + Math.pow((0.5 * (shaderTile.row - 1/2)) - light.row, 2))) / light.radius), shaderTile.shaderLevel);
 					shaderTile.shaderLevel = shaderLevel;
+				}
+			}
+		}
+	}
+
+	static #displayCollisionTiles() {
+		for (let i = 0; i < this.structure.length; i++) {
+			for (let j = 0; j < this.structure[i].length; j++) {
+				let currentTile = this.structure[i][j];
+				if (currentTile.hasCollision) {
+					Display.draw("redTile", currentTile.x, currentTile.y, currentTile.width, currentTile.height);
+				} else {
+					Display.draw("blueTile", currentTile.x, currentTile.y, currentTile.width, currentTile.height);
 				}
 			}
 		}
@@ -304,9 +344,26 @@ export class SceneBuilder {
 		this.cursorY = 0;
 	}
 
+	static bakeScene(structure) {
+		this.clear();
+		this.structure = structure;
+		this.#bakeLighting();
+		return this.shaderStructure;
+	}
+
 	/** Clears the current scene data */
 	static clear() {
 		[this.structure, this.shaderStructure] = SceneCreator.createEmptyShadedScene(48, 27);
+	}
+
+	/** Draws the scene editor cursor */
+	static drawCursor() {
+		Display.draw("crosshair", (this.cursorX * Scene.tileSize + Scene.tileSize/2)  / ((this.shaderEditor)? 2 : 1), (this.cursorY * Scene.tileSize + 20)  / ((this.shaderEditor)? 2 : 1), Scene.tileSize / ((this.shaderEditor)? 2 : 1), Scene.tileSize / ((this.shaderEditor)? 2 : 1));
+	}
+	
+	/** Prints the SceneBuilder Instructions */
+	static printInstructions() {
+		console.log(this.instructions);
 	}
 
 	/** Updates the SceneBuilder by taking user input and drawing the updated scene */
@@ -321,9 +378,26 @@ export class SceneBuilder {
 			this.shaderStructure = Scene.shaderStructure;
 		}
 		this.#takeInput();
-		Scene.initScene(this.structure, this.shaderStructure, 40);
-		Scene.updateTiles();
-		this.#drawCursor();
+		if (this.structure == null) {
+			return;
+		}
+		if (this.shaderEditor && this.collisionEditor) {
+			this.shaderEditor = false;
+			this.collisionEditor = false;
+			console.log("Returned to main editor");
+		}
+		if (this.shaderEditor) {
+			Scene.displayAll();
+		} else {
+			for (let i = 0; i < Scene.structure.length; i++) {
+				for (let j = 0; j < Scene.structure[i].length; j++) {
+					Scene.structure[i][j].update();
+				}
+			}
+		}
+		if (this.collisionEditor) {
+			this.#displayCollisionTiles();
+		}
 	}
 
 	//*********************************************************************//

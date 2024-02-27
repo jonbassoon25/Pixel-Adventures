@@ -45,9 +45,6 @@ import { ShaderTile } from "./classes/gameObjects/ShaderTile.js";
 import { DynamicObject } from "./classes/gameEntities/DynamicObject.js";
 import { Player } from "./classes/gameEntities/Player.js";
 
-Scene.initScene(SceneCreator.createTestScene(48, 27), 40);
-//Scene.initScene(SceneCreator.createPlaceholderScene(48, 27), 40);
-console.log(Scene.tileSize);
 
 //------------------------------------------------------------------------------------//
 //Constants
@@ -60,48 +57,75 @@ const socket = io();
 //------------------------------------------------------------------------------------//
 //Main Function
 
-//Switch variable
+//State variable
 let scene = "menu";
+
+//Frames
+let frames = 0;
 
 function updateGame() {
 	//Update Display values
 	Display.calcScreenSize();
 
-	//Update Scene
-	Scene.updateTiles();
-
 	switch (scene) {
 		case "menu":
+			if (Keyboard.isKeyPressed("p")) {
+				let structure = SceneCreator.createTestScene(48, 27)
+				Scene.initScene(structure, SceneBuilder.bakeScene(structure), 40);
+				scene = "game";
+			}
+			break;
+		case "game":
+			Scene.drawBackground();
+			
+			//Update Scene
+			Scene.update();
+
 			if (Keyboard.isKeyPressed("r")) {
 				new Player(180, 20);
 			}
+			
+			DynamicObject.updateObjects();
+			
+			//Update Scene
+			Scene.update();
+			
 			if (Keyboard.isKeyPressed("c")) {
 				DynamicObject.clear();
 			}
 			if (Keyboard.shiftPressed) {
 				DynamicObject.clear();
 				console.log("Scene builder");
-				console.log("Controls:\n\tWASD to move\n\tEnable mouse control by pressing 'm'\n\tPress 'c' to clear current scene\n\tPress 'k' to save current scene\n\tPress 'l' to load last saved scene\n\tPress '1' to replace tile with air\n\tPress '=' to replace tile with placeholder");
+				SceneBuilder.printInstructions();
 				SceneBuilder.init();
 				scene = "sceneCreator";
+			}
+			DynamicObject.drawObjects();
+
+			Scene.shade();
+
+			if (Scene.background != null) {
+				Scene.background = Display.imageData;
 			}
 			break;
 		case "sceneCreator":
 			if (Keyboard.shiftPressed) {
-				scene = "menu";
+				scene = "game";
 			}
 			SceneBuilder.update();
 			break;
 	}
 
-	DynamicObject.updateObjects();
-
-	Scene.updateShaders();
+	if (scene == "sceneCreator") {
+		SceneBuilder.drawCursor();
+	}
+	
 
 	//Update Pause Menu
 	PauseMenu.update();
 
 	//Reset single frame input varialbes
+	Display.resized = false;
 	Mouse.resetVars();
 	Keyboard.resetVars();
 }
@@ -114,6 +138,7 @@ function updateGame() {
 setInterval(() => {
 	//Display the game if the page is completely loaded
 	if (document.readyState === "complete") {
+		Display.clear();
 		updateGame();
 	}
 	//Stop frames from going over the max value that can be expressed by the variable
@@ -122,6 +147,7 @@ setInterval(() => {
 	}
 	//Incriment frames once per frame
 	frames++;
+	//console.log(frames);
 }, 1000 / 60);
 
 //------------------------------------------------------------------------------------//
@@ -251,32 +277,26 @@ export function sendRequest(name, data) {
 //Catch scene from server
 socket.on("scene", (data) => {
 	let structure = [];
-	let shaderStructure = [];
 	//Create SceneTiles from scene title values
-	for (let i = 0; i < data[0].length; i++) {
+	for (let i = 0; i < data.length; i++) {
 		structure.push([]);
-		for (let j = 0; j < data[0][i].length; j++) {
-			if (data[0][i][j]["type"] == "SceneTile") {
-				structure[i].push(new SceneTile(data[0][i][j]["image"], data[0][i][j]["col"], data[0][i][j]["row"], data[0][i][j]["hasCollision"]));
-			} else if (data[0][i][j]["type"] == "LightTile") {
-				structure[i].push(new LightTile(data[0][i][j]["image"], data[0][i][j]["col"], data[0][i][j]["row"], data[0][i][j]["str"], data[0][i][j]["rad"]));
+		for (let j = 0; j < data[i].length; j++) {
+			if (data[i][j]["type"] == "SceneTile") {
+				structure[i].push(new SceneTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["hasCollision"]));
+			} else if (data[i][j]["type"] == "LightTile") {
+				structure[i].push(new LightTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["str"], data[i][j]["rad"]));
 			} else {
 				console.warn("Undetermined SceneTile type. Creating with default values")
-				structure[i].push(new SceneTile(data[0][i][j]["image"], data[0][i][j]["col"], data[0][i][j]["row"], data[0][i][j]["hasCollision"]));
+				structure[i].push(new SceneTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["hasCollision"]));
 			}
 			
 		}
 	}
-
-	for (let i = 0; data[1] != null && i < data[1].length; i++) {
-		shaderStructure.push([]);
-		for (let j = 0; j < data[1][i].length; j++) {
-			shaderStructure[i].push(new ShaderTile(data[1][i][j]["col"], data[1][i][j]["row"]));
-			shaderStructure[i][j].shaderLevel = data[1][i][j]["level"];
-		}
-	}
-	Scene.structure = structure;
-	Scene.shaderStructure = shaderStructure;
+	Scene.initScene(structure, SceneBuilder.bakeScene(structure));
+	
+	SceneBuilder.structure = structure;
+	SceneBuilder.shaderStructure = Scene.shaderStructure;
+	
 	console.log("recieved");
 });
 
