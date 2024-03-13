@@ -44,6 +44,7 @@ import { ShaderTile } from "./classes/gameObjects/ShaderTile.js";
 //Game Entity Imports
 import { DynamicObject } from "./classes/gameEntities/DynamicObject.js";
 import { Player } from "./classes/gameEntities/Player.js";
+import { NPC } from "./classes/gameEntities/NPC.js";
 
 
 //------------------------------------------------------------------------------------//
@@ -63,13 +64,25 @@ let scene = "menu";
 //Frames
 let frames = 0;
 
+let npc;
+
+let button1 = new Button("playButton", 1920/2, 1080/2, 408, 144);
+
 function updateGame() {
 	//Update Display values
 	Display.calcScreenSize();
 
+	if (Mouse.button2Pressed) {
+		let mouse = [...Display.inverseCalcElementDimensions(Mouse.x, Mouse.y, 0, 0)];
+		console.log([Math.round(mouse[0]), Math.round(mouse[1])]);
+	}
+
 	switch (scene) {
+			
 		case "menu":
-			if (Keyboard.isKeyPressed("p")) {
+			button1.update();
+
+			if (button1.isPressed()) {
 				let structure = SceneCreator.createTestScene(48, 27)
 				Scene.initScene(structure, SceneBuilder.bakeScene(structure), 40);
 				scene = "game";
@@ -82,7 +95,18 @@ function updateGame() {
 			Scene.update();
 
 			if (Keyboard.isKeyPressed("r")) {
-				new Player(180, 20);
+				npc = new NPC(200, 20);
+			}
+			if (Keyboard.isKeyPressed("t")) {
+				new Player(100, 100, "wadfs");
+				new Player(200, 100, "ijl;k");
+				new Player(300, 100, ["up", "left", "right", "/", "down"]);
+			}
+			if (Mouse.button1Pressed) {
+				if (npc != undefined) {
+					let newTarget = [...Display.inverseCalcElementDimensions(Mouse.x, Mouse.y, 0, 0)];
+					npc.target = [newTarget[0], newTarget[1]];
+				}
 			}
 			
 			DynamicObject.updateObjects();
@@ -285,12 +309,12 @@ socket.on("scene", (data) => {
 		structure.push([]);
 		for (let j = 0; j < data[i].length; j++) {
 			if (data[i][j]["type"] == "SceneTile") {
-				structure[i].push(new SceneTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["hasCollision"]));
+				structure[i].push(new SceneTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["hasCollision"], data[i][j]["hasVines"]));
 			} else if (data[i][j]["type"] == "LightTile") {
-				structure[i].push(new LightTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["str"], data[i][j]["rad"]));
+				structure[i].push(new LightTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["str"], data[i][j]["rad"], data[i][j]["hasCollision"], data[i][j]["hasVines"]));
 			} else {
 				console.warn("Undetermined SceneTile type. Creating with default values")
-				structure[i].push(new SceneTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["hasCollision"]));
+				structure[i].push(new SceneTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["hasCollision"], data[i][j]["hasVines"]));
 			}
 			
 		}

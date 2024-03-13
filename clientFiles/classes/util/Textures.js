@@ -3,9 +3,9 @@ function loadAssets() {
 	let foldersToLoad = {};
 	let textures = {};
 	//Assign folders to load
-	foldersToLoad["tiles"] = ["stoneBrick", "rottedWoodPlanks", "vines", "blueTile", "redTile", "blackTile"];
+	foldersToLoad["tiles"] = ["stoneBrick", "rottedWoodPlanks", "vines", "blueTile", "redTile", "blackTile", "insetLantern"];
 	foldersToLoad["util"] = ["placeholder", "crosshair"];
-	foldersToLoad["buttons"] = ["buttonHovered", "buttonPressed"];
+	foldersToLoad["buttons"] = ["buttonHovered", "buttonPressed", "playButton"];
 	foldersToLoad["shaders"] = ["shader_00", "shader_01", "shader_02", "shader_03", "shader_04", "shader_05", "shader_06", "shader_07", "shader_08", "shader_09", "shader_10", "shader_11", "shader_12", "shader_13", "shader_14", "shader_15", "shader_16", "shader_17", "shader_18", "shader_19", "shader_20"];
 
 	console.log("Loading Textures:");

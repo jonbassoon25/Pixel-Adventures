@@ -15,8 +15,8 @@ export class LightTile extends SceneTile {
 	@param {number} strength - max strength of light tile (max 20)
 	@param {number} radius - radius where light output is 0
 	*/
-	constructor(background, col, row, strength, radius, hasCollision = false) {
-		super(background, col, row, hasCollision);
+	constructor(background, col, row, strength, radius, hasCollision = false, hasVines = false) {
+		super(background, col, row, hasCollision, hasVines);
 		this.type = "LightTile";
 		this.str = strength;
 		this.rad = radius;
@@ -27,8 +27,11 @@ export class LightTile extends SceneTile {
 
 	/** Updates this LightTile */
 	update() {
-		super.update();
-		Display.draw("placeholder", this.x, this.y, this.width/3, this.height/3);
+		Display.draw(this.image, this.x, this.y, this.width, this.height);
+		Display.draw("insetLantern", this.x, this.y, this.width, this.height);
+		if (this.hasVines) {
+			Display.draw("vines", this.x, this.y, this.width, this.height);
+		}
 	}
 
 	//*********************************************************************//

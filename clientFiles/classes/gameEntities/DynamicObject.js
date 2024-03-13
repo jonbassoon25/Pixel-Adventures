@@ -37,7 +37,7 @@ export class DynamicObject {
 		this.width = width;
 		this.height = height;
 		this.velocity = new Vector(0, 0);
-		this.gravity = 0.2;
+		this.accelerations = [];
 		this.isGrounded = false;
 		DynamicObject.dynamicObjects.push(this);
 	}
@@ -89,7 +89,7 @@ export class DynamicObject {
 					 * top of this and bottom of sceneTile aren't the same
 					 * All other cases: Horizontal
 					 */
-					if ((Math.min(times["top"], times["bottom"]) <= Math.min(times["left"], times["right"]) && this.x + this.width/2 != sceneTile.x - sceneTile.width/2 && this.x - this.width/2 != sceneTile.x + sceneTile.width/2) || this.y + this.height/2 <= sceneTile.y - sceneTile.height/2 + this.gravity || this.y - this.height/2 == sceneTile.y + sceneTile.height/2) {
+					if ((Math.min(times["top"], times["bottom"]) <= Math.min(times["left"], times["right"]) && this.x + this.width/2 != sceneTile.x - sceneTile.width/2 && this.x - this.width/2 != sceneTile.x + sceneTile.width/2) || this.y + this.height/2 <= sceneTile.y - sceneTile.height/2 + Vector.GRAVITY.magnitude || this.y - this.height/2 == sceneTile.y + sceneTile.height/2) {
 						//Vertical collision
 						if (times["top"] < times["bottom"]) {
 							this.y = sceneTile.y - sceneTile.height/2 - this.height/2;
@@ -139,7 +139,11 @@ export class DynamicObject {
 	/** Applies forces, moves, and draws this object */
 	update() {
 		this.isGrounded = false;
-		this.velocity.y += this.gravity;
+		this.accelerations.push(Vector.GRAVITY);
+		for (let i = 0; i < this.accelerations.length; i++) {
+			this.velocity.add(this.accelerations[i]);
+		}
+		this.accelerations = [];
 		this.x += this.velocity.x;
 		this.y += this.velocity.y;
 		this.collide();

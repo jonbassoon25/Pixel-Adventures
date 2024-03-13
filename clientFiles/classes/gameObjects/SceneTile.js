@@ -12,12 +12,13 @@ export class SceneTile {
 	@param {number} row - row of the scene structure this scene tile is at
 	@param {number} col - column of the scene structure this scene tile is at
 	*/
-	constructor(image, col, row, hasCollision = false) {
+	constructor(image, col, row, hasCollision = false, hasVines = false) {
 		this.type = "SceneTile"
 		this.image = image;
 		this.col = col;
 		this.row = row;
 		this.hasCollision = hasCollision;
+		this.hasVines = hasVines;
 	}
 
 	//*********************************************************************//
@@ -33,6 +34,9 @@ export class SceneTile {
 
 	update() {
 		Display.draw(this.image, this.x, this.y, Scene.tileSize, Scene.tileSize);
+		if (this.hasVines) {
+			Display.draw("vines", this.x, this.y, Scene.tileSize, Scene.tileSize);
+		}
 	}
 
 	//*********************************************************************//

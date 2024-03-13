@@ -106,4 +106,44 @@ export class Util {
 		}
 		return endArray;
 	}
+
+	/**
+	@param {number[]} - The array to find the element in
+	@returns {number} The lowest element in the array
+	*/
+	static findLowestElement(array) {
+		if (array.length == 0) {
+			return null;
+		}
+		let lowestElement = number.MAX_VALUE;
+		for (let i = 0; i < array.length; i++) {
+			if (typeof array[i] != "number") {
+				continue;
+			}
+			if (array[i] < lowestElement) {
+				lowestElement = array[i];
+			}
+		}
+		return lowestElement;
+	}
+	
+	/**
+	@param {number[]} - The array to find the element in
+	@returns {number} The highest element in the array
+	*/
+	static findHighestElement(array) {
+		if (array.length == 0) {
+			return null;
+		}
+		let highestElement = number.MIN_VALUE;
+		for (let i = 0; i < array.length; i++) {
+			if (typeof array[i] != "number") {
+				continue;
+			}
+			if (array[i] > lowestElement) {
+				highestElement = array[i];
+			}
+		}
+		return highestElement;
+	}
 }

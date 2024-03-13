@@ -39,9 +39,7 @@ export class Button extends UIObject {
   	*/
 	constructor(image, x, y, width, height) {
 		//Call super constructor to assign absolute and relative values of: x, y, width, height
-		super(x, y, width, height);
-		//Assign image
-		this.image = image;
+		super(image, x, y, width, height);
 	}
 
 	//*********************************************************************//

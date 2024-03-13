@@ -11,6 +11,7 @@ import { SceneCreator } from "./SceneCreator.js";
 //Game Object Imports
 import { SceneTile } from "../gameObjects/SceneTile.js";
 import { LightTile } from "../gameObjects/LightTile.js";
+import { ChestTile } from "../gameObjects/ChestTile.js";
 
 //Add baked lighting options
 //shared files from Zac (school)
@@ -78,8 +79,8 @@ export class SceneBuilder {
 	}
 
 	static #setLight() {
-		let background = this.structure[this.cursorY][this.cursorX].image;
-		this.structure[this.cursorY][this.cursorX] = new LightTile(background, this.cursorX, this.cursorY, 15, 10, false);
+		let replacedTile = this.structure[this.cursorY][this.cursorX];
+		this.structure[this.cursorY][this.cursorX] = new LightTile(replacedTile.image, this.cursorX, this.cursorY, 15, 10, false, replacedTile.hasVines);
 	}
 
 	static #setPlaceholder() {
@@ -94,8 +95,9 @@ export class SceneBuilder {
 		this.structure[this.cursorY][this.cursorX] = new SceneTile("rottedWoodPlanks", this.cursorX, this.cursorY, false);
 	}
 
-	static #setVines() {
-		
+	static #setChest() {
+		let replacedTile = this.structure[this.cursorY][this.cursorX];
+		this.structure[this.cursorY][this.cursorX] = new ChestTile(replacedTile.image, this.cursorX, this.cursorY, replacedTile.hasVines, [0, 10]);
 	}
 
 	static #save() {
@@ -169,9 +171,11 @@ export class SceneBuilder {
 			this.cursorY = 0;
 		}
 
+		let currentTile = this.structure[this.cursorY][this.cursorX];
+
 		//Print tile components
 		if (Keyboard.isKeyPressed("z")) {
-			(this.shaderEditor)? console.log(this.shaderStructure[this.cursorY][this.cursorX]) : console.log(this.structure[this.cursorY][this.cursorX]);
+			(this.shaderEditor)? console.log(this.shaderStructure[this.cursorY][this.cursorX]) : console.log(currentTile);
 		}
 
 		//Bake lighting
@@ -215,11 +219,9 @@ export class SceneBuilder {
 				return;
 			}
 
-			let selectedTile = this.structure[this.cursorY][this.cursorX];
-
-			if (selectedTile instanceof LightTile) {
-				selectedTile.strength += 1;
-				console.log("New Light Strength: " + selectedTile.strength);
+			if (currentTile instanceof LightTile) {
+				currentTile.strength += 1;
+				console.log("New Light Strength: " + currentTile.strength);
 				return;
 			}
 		}
@@ -230,29 +232,23 @@ export class SceneBuilder {
 				return;
 			}
 
-			let selectedTile = this.structure[this.cursorY][this.cursorX];
-
-			if (selectedTile instanceof LightTile) {
-				selectedTile.strength -= 1;
-				console.log("New Light Strength: " + selectedTile.strength);
+			if (currentTile instanceof LightTile) {
+				currentTile.strength -= 1;
+				console.log("New Light Strength: " + currentTile.strength);
 				return;
 			}
 		}
 		if (Keyboard.isKeyPressed("left")) {
-			let selectedTile = this.structure[this.cursorY][this.cursorX];
-
-			if (selectedTile instanceof LightTile) {
-				selectedTile.radius -= 1;
-				console.log("New Light Radius: " + selectedTile.radius);
+			if (currentTile instanceof LightTile) {
+				currentTile.radius -= 1;
+				console.log("New Light Radius: " + currentTile.radius);
 				return;
 			}
 		}
 		if (Keyboard.isKeyPressed("right")) {
-			let selectedTile = this.structure[this.cursorY][this.cursorX];
-
-			if (selectedTile instanceof LightTile) {
-				selectedTile.radius += 1;
-				console.log("New Light Radius: " + selectedTile.radius);
+			if (currentTile instanceof LightTile) {
+				currentTile.radius += 1;
+				console.log("New Light Radius: " + currentTile.radius);
 				return;
 			}
 		}
@@ -260,11 +256,10 @@ export class SceneBuilder {
 		if (this.shaderEditor) {
 			return;
 		}
-
 		//Toggle collision for sceneTile
 		if (Keyboard.isKeyPressed("n")) {
-			this.structure[this.cursorY][this.cursorX].hasCollision = !this.structure[this.cursorY][this.cursorX].hasCollision;
-			console.log("Collision " + ((this.structure[this.cursorY][this.cursorX].hasCollision)? "enabled" : "disabled"));
+			currentTile.hasCollision = !currentTile.hasCollision;
+			console.log("Collision " + ((currentTile.hasCollision)? "enabled" : "disabled"));
 		}
 
 		//Tile placing inputs
@@ -277,8 +272,16 @@ export class SceneBuilder {
 		if (Keyboard.isKeyDown("4")) {
 			this.#setRottenWood();
 		}
+		
 		if (Keyboard.isKeyDown("6")) {
 			this.#setLight();
+		}
+		if (Keyboard.isKeyPressed("7")) {
+			currentTile.hasVines = !currentTile.hasVines;
+			console.log("Vines " + ((currentTile.hasVines)? "enabled" : "disabled"));
+		}
+		if (Keyboard.isKeyPressed("8")) {
+			this.#setChest();
 		}
 		if (Keyboard.isKeyDown("=")) {
 			this.#setPlaceholder();

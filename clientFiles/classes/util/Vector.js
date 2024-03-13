@@ -14,6 +14,8 @@ export class Vector {
 
 	static ZERO = new Vector([0, 0]);
 
+	static GRAVITY = new Vector("Gravity", [0, 0.4]);
+
 	//*********************************************************************//
 	//Public Static Methods
 	
@@ -210,7 +212,7 @@ export class Vector {
 
 	/** @returns {number[]} The Standard Vector of this object */
 	get standardVector() {
-		return [...Vector.calcStandardVector(this.x, this.y)];
+		return [...Vector.calcStandardVector([this.x, this.y])];
 	}
 
 	/** @returns {number[]} The componatized vector of this object */
