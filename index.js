@@ -26,6 +26,8 @@ const path = require('path');
 //------------------------------------------------------------------------------------//
 //Local Imports
 
+let leaderboard = require("./serverFiles/leaderboard.json");
+
 let scenes = {
 	"lastSaved": require("./serverFiles/lastSaved.json")
 };
@@ -61,13 +63,36 @@ function save(file, data) {
 	});
 };
 
-
 //Send a update to EVERYONE in the room, (socket io is stupid and doesn't send it to the client making the request)
 function roomEmit(roomName, socket, event, data) {
 	socket.to(roomName).emit(event, data);
 	socket.emit(event, data);
 };
 
+//Sorts a number dictionary, element "order" is the sort order
+function sort(dict) {
+	if (dict["order"] != undefined) {
+		delete dict["order"];
+	}
+	let sortedDict = {"order":[]};
+	while (Object.keys(dict).length > 0) {
+		let smallest = Object.keys(dict)[0];
+		//console.log("smallest: " + smallest);
+		for (let j = 0; j < Object.keys(dict).splice(1).length; j++) {
+			let key = Object.keys(dict).splice(1)[j];
+			//console.log(key);
+			if (dict[key] < dict[smallest]) {
+				smallest = key;
+				//console.log("changed smallest to " + key);
+			}
+		}
+		//console.log("pushing " + smallest + " to order");
+		sortedDict["order"].push(smallest);
+		sortedDict[smallest] = dict[smallest];
+		delete dict[smallest];
+	}
+	return sortedDict;
+}
 
 //------------------------------------------------------------------------------------//
 //App Commands
@@ -98,6 +123,18 @@ io.on('connection', (socket) => {
 	
 	socket.on("loadScene", (name) => {
 		socket.emit("scene", scenes[name]);
+	});
+
+	socket.on("getLeaderboard", () => {
+		socket.emit("leaderboardUpdate", leaderboard);
+	});
+
+	socket.on("updateLeaderboard", (data) => {
+		//Data formatted as name, score
+		leaderboard[data[0]] = data[1];
+		leaderboard = sort(leaderboard);
+		save("leaderboard", leaderboard);
+		io.emit("leaderboardUpdate", leaderboard);
 	});
 
 	//When a user has disconnected

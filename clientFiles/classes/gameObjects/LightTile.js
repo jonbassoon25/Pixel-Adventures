@@ -9,12 +9,12 @@ export class LightTile extends SceneTile {
 	//Constructor
 
 	/**
-	@param {string} background - background for the light tile
-	@param {number} row - row of the LightTile
-	@param {number} col - column of the LightTile
-	@param {number} strength - max strength of light tile (max 20)
-	@param {number} radius - radius where light output is 0
-	*/
+	 * @param {string} background - background for the light tile
+	 * @param {number} row - row of the LightTile
+	 * @param {number} col - column of the LightTile
+	 * @param {number} strength - max strength of light tile (max 20)
+	 * @param {number} radius - radius where light output is 0
+	 */
 	constructor(background, col, row, strength, radius, hasCollision = false, hasVines = false) {
 		super(background, col, row, hasCollision, hasVines);
 		this.type = "LightTile";
@@ -49,6 +49,9 @@ export class LightTile extends SceneTile {
 	//*********************************************************************//
 	//Setters
 
+	/**
+	 * @param {number} value - Value to set the strength to
+	 */
 	set strength(value) {
 		if (value > 20) {
 			this.str = 20;
@@ -59,6 +62,9 @@ export class LightTile extends SceneTile {
 		}
 	}
 
+	/**
+	 * @param {number} value - Value to set the radius to
+	 */
 	set radius(value) {
 		if (value < 0) {
 			this.rad = 0;

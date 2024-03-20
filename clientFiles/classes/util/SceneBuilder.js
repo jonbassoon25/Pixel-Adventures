@@ -44,6 +44,8 @@ export class SceneBuilder {
 	"	Press '2' to replace tile with stone bricks\n" + 
 	"	Press '4' to replace tile with rotten wood\n" + 
 	"	Press '6' to place light\n" + 
+	"	Press '7' to place vines\n" +
+	"	Press '8' to place chest" +
 	"	Press '=' to replace tile with placeholder\n" + 
   "\n	Press 'h' to relog instructions";
 
@@ -142,6 +144,7 @@ export class SceneBuilder {
 		//Load
 		if (Keyboard.isKeyPressed("l")) {
 			this.#load();
+			return;
 		}
 
 		//Erase

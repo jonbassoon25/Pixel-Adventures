@@ -1,8 +1,6 @@
 import { Display } from "../util/Display.js";
 import { Util } from "../util/Util.js";
 
-import { DynamicObject } from "../gameEntities/DynamicObject.js";
-
 //Scene Class
 export class Scene {
 	//Static Variables
@@ -32,16 +30,17 @@ export class Scene {
 	}
 
 	/** 
-	Updates all scene objects in the scene structure
-	*/
-	static updateTiles() {
+	 * Updates all scene objects in the scene structure
+	 * @param {VisualObject[]} objects - objects that need to have their background updated, defaults to all dynamicObjects
+	 */
+	static updateTiles(objects) {
 		if (this.structure == null) {
 			return;
 		}
-		for (let i = 0; i < DynamicObject.dynamicObjects.length; i++) {
+		for (let i = 0; i < objects.length; i++) {
 			for (let j = 0; j < this.structure.length; j++) {
 				for (let k = 0; k < this.structure[j].length; k++) {
-					if (DynamicObject.dynamicObjects[i].isColliding(this.structure[j][k])) {
+					if (objects[i].isVisualColliding(this.structure[j][k])) {
 						this.structure[j][k].update();
 					}
 				}
@@ -49,14 +48,14 @@ export class Scene {
 		}
 	}
 
-	static updateShaders() {
+	static updateShaders(objects) {
 		if (this.shaderStructure == null) {
 			return;
 		}
-		for (let i = 0; i < DynamicObject.dynamicObjects.length; i++) {
+		for (let i = 0; i < objects.length; i++) {
 			for (let j = 0; j < this.structure.length; j++) {
 				for (let k = 0; k < this.structure[j].length; k++) {
-					if (DynamicObject.dynamicObjects[i].isColliding(this.structure[j][k])) {
+					if (objects[i].isVisualColliding(this.structure[j][k])) {
 						for (let l = 0; l < 2; l++) {
 							for (let n = 0; n < 2; n++) {
 								Scene.shaderStructure[j * 2 + l][k * 2 + n].update();
@@ -78,16 +77,17 @@ export class Scene {
 		}
 	}
 
-	static update() {
-		for (let i = 0; i < DynamicObject.dynamicObjects.length; i++) {
+	static update(objects) {
+		for (let i = 0; i < objects.length; i++) {
 			for (let j = 0; j < this.structure.length; j++) {
 				//If not the top of the dynamic object is above the bottom of the first structure tile in the row and the bottom of the dynamic object is below the top of the first structure tile in the row
-				if (!(DynamicObject.dynamicObjects[i].y - DynamicObject.dynamicObjects[i].height/2 < this.structure[j][0].y + this.structure[j][0].height/2 && DynamicObject.dynamicObjects[i].y + DynamicObject.dynamicObjects[i].height/2 > this.structure[j][0].y - this.structure[j][0].height/2)) {
+				if (!(objects[i].y - objects[i].visualHeight/2 < this.structure[j][0].y + this.structure[j][0].height/2 && objects[i].y + objects[i].visualHeight/2 > this.structure[j][0].y - this.structure[j][0].height/2)) {
 					//The dynamic object won't collide with any tiles in that row
 					continue;
 				}
+				//console.log(objects[i].visualWidth);
 				for (let k = 0; k < this.structure[j].length; k++) {
-					if (DynamicObject.dynamicObjects[i].isColliding(this.structure[j][k])) {
+					if (objects[i].isVisualColliding(this.structure[j][k])) {
 						this.structure[j][k].update();
 						if (this.shaderStructure == null) {
 							continue;
@@ -110,6 +110,23 @@ export class Scene {
 		this.shadersToUpdate = [];
 	}
 
+	static calcBlockCoordinates(x, y) {
+		return [Math.floor(x / this.tileSize), Math.floor(y / this.tileSize)];
+	}
+
+	static getTile(x, y) {
+		[x, y] = this.calcBlockCoordinates(x, y);
+		if (!this.isInBounds(x, y)) {
+			console.error("Out Of Bounds: Scene.getTile(" + x + ", " + y + ")");
+		}
+		return this.structure[y][x];
+	}
+
+	static isInBounds(x, y) {
+		[x, y] = this.calcBlockCoordinates(x, y);
+		return !(x < 0 || x >= this.structure[0].length || y < 0 || y >= this.structure.length);
+	}
+
 	static displayAll() {
 		if (this.structure == null) {
 			return;
@@ -130,4 +147,7 @@ export class Scene {
 			}
 		}
 	}
+
+	
+	
 }

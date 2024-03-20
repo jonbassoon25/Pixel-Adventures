@@ -1,5 +1,5 @@
 /*
-Created by Jonathan Hanson, Zac Young, Mariasha Taariq
+Created by Jonathan Hanson, Zac Young
 
 client.js
 
@@ -17,7 +17,6 @@ Created: 11.4.23
 //Imports
 
 //Util Imports
-
 import { Display } from "./classes/util/Display.js"
 import { Keyboard } from "./classes/util/Keyboard.js"
 import { Mouse } from "./classes/util/Mouse.js";
@@ -27,24 +26,26 @@ import { SceneCreator } from "./classes/util/SceneCreator.js";
 import { textures } from "./classes/util/Textures.js";
 import { Util } from "./classes/util/Util.js";
 import { Vector } from "./classes/util/Vector.js";
+import { VisualObject } from "./classes/util/VisualObject.js";
 
 //UI Object Imports
-
 import { Button } from "./classes/UIObjects/Button.js";
 import { PauseMenu } from "./classes/UIObjects/PauseMenu.js";
 import { Slider } from "./classes/UIObjects/Slider.js";
 import { Textbox } from "./classes/UIObjects/Textbox.js";
 
-
 //Game Object Imports
-import { SceneTile } from "./classes/gameObjects/SceneTile.js";
+import { ChestTile } from "./classes/gameObjects/ChestTile.js";
 import { LightTile } from "./classes/gameObjects/LightTile.js";
+import { SceneTile } from "./classes/gameObjects/SceneTile.js";
 import { ShaderTile } from "./classes/gameObjects/ShaderTile.js";
 
 //Game Entity Imports
 import { DynamicObject } from "./classes/gameEntities/DynamicObject.js";
 import { Player } from "./classes/gameEntities/Player.js";
 import { NPC } from "./classes/gameEntities/NPC.js";
+import { Coin } from "./classes/gameEntities/Coin.js";
+import { Item } from "./classes/gameEntities/Item.js";
 
 
 //------------------------------------------------------------------------------------//
@@ -56,17 +57,35 @@ const canvas = document.getElementById("gameScreen");
 const socket = io();
 
 //------------------------------------------------------------------------------------//
+//Variables
+
+let buttons = {};
+
+let sliders = {};
+
+let textboxes = {};
+
+let boxes = {};
+
+//------------------------------------------------------------------------------------//
+//Util Functions
+
+function clearUI() {
+	buttons = {};
+	sliders = {};
+	textboxes = {};
+	boxes = {};
+}
+
+//------------------------------------------------------------------------------------//
 //Main Function
 
 //State variable
-let scene = "menu";
-
-//Frames
-let frames = 0;
+let scene = "initMenu";
 
 let npc;
 
-let button1 = new Button("playButton", 1920/2, 1080/2, 408, 144);
+
 
 function updateGame() {
 	//Update Display values
@@ -75,32 +94,36 @@ function updateGame() {
 	if (Mouse.button2Pressed) {
 		let mouse = [...Display.inverseCalcElementDimensions(Mouse.x, Mouse.y, 0, 0)];
 		console.log([Math.round(mouse[0]), Math.round(mouse[1])]);
+		console.log(Scene.calcBlockCoordinates(mouse[0], mouse[1]));
 	}
 
 	switch (scene) {
-			
+		case "initMenu":
+			clearUI();
+			buttons["button1"] = new Button("playButton", 1920/2, 1080/2, 408, 144);
 		case "menu":
-			button1.update();
-
-			if (button1.isPressed()) {
-				let structure = SceneCreator.createTestScene(48, 27)
-				Scene.initScene(structure, SceneBuilder.bakeScene(structure), 40);
-				scene = "game";
+			buttons["button1"].update();
+			if (buttons["button1"].isPressed()) {
+				
+				scene = "initGame";
 			}
 			break;
+		case "initGame":
+			clearUI();
+			let structure = SceneCreator.createTestScene(48, 27);
+			Scene.initScene(structure, SceneBuilder.bakeScene(structure), 40);
+			console.log("coin spawned");
+			new Coin(416, 736);
+			scene = "game";
 		case "game":
 			Scene.drawBackground();
-			
-			//Update Scene
-			Scene.update();
 
 			if (Keyboard.isKeyPressed("r")) {
 				npc = new NPC(200, 20);
 			}
 			if (Keyboard.isKeyPressed("t")) {
-				new Player(100, 100, "wadfs");
-				new Player(200, 100, "ijl;k");
-				new Player(300, 100, ["up", "left", "right", "/", "down"]);
+				new Player(100, 100, "red", "wadfs");
+				new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
 			}
 			if (Mouse.button1Pressed) {
 				if (npc != undefined) {
@@ -108,11 +131,18 @@ function updateGame() {
 					npc.target = [newTarget[0], newTarget[1]];
 				}
 			}
-			
+
+			//Update backgrounds of old moving objects in Scene
+			Scene.update(Item.items);
+			Scene.update(DynamicObject.dynamicObjects);
+
+			//Update/move items and dynamic objects
+			Item.updateItems();
 			DynamicObject.updateObjects();
 			
-			//Update Scene
-			Scene.update();
+			//Update backgrounds of new moving objects in Scene
+			Scene.update(Item.items);
+			Scene.update(DynamicObject.dynamicObjects);
 			
 			if (Keyboard.isKeyPressed("c")) {
 				DynamicObject.clear();
@@ -124,10 +154,15 @@ function updateGame() {
 				SceneBuilder.init();
 				scene = "sceneCreator";
 			}
+
+			//Draw items and dynamicObjects in Scene
+			Item.drawItems();
 			DynamicObject.drawObjects();
 
+			//Shade the scene
 			Scene.shade();
 
+			//If the background isn't null, set the background to the current screen
 			if (Scene.background != null) {
 				Scene.background = Display.imageData;
 			}
@@ -167,13 +202,11 @@ setInterval(() => {
 	if (document.readyState === "complete") {
 		Display.clear();
 		updateGame();
+		if (Display.frames >= Number.MAX_VALUE) {
+			Display.frames = 0;
+		}
+		Display.frames++;
 	}
-	//Stop frames from going over the max value that can be expressed by the variable
-	if (frames >= Number.MAX_VALUE) {
-		frames = 0;
-	}
-	//Incriment frames once per frame
-	frames++;
 	//console.log(frames);
 }, 1000 / 60);
 
@@ -312,6 +345,8 @@ socket.on("scene", (data) => {
 				structure[i].push(new SceneTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["hasCollision"], data[i][j]["hasVines"]));
 			} else if (data[i][j]["type"] == "LightTile") {
 				structure[i].push(new LightTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["str"], data[i][j]["rad"], data[i][j]["hasCollision"], data[i][j]["hasVines"]));
+			} else if (data[i][j]["type"] == "ChestTile") {
+				structure[i].push(new ChestTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["hasVines"], data[i][j]["coinRange"]));
 			} else {
 				console.warn("Undetermined SceneTile type. Creating with default values")
 				structure[i].push(new SceneTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["hasCollision"], data[i][j]["hasVines"]));

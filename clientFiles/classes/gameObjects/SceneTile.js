@@ -1,18 +1,20 @@
 //Util Imports
 import { Display } from "../util/Display.js";
 import { Scene } from "../util/Scene.js";
+import { VisualObject } from "../util/VisualObject.js";
 
 
 //Class SceneTile
-export class SceneTile {
+export class SceneTile extends VisualObject {
 	//Constructor
 
-	/*
-	@param {string} image - image of the scene tile
-	@param {number} row - row of the scene structure this scene tile is at
-	@param {number} col - column of the scene structure this scene tile is at
+	/**
+	 * @param {string} image - image of the scene tile
+	 * @param {number} row - row of the scene structure this scene tile is at
+	 * @param {number} col - column of the scene structure this scene tile is at
 	*/
 	constructor(image, col, row, hasCollision = false, hasVines = false) {
+		super(image, 0, 0, Scene.tileSize, Scene.tileSize);
 		this.type = "SceneTile"
 		this.image = image;
 		this.col = col;
@@ -24,14 +26,7 @@ export class SceneTile {
 	//*********************************************************************//
 	//Public Methods
 
-	isEnclosing(point) {
-		return point[0] >= this.x - this.width/2 && point[0] <= this.x + this.width/2 && point[1] >= this.y - this.height/2 && point[1] <= this.y + this.height/2;
-	}
-
-	isColliding(other) {
-		return this.isEnclosing(other.upperLeft) || this.isEnclosing(other.upperRight) || this.isEnclosing(other.bottomRight) || this.isEnclosing(other.bottomLeft);
-	}
-
+	/** Updates this SceneTile */
 	update() {
 		Display.draw(this.image, this.x, this.y, Scene.tileSize, Scene.tileSize);
 		if (this.hasVines) {
@@ -48,12 +43,7 @@ export class SceneTile {
 	get y() {
 		return this.row * Scene.tileSize + Scene.tileSize/2;
 	}
-	get width() {
-		return Scene.tileSize;
-	}
-	get height() {
-		return Scene.tileSize;
-	}
+	
 	get upperLeft() {
 		return [this.x - this.width/2, this.y - this.height/2];
 	}
@@ -66,4 +56,10 @@ export class SceneTile {
 	get bottomRight() {
 		return [this.x + this.width/2, this.y + this.height/2];
 	}
+
+	//*********************************************************************//
+	//Setters
+	
+	set x(x) {}
+	set y(y) {}
 }

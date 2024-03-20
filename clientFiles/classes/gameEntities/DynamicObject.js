@@ -1,44 +1,52 @@
 //Util Imports
-import { Display } from "../util/Display.js";
 import { Scene } from "../util/Scene.js";
 import { Vector } from "../util/Vector.js";
+import { VisualObject } from "../util/VisualObject.js";
 import { Util } from "../util/Util.js";
 
 //Class DynamicObject
-export class DynamicObject {
-	static dynamicObjects = [];
+export class DynamicObject extends VisualObject {
+	//Static Variables
 	
-	static updateObjects() {
-		for (let i = 0; i < this.dynamicObjects.length; i++) {
-			this.dynamicObjects[i].update();
-		}
+	//All currently spawned dynamic objects
+	static dynamicObjects = [];
+
+	//*********************************************************************//
+	//Public Static Methods
+
+	/** Despawns all dynamic objects */
+	static clear() {
+		this.dynamicObjects = [];
 	}
 
+	/** Draws all currently spawned dynamic objects */
 	static drawObjects() {
 		for (let i = 0; i < this.dynamicObjects.length; i++) {
 			this.dynamicObjects[i].draw();
 		}
 	}
-
-	static clear() {
-		this.dynamicObjects = [];
+	
+	/** Updates all currently spawned dynamic objects */
+	static updateObjects() {
+		for (let i = 0; i < this.dynamicObjects.length; i++) {
+			this.dynamicObjects[i].update();
+		}
 	}
 	
+	//*********************************************************************//
 	//Constructor
 	/**
-	@param {string} image - image to display
-	@param {number} x - initial x value 
-	@param {number} y - initial y value
-	*/
-	constructor(image, x, y, width, height) {
+	 * @param {string} image - image to display
+	 * @param {number} x - initial x value 
+	 * @param {number} y - initial y value
+	 */
+	constructor(image, x, y, width, height, hasCollision = true) {
+		super(image, x, y, width, height)
 		this.image = image;
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
 		this.velocity = new Vector(0, 0);
 		this.accelerations = [];
 		this.isGrounded = false;
+		this.hasCollision = hasCollision;
 		DynamicObject.dynamicObjects.push(this);
 	}
 
@@ -61,6 +69,8 @@ export class DynamicObject {
 	 * Carries out the collision of a dynamic object
 	 */
 	collide() {
+		//Don't do collisions if this object doesn't have collisions
+		if (!this.hasCollision) return;
 		for (let i = 0; i < Scene.structure.length; i++) {
 			for (let j = 0; j < Scene.structure[i].length; j++) {
 				let sceneTile = Scene.structure[i][j];
@@ -81,14 +91,14 @@ export class DynamicObject {
 						}
 					}
 					//Check to see if it hits a vertical or horizontal side first
-					/** Vertical if 
+					/* Vertical if 
 					 * Min time is on top or bottom, not left or right
 					 * right side of this and left side of sceneTile aren't the same
 					 * left side of this and right side of sceneTile aren't the same
 					 * bottom of this + gravity is less than top of sceneTile
 					 * top of this and bottom of sceneTile aren't the same
 					 * All other cases: Horizontal
-					 */
+					*/
 					if ((Math.min(times["top"], times["bottom"]) <= Math.min(times["left"], times["right"]) && this.x + this.width/2 != sceneTile.x - sceneTile.width/2 && this.x - this.width/2 != sceneTile.x + sceneTile.width/2) || this.y + this.height/2 <= sceneTile.y - sceneTile.height/2 + Vector.GRAVITY.magnitude || this.y - this.height/2 == sceneTile.y + sceneTile.height/2) {
 						//Vertical collision
 						if (times["top"] < times["bottom"]) {
@@ -117,26 +127,7 @@ export class DynamicObject {
 		DynamicObject.dynamicObjects = Util.delValue(DynamicObject.dynamicObjects, this);
 	}
 
-	/** 
-	@returns {boolean} is the point inside of this object
-	*/
-	isEnclosing(point) {
-		return point[0] >= this.x - this.width/2 && point[0] <= this.x + this.width/2 && point[1] >= this.y - this.height/2 && point[1] <= this.y + this.height/2;
-	}
-
-	/**
-	 * @returns {boolean} is this object colliding with the other object
-	 */
-	isColliding(other) {
-		return this.isEnclosing(other.upperLeft) || this.isEnclosing(other.upperRight) || this.isEnclosing(other.bottomRight) || this.isEnclosing(other.bottomLeft) || other.isColliding(this);
-	}
-
-	/** Draws this object to the display */
-	draw() {
-		Display.draw(this.image, this.x, this.y, this.width, this.height);
-	}
-
-	/** Applies forces, moves, and draws this object */
+	/** Applies forces and moves this object */
 	update() {
 		this.isGrounded = false;
 		this.accelerations.push(Vector.GRAVITY);
@@ -147,28 +138,5 @@ export class DynamicObject {
 		this.x += this.velocity.x;
 		this.y += this.velocity.y;
 		this.collide();
-	}
-
-	//*********************************************************************//
-	//Getter Methods
-
-	get center() {
-		return [this.x, this.y];
-	}
-
-	get upperLeft() {
-		return [this.x - this.width/2, this.y - this.height/2];
-	}
-
-	get upperRight() {
-		return [this.x + this.width/2, this.y - this.height/2];
-	}
-
-	get bottomLeft() {
-		return [this.x - this.width/2, this.y + this.height/2];
-	}
-
-	get bottomRight() {
-		return [this.x + this.width/2, this.y + this.height/2];
 	}
 }

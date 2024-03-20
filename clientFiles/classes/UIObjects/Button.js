@@ -1,12 +1,11 @@
 //Util Imports
 import { Display } from "../util/Display.js";
 import { Mouse } from "../util/Mouse.js";
+import { VisualObject } from "../util/VisualObject.js";
 
-//UI Object Imports
-import { UIObject } from "./UIObject.js";
 
 //Button Class
-export class Button extends UIObject {
+export class Button extends VisualObject {
 	//Public Static Methods
 	
 	/** 

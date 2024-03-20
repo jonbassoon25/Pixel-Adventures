@@ -13,6 +13,7 @@ export class Display {
 	static horizontalOffset = 0;
 	static verticalOffset = 0;
 	static resized = false;
+	static frames = 0;
 	
 
 	//*********************************************************************//
@@ -101,7 +102,7 @@ export class Display {
 	static draw(image, x, y, width, height, resize = true) {
 		//If there is no image to draw, return
 		if (image == "none") {
-			image = "blackTile";
+			return;
 		}
 		//If the coordinates passed in are absolute (they need to be resized)
 		if (resize) {

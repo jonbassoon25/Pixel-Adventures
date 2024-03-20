@@ -24,7 +24,7 @@ export class SceneCreator {
 		
 		structure.push([]);
 		for (let col = 0; col < width; col++) {
-			structure[height - 1].push(new SceneTile("placeholder", col, height - 1, true));
+			structure[height - 1].push(new SceneTile("stoneBrick", col, height - 1, true));
 		}
 		
 		return structure;
@@ -37,7 +37,7 @@ export class SceneCreator {
 			structure.push([]);
 			for (let col = 0; col < width; col++) {
 				if (row == col) {
-					structure[row].push(new SceneTile("placeholder", col, row, true));
+					structure[row].push(new SceneTile("stoneBrick", col, row, true));
 				} else {
 					structure[row].push(new SceneTile("none", col, row));
 				}

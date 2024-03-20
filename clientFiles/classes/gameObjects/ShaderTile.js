@@ -1,12 +1,14 @@
 //Util imports
 import { Display } from "../util/Display.js";
 import { Scene } from "../util/Scene.js";
+import { VisualObject } from "../util/VisualObject.js";
 
 //Class ShaderTile
-export class ShaderTile {
+export class ShaderTile extends VisualObject {
 	//Constructor
 
 	constructor(col, row) {
+		super("none", 0, 0, Scene.tileSize/2, Scene.tileSize/2);
 		this.col = col;
 		this.row = row;
 		this.level = 0;
@@ -29,12 +31,6 @@ export class ShaderTile {
 	get y() {
 		return this.row * Scene.tileSize/2 + this.height/2;
 	}
-	get width() {
-		return Scene.tileSize/2;
-	}
-	get height() {
-		return Scene.tileSize/2;
-	}
 	get shaderLevel() {
 		return this.level;
 	}
@@ -54,4 +50,7 @@ export class ShaderTile {
 			this.level = Math.round(level);
 		}
 	}
+
+	set x(x){}
+	set y(y){}
 }
