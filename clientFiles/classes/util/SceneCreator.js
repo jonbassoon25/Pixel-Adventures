@@ -1,13 +1,14 @@
+//Game Object Imports
+import { LightTile } from "../gameObjects/LightTile.js";
 import { SceneTile } from "../gameObjects/SceneTile.js";
 import { ShaderTile } from "../gameObjects/ShaderTile.js";
-import { LightTile } from "../gameObjects/LightTile.js";
 
 //SceneCreator Class
 export class SceneCreator {
 	//Public Static Methods
 
 	/** 
-	Creates a basic placeholder scene
+	Creates a flat brick scene
 	@param {number} width - The width of the scene in tiles
 	@param {number} height - The height of the scene in tiles
 	@returns {SceneTile[][]} The new scene
@@ -30,6 +31,12 @@ export class SceneCreator {
 		return structure;
 	}
 
+	/** 
+	Creates a basic brick staircase with a light
+	@param {number} width - The width of the scene in tiles
+	@param {number} height - The height of the scene in tiles
+	@returns {SceneTile[][]} The new scene
+	*/
 	static createTestScene(width, height) {
 		let structure = [];
 
@@ -48,6 +55,12 @@ export class SceneCreator {
 		return structure;
 	}
 
+	/** 
+	Creates an empty scene
+	@param {number} width - The width of the scene in tiles
+	@param {number} height - The height of the scene in tiles
+	@returns {SceneTile[][]} The new scene
+	*/
 	static createEmptyScene(width, height) {
 		let structure = [];
 
@@ -61,7 +74,12 @@ export class SceneCreator {
 		return structure;
 	}
 
-	/** Creates an empty shader scene with the specified with and height (in scene tile blocks) */
+	/** 
+	Creates an empty shader structure
+	@param {number} width - The width of the scene in tiles
+	@param {number} height - The height of the scene in tiles
+	@returns {SceneTile[][]} The new scene
+	*/
 	static createShaderStructure(width, height) {
 		let structure = [];
 			
@@ -75,6 +93,12 @@ export class SceneCreator {
 		return structure;
 	}
 
+	/** 
+	Creates an empty shaded scene
+	@param {number} width - The width of the scene in tiles
+	@param {number} height - The height of the scene in tiles
+	@returns {SceneTile[][]} The new scene
+	*/
 	static createEmptyShadedScene(width, height) {
 		return [this.createEmptyScene(width, height), this.createShaderStructure(width, height)];
 	}

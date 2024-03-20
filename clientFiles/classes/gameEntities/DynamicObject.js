@@ -1,8 +1,8 @@
 //Util Imports
 import { Scene } from "../util/Scene.js";
+import { Util } from "../util/Util.js";
 import { Vector } from "../util/Vector.js";
 import { VisualObject } from "../util/VisualObject.js";
-import { Util } from "../util/Util.js";
 
 //Class DynamicObject
 export class DynamicObject extends VisualObject {

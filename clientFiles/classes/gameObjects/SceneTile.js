@@ -4,7 +4,7 @@ import { Scene } from "../util/Scene.js";
 import { VisualObject } from "../util/VisualObject.js";
 
 
-//Class SceneTile
+//SceneTile Class
 export class SceneTile extends VisualObject {
 	//Constructor
 
@@ -12,6 +12,8 @@ export class SceneTile extends VisualObject {
 	 * @param {string} image - image of the scene tile
 	 * @param {number} row - row of the scene structure this scene tile is at
 	 * @param {number} col - column of the scene structure this scene tile is at
+	 * @param {boolean} hasCollision - if this SceneTile has collision
+	 * @param {boolean} hasVines - if this SceneTile has vines
 	*/
 	constructor(image, col, row, hasCollision = false, hasVines = false) {
 		super(image, 0, 0, Scene.tileSize, Scene.tileSize);
@@ -26,7 +28,7 @@ export class SceneTile extends VisualObject {
 	//*********************************************************************//
 	//Public Methods
 
-	/** Updates this SceneTile */
+	/** Updates and Draws this SceneTile */
 	update() {
 		Display.draw(this.image, this.x, this.y, Scene.tileSize, Scene.tileSize);
 		if (this.hasVines) {
@@ -59,7 +61,8 @@ export class SceneTile extends VisualObject {
 
 	//*********************************************************************//
 	//Setters
-	
+
+	//Needed to avoid set errors in the VisualObject constructor
 	set x(x) {}
 	set y(y) {}
 }

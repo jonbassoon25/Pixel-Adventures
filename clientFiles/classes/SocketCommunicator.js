@@ -1,6 +1,7 @@
+//Client Imports
 import { sendRequest } from "../client.js";
 
-//Class SocketCommunicator
+//SocketCommunicator Class
 export class SocketCommunicator {
 	/* sends data to server through the client.js sendRequest method */
 	static send(name, data) {

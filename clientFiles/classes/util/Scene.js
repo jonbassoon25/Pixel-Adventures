@@ -1,5 +1,9 @@
-import { Display } from "../util/Display.js";
-import { Util } from "../util/Util.js";
+//Util Imports
+import { Display } from ".Display.js";
+import { Util } from ".Util.js";
+
+//Game Object Imports
+import { SceneTile } from "../gameObjects/SceneTile.js";
 
 //Scene Class
 export class Scene {
@@ -8,8 +12,6 @@ export class Scene {
 	static structure = null;
 	static shaderStructure = null;
 	static tileSize = 40;
-	//How many pixels have been scrolled (positive = user walking right). 
-	static scrollAmount = 0;
 	static background = null;
 	static shadersToUpdate = [];
 
@@ -17,10 +19,10 @@ export class Scene {
 	//Public Static Methods
 
 	/** 
-	Initalizes a new game scene
-	@param {SceneTile[][]} structure - The new scene's structure
-	@param {number} tileSize - The new size of each tile (optional)
-	*/
+	 * Initalizes a new game scene
+	 * @param {SceneTile[][]} structure - The new scene's structure
+	 * @param {number} tileSize - The new size of each tile (optional)
+	 */
 	static initScene(structure, shaderStructure = null, tileSize = 40) {
 		this.structure = structure;
 		this.shaderStructure = shaderStructure;
@@ -31,7 +33,7 @@ export class Scene {
 
 	/** 
 	 * Updates all scene objects in the scene structure
-	 * @param {VisualObject[]} objects - objects that need to have their background updated, defaults to all dynamicObjects
+	 * @param {VisualObject[]} objects - objects that need to have their background updated
 	 */
 	static updateTiles(objects) {
 		if (this.structure == null) {
@@ -48,6 +50,10 @@ export class Scene {
 		}
 	}
 
+	/**
+	 * Updates all shaders in the shader structure
+	 * @param {VisualObject[]} objects - objects that need to have their background updated
+	 */
 	static updateShaders(objects) {
 		if (this.shaderStructure == null) {
 			return;
@@ -67,7 +73,9 @@ export class Scene {
 		}
 	}
 
+	/** Draws the background of the Scene, flashes the screen on canvas resize */
 	static drawBackground() {
+		//Flash the screen on canvas resize to avoid size errors
 		if (Display.resized) {
 			this.displayAll();
 			return;
@@ -77,6 +85,10 @@ export class Scene {
 		}
 	}
 
+	/**
+	 * Updates all SceneTiles and ShaderTiles that need to be updated
+	 * @param {VisualObject[]} objects - objects that need to have their background updated
+	 */
 	static update(objects) {
 		for (let i = 0; i < objects.length; i++) {
 			for (let j = 0; j < this.structure.length; j++) {
@@ -103,6 +115,7 @@ export class Scene {
 		}
 	}
 
+	/** Updates all shaders that need to be updated */
 	static shade() {
 		for (let i = 0; i < this.shadersToUpdate.length; i++) {
 			this.shadersToUpdate[i].update();
@@ -110,23 +123,43 @@ export class Scene {
 		this.shadersToUpdate = [];
 	}
 
+	/**
+	 * @param {number} x - x coordinate to calculate
+	 * @param {number} y - y coordinate to calculate
+	 * @returns {number[]} Block coordinates of the passed in point. Formatted as [col, row]
+	 */
 	static calcBlockCoordinates(x, y) {
 		return [Math.floor(x / this.tileSize), Math.floor(y / this.tileSize)];
 	}
 
-	static getTile(x, y) {
+	/**
+	 * @param {number} x - x coordinate of request
+	 * @param {number} y - y coordinate of request
+	 * @param {boolean} ignoreOutsideBoundsErr - should an error message not be printed on bounds error, default: false
+	 * @returns {SceneTile} SceneTile at the requested x and y coordinates or a new SceneTile at [-1, -1] (col, row) on bounds error
+	 */
+	static getTile(x, y, ignoreOutsideBoundsErr = false) {
 		[x, y] = this.calcBlockCoordinates(x, y);
 		if (!this.isInBounds(x, y)) {
-			console.error("Out Of Bounds: Scene.getTile(" + x + ", " + y + ")");
+			if (!ignoreOutsideBoundsErr) {
+				console.error("Out Of Bounds: Scene.getTile(" + x + ", " + y + ")");
+			}
+			return new SceneTile("none", -1, -1, false, false);
 		}
 		return this.structure[y][x];
 	}
 
+	/**
+	 * @param {number} x - x coordinate of request
+	 * @param {number} y - y coordinate of request
+	 * @returns {boolean} is the requested block out of bounds
+	 */
 	static isInBounds(x, y) {
 		[x, y] = this.calcBlockCoordinates(x, y);
 		return !(x < 0 || x >= this.structure[0].length || y < 0 || y >= this.structure.length);
 	}
 
+	/** Displays all SceneTiles and ShaderTiles */
 	static displayAll() {
 		if (this.structure == null) {
 			return;
@@ -147,7 +180,4 @@ export class Scene {
 			}
 		}
 	}
-
-	
-	
 }

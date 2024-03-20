@@ -154,6 +154,7 @@ export class Player extends DynamicObject {
 		}
 	}
 
+	/** Draws the player with animations */
 	draw() {
 		if (!this.isDead) {
 			if (!this.isGrounded) {

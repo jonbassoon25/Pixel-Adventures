@@ -18,42 +18,42 @@ export class Keyboard {
 	//Public Static Methods 
 	
 	/** 
- 	@param {string} key - The key to check
- 	@returns {boolean} - True if the specified key is down (held)
-  	*/
+ 	 * @param {string} key - The key to check
+ 	 * @returns {boolean} - True if the specified key is down (held)
+  	 */
 	static isKeyDown(key) {
 		return Keyboard.keysDown.includes(key);
 	}
 
 	/** 
- 	@param {string} key - The key to check
-  	@returns {boolean} - True if the specified key is pressed (single frame)
-  	*/
+ 	 * @param {string} key - The key to check
+  	 * @returns {boolean} - True if the specified key is pressed (single frame)
+  	 */
 	static isKeyPressed(key) {
 		return Keyboard.keysPressed.includes(key);
 	}
 
 	/** 
- 	@param {string} key - The key to check
-  	@returns {boolean} - True if the specified key is released (single frame)
-  	*/
+ 	 * @param {string} key - The key to check
+  	 * @returns {boolean} - True if the specified key is released (single frame)
+  	 */
 	static isKeyReleased(key) {
 		return Keyboard.keysReleased.includes(key);
 	}
 	
 	/** 
- 	"Presses" a keyboard key
-  	@param {string} key - The key to press
- 	*/
+ 	 * "Presses" a keyboard key
+  	 * @param {string} key - The key to press
+ 	 */
 	static keyDown(key) {
 		this.keysPressed.push(key);
 		this.keysDown = Array.from(new Set([...this.keysDown, key]));
 	}
 
 	/**
- 	"Releases" a keyboard key
-  	@param {string} key - The key to release
-  	*/
+ 	 * "Releases" a keyboard key
+  	 * @param {string} key - The key to release
+  	 */
 	static keyUp(key) {
 		this.keysReleased.push(key);
 		for (let keyIndex = 0; keyIndex < this.keysDown.length; keyIndex++) {
@@ -66,8 +66,8 @@ export class Keyboard {
 	}
 
 	/** 
-	Resets all single frame Keyboard variables
-  	*/
+	 * Resets all single frame Keyboard variables
+  	 */
 	static resetVars() {
 		this.keysPressed = [];
 		this.keysReleased = [];

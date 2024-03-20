@@ -3,10 +3,14 @@ import { Display } from "../util/Display.js";
 import { Scene } from "../util/Scene.js";
 import { VisualObject } from "../util/VisualObject.js";
 
-//Class ShaderTile
+//ShaderTile Class
 export class ShaderTile extends VisualObject {
 	//Constructor
 
+	/**
+	 * @param {number} col - Column of this ShaderTile
+	 * @param {number} row - Row of this ShaderTile
+	 */
 	constructor(col, row) {
 		super("none", 0, 0, Scene.tileSize/2, Scene.tileSize/2);
 		this.col = col;
@@ -17,6 +21,7 @@ export class ShaderTile extends VisualObject {
 	//*********************************************************************//
 	//Public Methods
 
+	/** Updates and Draws this ShaderTile */
 	update() {
 		let shaderString = "shader_" + ((this.shaderLevel < 10)? "0" + this.shaderLevel.toString() : this.shaderLevel.toString());
 		Display.draw(shaderString, this.x, this.y, this.width + 0, this.height + 0);

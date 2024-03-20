@@ -82,10 +82,7 @@ function clearUI() {
 
 //State variable
 let scene = "initMenu";
-
 let npc;
-
-
 
 function updateGame() {
 	//Update Display values

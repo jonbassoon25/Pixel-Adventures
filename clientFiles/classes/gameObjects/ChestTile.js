@@ -30,7 +30,7 @@ export class ChestTile extends SceneTile {
 	//*********************************************************************//
 	//Public Methods
 
-	/** Updates this ChestTile */
+	/** Updates and Draws this ChestTile */
 	update() {
 		super.update();
 		Display.draw(((this.isOpen)? "placeholder" : "placeholder"), this.x, this.y, this.width/1.2, this.height/1.2)

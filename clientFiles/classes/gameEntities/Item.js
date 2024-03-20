@@ -1,6 +1,6 @@
 //Util Imports
-import { VisualObject } from "../util/VisualObject.js";
 import { Util } from "../util/Util.js";
+import { VisualObject } from "../util/VisualObject.js";
 
 //Class Item
 export class Item extends VisualObject {
@@ -11,10 +11,8 @@ export class Item extends VisualObject {
 	//*********************************************************************//
 	//Static Methods
 
-	static updateItems() {
-		for (let i = 0; i < this.items.length; i++) {
-			this.items[i].update();
-		}
+	static clear() {
+		this.items = [];
 	}
 
 	static drawItems() {
@@ -23,8 +21,10 @@ export class Item extends VisualObject {
 		}
 	}
 
-	static clear() {
-		this.items = [];
+	static updateItems() {
+		for (let i = 0; i < this.items.length; i++) {
+			this.items[i].update();
+		}
 	}
 	
 	//*********************************************************************//

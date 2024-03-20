@@ -4,7 +4,7 @@ import { Display } from "../util/Display.js";
 //Game Object imports
 import { SceneTile } from "./SceneTile.js";
 
-//LightTile class
+//LightTile Class
 export class LightTile extends SceneTile {
 	//Constructor
 
@@ -14,6 +14,8 @@ export class LightTile extends SceneTile {
 	 * @param {number} col - column of the LightTile
 	 * @param {number} strength - max strength of light tile (max 20)
 	 * @param {number} radius - radius where light output is 0
+	 * @param {boolean} hasCollision - if this light has collision
+	 * @param {boolean} hasVines - if this light's background has vines
 	 */
 	constructor(background, col, row, strength, radius, hasCollision = false, hasVines = false) {
 		super(background, col, row, hasCollision, hasVines);
@@ -25,7 +27,7 @@ export class LightTile extends SceneTile {
 	//*********************************************************************//
 	//Public Methods
 
-	/** Updates this LightTile */
+	/** Updates and Draws this LightTile */
 	update() {
 		Display.draw(this.image, this.x, this.y, this.width, this.height);
 		Display.draw("insetLantern", this.x, this.y, this.width, this.height);
@@ -50,7 +52,7 @@ export class LightTile extends SceneTile {
 	//Setters
 
 	/**
-	 * @param {number} value - Value to set the strength to
+	 * @param {number} value - Value to set the strength to, range of [0, 20]
 	 */
 	set strength(value) {
 		if (value > 20) {
@@ -63,7 +65,7 @@ export class LightTile extends SceneTile {
 	}
 
 	/**
-	 * @param {number} value - Value to set the radius to
+	 * @param {number} value - Value to set the radius to, non-negative value
 	 */
 	set radius(value) {
 		if (value < 0) {

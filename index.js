@@ -69,7 +69,7 @@ function roomEmit(roomName, socket, event, data) {
 	socket.emit(event, data);
 };
 
-//Sorts a number dictionary, element "order" is the sort order
+//Sorts a number dictionary using a selection sort, element "order" is the sort order
 function sort(dict) {
 	if (dict["order"] != undefined) {
 		delete dict["order"];

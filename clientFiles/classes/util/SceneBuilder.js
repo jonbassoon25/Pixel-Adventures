@@ -9,13 +9,9 @@ import { Scene } from "./Scene.js";
 import { SceneCreator } from "./SceneCreator.js";
 
 //Game Object Imports
-import { SceneTile } from "../gameObjects/SceneTile.js";
-import { LightTile } from "../gameObjects/LightTile.js";
 import { ChestTile } from "../gameObjects/ChestTile.js";
-
-//Add baked lighting options
-//shared files from Zac (school)
-//add dynamic lighting for player
+import { LightTile } from "../gameObjects/LightTile.js";
+import { SceneTile } from "../gameObjects/SceneTile.js";
 
 //SceneBuilder Class
 export class SceneBuilder {

@@ -22,7 +22,6 @@ export class Util {
 	<br>
 	Does not copy class methods
 	<br>
-	<br>
 	@param {any} input - The object to be copied
 	@returns {any} The copied object
 	*/

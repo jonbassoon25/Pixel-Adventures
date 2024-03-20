@@ -19,7 +19,7 @@ export class Mouse {
 	//Public Static Methods
 	
 	/** 
-	Resets all single frame Mouse variables
+	 * Resets all single frame Mouse variables
 	*/
 	static resetVars() {
 		this.button1Pressed = false;

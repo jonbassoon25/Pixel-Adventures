@@ -1,7 +1,7 @@
 //Util Imports
 import { Scene } from "../util/Scene.js";
-import { Vector } from "../util/Vector.js";
 import { Util } from "../util/Util.js";
+import { Vector } from "../util/Vector.js";
 
 //Game Entity Imports
 import { DynamicObject } from "./DynamicObject.js";
@@ -13,6 +13,7 @@ export class NPC extends DynamicObject {
 		super("placeholder", x, y, width, height);
 		//Maximum speed of the enemy in px/frame
 		this.speed = 2;
+		//Inital speed at bottom of jump
 		this.jumpspeed = 7.5;
 		//Enable or disable pathfinding
 		this.pathfinding = false;
