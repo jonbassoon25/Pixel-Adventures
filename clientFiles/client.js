@@ -17,8 +17,8 @@ Created: 11.4.23
 //Imports
 
 //Util Imports
-import { Display } from "./classes/util/Display.js"
-import { Keyboard } from "./classes/util/Keyboard.js"
+import { Display } from "./classes/util/Display.js";
+import { Keyboard } from "./classes/util/Keyboard.js";
 import { Mouse } from "./classes/util/Mouse.js";
 import { Scene } from "./classes/util/Scene.js";
 import { SceneBuilder } from "./classes/util/SceneBuilder.js";

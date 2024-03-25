@@ -43,6 +43,7 @@ export class Player extends DynamicObject {
 		this.isDead = false;
 		this.visualWidth = 60;
 		this.visualHeight = 60;
+		this.weapon = new Sword();
 	}
 
 	//*********************************************************************//
@@ -137,6 +138,10 @@ export class Player extends DynamicObject {
 				}
 			}
 		}
+	}
+
+	#attack() {
+		if ()
 	}
 
 	//*********************************************************************//

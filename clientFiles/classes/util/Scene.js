@@ -1,6 +1,6 @@
 //Util Imports
-import { Display } from ".Display.js";
-import { Util } from ".Util.js";
+import { Display } from "./Display.js";
+import { Util } from "./Util.js";
 
 //Game Object Imports
 import { SceneTile } from "../gameObjects/SceneTile.js";
@@ -90,6 +90,9 @@ export class Scene {
 	 * @param {VisualObject[]} objects - objects that need to have their background updated
 	 */
 	static update(objects) {
+		if (this.structure == null) {
+			return;
+		}
 		for (let i = 0; i < objects.length; i++) {
 			for (let j = 0; j < this.structure.length; j++) {
 				//If not the top of the dynamic object is above the bottom of the first structure tile in the row and the bottom of the dynamic object is below the top of the first structure tile in the row

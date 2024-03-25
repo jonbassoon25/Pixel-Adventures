@@ -1,6 +1,5 @@
 //Util Imports
 import { textures } from "./Textures.js";
-import { Scene } from "./Scene.js";
 
 //Define the canvas
 const canvas = document.getElementById("gameScreen");

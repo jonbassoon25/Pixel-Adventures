@@ -289,8 +289,7 @@ export class SceneBuilder {
 
 	static #bakeLighting() {
 		let lightTiles = [];
-		let collisionTiles = [];
-		//find light and collision tiles
+		//find light tiles
 		for (let i = 0; i < this.structure.length; i++) {
 			for (let j = 0; j < this.structure[i].length; j++) {
 				if (this.structure[i][j] instanceof LightTile) {
