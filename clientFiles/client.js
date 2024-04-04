@@ -17,6 +17,8 @@ Created: 11.4.23
 //Imports
 
 //Util Imports
+import { Animation } from "./classes/util/Animation.js";
+import { AnimationPlayer } from "./classes/util/AnimationPlayer.js";
 import { Display } from "./classes/util/Display.js";
 import { Keyboard } from "./classes/util/Keyboard.js";
 import { Mouse } from "./classes/util/Mouse.js";
@@ -30,15 +32,20 @@ import { VisualObject } from "./classes/util/VisualObject.js";
 
 //UI Object Imports
 import { Button } from "./classes/UIObjects/Button.js";
+import { DialogueBox } from "./classes/UIObjects/DialogueBox.js";
+import { Leaderboard } from "./classes/UIObjects/Leaderboard.js";
 import { PauseMenu } from "./classes/UIObjects/PauseMenu.js";
 import { Slider } from "./classes/UIObjects/Slider.js";
 import { Textbox } from "./classes/UIObjects/Textbox.js";
+import { BackButton } from "./classes/UIObjects/BackButton.js";
 
 //Game Object Imports
 import { ChestTile } from "./classes/gameObjects/ChestTile.js";
+import { Door } from "./classes/gameObjects/Door.js";
 import { LightTile } from "./classes/gameObjects/LightTile.js";
 import { SceneTile } from "./classes/gameObjects/SceneTile.js";
 import { ShaderTile } from "./classes/gameObjects/ShaderTile.js";
+import { Grave } from "./classes/gameObjects/Grave.js";
 
 //Game Entity Imports
 import { DynamicObject } from "./classes/gameEntities/DynamicObject.js";
@@ -46,6 +53,7 @@ import { Player } from "./classes/gameEntities/Player.js";
 import { NPC } from "./classes/gameEntities/NPC.js";
 import { Coin } from "./classes/gameEntities/Coin.js";
 import { Item } from "./classes/gameEntities/Item.js";
+import { Slime } from "./classes/gameEntities/Slime.js";
 
 
 //------------------------------------------------------------------------------------//
@@ -63,9 +71,15 @@ let buttons = {};
 
 let sliders = {};
 
-let textboxes = {};
+let textBoxes = {};
+
+let dialogueBoxes = {};
 
 let boxes = {};
+
+let leaderboard = null;
+
+let lastFrameTime = new Date().getTime();
 
 //------------------------------------------------------------------------------------//
 //Util Functions
@@ -73,7 +87,8 @@ let boxes = {};
 function clearUI() {
 	buttons = {};
 	sliders = {};
-	textboxes = {};
+	textBoxes = {};
+	dialogueBoxes = {};
 	boxes = {};
 }
 
@@ -83,10 +98,15 @@ function clearUI() {
 //State variable
 let scene = "initMenu";
 let npc;
+let player1;
+let player2;
+let slime;
 
 function updateGame() {
 	//Update Display values
 	Display.calcScreenSize();
+
+	AnimationPlayer.playUnderlayAnimations();
 
 	if (Mouse.button2Pressed) {
 		let mouse = [...Display.inverseCalcElementDimensions(Mouse.x, Mouse.y, 0, 0)];
@@ -94,41 +114,66 @@ function updateGame() {
 		console.log(Scene.calcBlockCoordinates(mouse[0], mouse[1]));
 	}
 
+	AnimationPlayer.playUnderlayAnimations();
+	
 	switch (scene) {
 		case "initMenu":
 			clearUI();
-			buttons["button1"] = new Button("playButton", 1920/2, 1080/2, 408, 144);
+			AnimationPlayer.load("pano", true, true);
+			AnimationPlayer.load("fadeIn");
+			buttons["play"] = new Button("playButton", 1920/2, 1080/2, 408, 144);
+			buttons["leaderboard"] = new Button("leaderboard", 1920/2, 1080/2 + 144 - 25, 408, 96);
+			//dialogueBoxes["dia"] = new DialogueBox(1000, 500, 1000, 200);
+			//dialogueBoxes["dia"].displayText("Lorem ipsum dolor sit amet\n consectetur adipiscing elit\n sed do eiusmod tempor incididunt ut labore et dolore magna aliqua\n Sit amet commodo nulla facilisi nullam vehicula ipsum a\n Porttitor lacus luctus accumsan tortor posuere\n Viverra vitae congue eu consequat ac felis\n Purus non enim praesent elementum", 80);
+			scene = "menu";
+			//scene = "initLose";
+			break;
 		case "menu":
-			buttons["button1"].update();
-			if (buttons["button1"].isPressed()) {
-				
+			Display.draw("banner", 1920/2, 1080/2 - 150, 600, 300);
+			buttons["play"].update();
+			buttons["leaderboard"].update();
+			if (buttons["play"].isPressed()) {
+				AnimationPlayer.clear();
+				player1 = new Player(100, 100, "red", "wadfs");
+				player2 = new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
+				player1.coins = 1000000;
+				player2.coins = 1000000;
 				scene = "initGame";
+				//scene = "initShop";
 			}
+			if (buttons["leaderboard"].isPressed()) {
+				AnimationPlayer.clear();
+				scene = "initLeaderboard";
+			}
+			//Delete the dialoge box when it is done updating
+			//if (dialogueBoxes["dia"] != undefined && !dialogueBoxes["dia"].update()) {
+			//	delete dialogueBoxes["dia"];
+			//}
 			break;
 		case "initGame":
 			clearUI();
 			let structure = SceneCreator.createTestScene(48, 27);
 			Scene.initScene(structure, SceneBuilder.bakeScene(structure), 40);
-			console.log("coin spawned");
 			new Coin(416, 736);
+			player1 = new Player(100, 100, "red", "wadfs");
+			player2 = new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
+			slime = new Slime(900, 100);
 			scene = "game";
+			break;
 		case "game":
+			//Game calculations
+			if (player1.isDead && player2.isDead) {
+				AnimationPlayer.clear();
+				AnimationPlayer.load("fadeOut");
+				scene = "initLose";
+				player1 = null;
+				player2 = null;
+				slime = null;
+				break;
+			}
+
 			Scene.drawBackground();
-
-			if (Keyboard.isKeyPressed("r")) {
-				npc = new NPC(200, 20);
-			}
-			if (Keyboard.isKeyPressed("t")) {
-				new Player(100, 100, "red", "wadfs");
-				new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
-			}
-			if (Mouse.button1Pressed) {
-				if (npc != undefined) {
-					let newTarget = [...Display.inverseCalcElementDimensions(Mouse.x, Mouse.y, 0, 0)];
-					npc.target = [newTarget[0], newTarget[1]];
-				}
-			}
-
+			
 			//Update backgrounds of old moving objects in Scene
 			Scene.update(Item.items);
 			Scene.update(DynamicObject.dynamicObjects);
@@ -140,16 +185,19 @@ function updateGame() {
 			//Update backgrounds of new moving objects in Scene
 			Scene.update(Item.items);
 			Scene.update(DynamicObject.dynamicObjects);
-			
-			if (Keyboard.isKeyPressed("c")) {
-				DynamicObject.clear();
-			}
+			Scene.update(ChestTile.chestTiles);
+			Scene.update(Grave.graves);
+
 			if (Keyboard.shiftPressed) {
 				DynamicObject.clear();
+				player1 = null;
+				player2 = null;
+				slime = null;
 				console.log("Scene builder");
 				SceneBuilder.printInstructions();
 				SceneBuilder.init();
 				scene = "sceneCreator";
+				break;
 			}
 
 			//Draw items and dynamicObjects in Scene
@@ -158,10 +206,78 @@ function updateGame() {
 
 			//Shade the scene
 			Scene.shade();
+			Display.drawText("Player 1 Coins: " + player1.coins.toString(), 50, 50, 40, true, "white");
+			Display.drawText("Player 2 Coins: " + player2.coins.toString(), 1920 - ("Player 2 Coins: " + player2.coins.toString()).length * 30, 50, 40, true, "white");
+			break;
+		case "initShop":
+			//Player 1 Upgrades
+			buttons["player1UpgradeWeapon"] = new Button("placeholder", 1920/4, 1080/2 - 300, 408, 144);
+			buttons["player1UpgradeHealth"] = new Button("placeholder", 1920/4, 1080/2 - 100, 408, 144);
+			buttons["player1UpgradeRegen"] = new Button("placeholder", 1920/4, 1080/2 + 100, 408, 144);
+			buttons["player1UpgradeSpeed"] = new Button("placeholder", 1920/4, 1080/2 + 300, 408, 144);
+			buttons["player1UpgradeJump"] = new Button("placeholder", 1920/4, 1080/2 + 500, 408, 144);
+			
+			//Player 2 Upgrades
+			buttons["player2UpgradeWeapon"] = new Button("placeholder", 1920/4 * 3, 1080/2 - 300, 408, 144);
+			buttons["player2UpgradeHealth"] = new Button("placeholder", 1920/4 * 3, 1080/2 - 100, 408, 144);
+			buttons["player2UpgradeRegen"] = new Button("placeholder", 1920/4 * 3, 1080/2 + 100, 408, 144);
+			buttons["player2UpgradeSpeed"] = new Button("placeholder", 1920/4 * 3, 1080/2 + 300, 408, 144);
+			buttons["player2UpgradeJump"] = new Button("placeholder", 1920/4 * 3, 1080/2 + 500, 408, 144);
+			scene = "shop";
+			break;
+		case "shop":
+			//Display Shop Background, darkened stone bricks
+			Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
 
-			//If the background isn't null, set the background to the current screen
-			if (Scene.background != null) {
-				Scene.background = Display.imageData;
+			//Update Shop Buttons for Player 1
+			buttons["player1UpgradeWeapon"].update();
+			buttons["player1UpgradeHealth"].update();
+			buttons["player1UpgradeRegen"].update();
+			buttons["player1UpgradeSpeed"].update();
+			buttons["player1UpgradeJump"].update();
+			//Update Shop Buttons for Player 2
+			buttons["player2UpgradeWeapon"].update();
+			buttons["player2UpgradeHealth"].update();
+			buttons["player2UpgradeRegen"].update();
+			buttons["player2UpgradeSpeed"].update();
+			buttons["player2UpgradeJump"].update();
+			//Detect upgrade button presses and upgrade selected
+			//Player 1
+			if (buttons["player1UpgradeWeapon"].isReleased()) player1.upgradeWeapon();
+			if (buttons["player1UpgradeHealth"].isReleased()) player1.upgradeHealth();
+			if (buttons["player1UpgradeRegen"].isReleased()) player1.upgradeRegen();
+			if (buttons["player1UpgradeSpeed"].isReleased()) player1.upgradeSpeed();
+			if (buttons["player1UpgradeJump"].isReleased()) player1.upgradeJump();
+			//Player 2
+			if (buttons["player2UpgradeWeapon"].isReleased()) player2.upgradeWeapon();
+			if (buttons["player2UpgradeHealth"].isReleased()) player2.upgradeHealth();
+			if (buttons["player2UpgradeRegen"].isReleased()) player2.upgradeRegen();
+			if (buttons["player2UpgradeSpeed"].isReleased()) player2.upgradeSpeed();
+			if (buttons["player2UpgradeJump"].isReleased()) player2.upgradeJump();
+			//Display Player Coins
+			Display.drawText("Player 1 Coins: " + player1.coins.toString(), 50, 50, 40, true, "white");
+			Display.drawText("Player 2 Coins: " + player2.coins.toString(), 1920 - ("Player 2 Coins: " + player2.coins.toString()).length * 30, 50, 40, true, "white");
+
+			//Combined coins
+
+			break;
+		case "initLose":
+			AnimationPlayer.clear();
+			AnimationPlayer.load("fadeIn");
+			Display.clear();
+			buttons["return"] = new Button("none", 1920/2, 1080/2 + 300, 1000, 144);
+			scene = "lose";
+			break;
+		case "lose":
+			Display.drawText("you lost...", 1920/2 - "you lost...".length*60/2, 1080/2, 100, true, "white");
+			if (!AnimationPlayer.isPlaying("fadeIn")) {
+				Display.drawText("click to return", 1920/2 - "click to return".length*60/2, 1080/2 + 400, 100, true, "white");
+				buttons["return"].update();
+				if (buttons["return"].isPressed()) {
+					AnimationPlayer.clear();
+					DynamicObject.clear();
+					scene = "initMenu";
+				}
 			}
 			break;
 		case "sceneCreator":
@@ -169,19 +285,47 @@ function updateGame() {
 				Display.clear();
 				Scene.displayAll();
 				Scene.background = Display.imageData;
+				player1 = new Player(100, 100, "red", "wadfs");
+				player2 = new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
+				slime = new Slime(900, 100);
 				scene = "game";
 			}
 			SceneBuilder.update();
+			break;
+		case "saveScore":
+			
+			break;
+		case "initLeaderboard":
+			socket.emit("getLeaderboard", null);
+			Leaderboard.data = null;
+			leaderboard = new Leaderboard(1920/2, 1080/2, 850, 990);
+			scene = "leaderboard";
+			break;
+		case "leaderboard":
+			Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
+			/* back button code */
+			let back = new BackButton(150, 100);
+			back.update();
+			if (back.isPressed()) scene = back.destination;
+			leaderboard.update();
+			break;
+		case "help":
+			
 			break;
 	}
 
 	if (scene == "sceneCreator") {
 		SceneBuilder.drawCursor();
 	}
+
+	AnimationPlayer.playOverlayAnimations();
 	
 
 	//Update Pause Menu
 	PauseMenu.update();
+
+	//Draw black tiles on the screen bounds where the player's screen ends
+	Display.drawBounds();
 
 	//Reset single frame input varialbes
 	Display.resized = false;
@@ -195,13 +339,19 @@ function updateGame() {
 
 //Update Interval, fires 60 times per second
 setInterval(() => {
+	let thisTime = new Date().getTime();
 	//Display the game if the page is completely loaded
-	if (document.readyState === "complete") {
+	if (document.readyState === "complete" && Animation.compiled) {
+		if (thisTime - lastFrameTime > 1000/45) {
+			console.warn("LOW FPS: " + Math.round(1000 / (thisTime - lastFrameTime)));
+		}
+		lastFrameTime = thisTime;
 		Display.clear();
 		updateGame();
 		if (Display.frames >= Number.MAX_VALUE) {
 			Display.frames = 0;
 		}
+		Display.fps = Math.round(1000 / (thisTime - lastFrameTime));
 		Display.frames++;
 	}
 	//console.log(frames);
@@ -324,6 +474,10 @@ document.addEventListener("keyup", (event) => {
 	}
 });
 
+document.addEventListener("readystatechange", () => {
+	Animation.compileTemplates();
+});
+
 //------------------------------------------------------------------------------------//
 //Server Events
 
@@ -357,6 +511,10 @@ socket.on("scene", (data) => {
 	SceneBuilder.shaderStructure = Scene.shaderStructure;
 	
 	console.log("recieved");
+});
+
+socket.on("leaderboardUpdate", (data) => {
+	Leaderboard.data = data;
 });
 
 socket.on("log", (msg) => {

@@ -29,6 +29,8 @@ export class Scene {
 		this.tileSize = tileSize;
 		this.displayAll();
 		this.background = Display.imageData;
+		this.level = 0;
+		this.loadedLevel = 0;
 	}
 
 	/** 
@@ -78,6 +80,7 @@ export class Scene {
 		//Flash the screen on canvas resize to avoid size errors
 		if (Display.resized) {
 			this.displayAll();
+			this.background = Display.imageData;
 			return;
 		}
 		if (this.background != null) {

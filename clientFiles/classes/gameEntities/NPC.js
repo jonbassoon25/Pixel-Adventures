@@ -9,10 +9,10 @@ import { DynamicObject } from "./DynamicObject.js";
 //NPC Class
 export class NPC extends DynamicObject {
 	//Constructor
-	constructor(x, y, width = 30, height = 30, wanderDistance = 0) {
-		super("placeholder", x, y, width, height);
+	constructor(x, y, width = 30, height = 30, wanderDistance = 0, image = "placeholder", speed = 2) {
+		super(image, x, y, width, height);
 		//Maximum speed of the enemy in px/frame
-		this.speed = 2;
+		this.speed = speed;
 		//Inital speed at bottom of jump
 		this.jumpspeed = 7.5;
 		//Enable or disable pathfinding
@@ -29,84 +29,6 @@ export class NPC extends DynamicObject {
 
 	//*********************************************************************//
 	//Private Methods
-
-	//Moves along the determined path to the target
-	#move() {
-		//If there is no target, find a target
-		if (this.target.length == 0) {
-			this.findTarget();
-		}
-		//Basic movement, moves towards the target at all times regardless of physical surroundings
-		if (!this.pathfinding) {
-			this.#simplePathfinding();
-			return;
-		}
-		
-		if (this.path.length == 0) {
-			//If the npc is within the wander distance of the target, allow the npc to wander
-			if (this.x <= this.target[0] - this.wanderDistance && this.x >= this.target[0] + this.wanderDistance) {
-				this.path.push(((this.x < this.target[0])? this.target[0] + this.wanderDistance : this.target[0] - this.wanderDistance));
-			} else {
-				//Calculate a new path because we aren't at the target and don't have a path
-				this.calculatePath();
-				return;
-			}
-		}
-		
-		if (this.y > this.path[0][1] + this.velocity.y && this.isGrounded) {
-			this.velocity.y = -this.jumpspeed;
-		}
-		if (this.x < this.path[0][0] - this.targetCompleteDistance) {
-			if (!(this.velocity.x > this.speed)) {
-				this.accelerations.push(new Vector([this.speed/((this.velocity.x < 0)? 5 : 20), 0]));
-			}
-		} else if (this.x > this.path[0][0] + this.targetCompleteDistance) {
-			if (!(this.velocity.x < -this.speed)) {
-				this.accelerations.push(new Vector([-this.speed/((this.velocity.x > 0)? 5 : 20), 0]));
-			}
-		} else {
-			this.velocity.x = 0;
-			this.path = Util.delIndex(this.path, 0);
-		}
-	}
-
-	//Simple pathfinding, can't navigate around obstacles
-	#simplePathfinding() {
-		if (this.x < this.target[0]) {
-			if (!(this.velocity.x > this.speed)) {
-				this.accelerations.push(new Vector([this.speed/((this.velocity.x < 0)? 5 : 20), 0]));
-			}
-		} else if (this.x > this.target[0]) {
-			if (!(this.velocity.x < -this.speed)) {
-				this.accelerations.push(new Vector([-this.speed/((this.velocity.x > 0)? 5 : 20), 0]));
-			}
-		} else {
-			this.velocity.x = 0;
-		}
-		if (this.y - this.height/2 > this.target[1] && this.isGrounded) {
-			this.velocity.y = -this.jumpspeed;
-		}
-		if (this.accelerations.length == 0) { return; }
-		//Don't look for blocks if the NPC isn't in the bounds
-		let col;
-		let row;
-		[col, row] = Scene.calcBlockCoordinates(this.x, this.y);
-		if ((col < 1 || col >= Scene.structure[0].length - 1 || row < 1 || row >= Scene.structure.length - 1)) {
-			return;
-		}
-		//Don't let the NPC fall off of ledges
-		for (let i = Scene.calcBlockCoordinates(this.x, this.y)[1]; i < Scene.structure.length; i++) {
-			//If there is a tile under the next tile that the NPC is trying to move to
-			//console.log(Scene.getTile(this.x + ((this.velocity.x > 0)? Scene.tileSize : -Scene.tileSize), i * Scene.tileSize).hasCollision);
-			if (Scene.getTile(this.x + ((this.velocity.x > 0)? Scene.tileSize : -Scene.tileSize), i * Scene.tileSize).hasCollision) {
-				//Let the NPC move
-				return;
-			}
-		}
-		//Don't let the NPC move because there are no tiles that it can move to
-		this.accelerations = Util.delIndex(this.accelerations, this.accelerations.length - 1);
-		this.velocity.x = 0;
-	}
 
 	//Calculate the possibilities from this path, yield each path in order for them to be added to unresolved paths. Reject the promise if the path is resolved. Path is resolved if there aren't any possible places to move to or if the path has reached the target
 	#calculateNext(unresolvedPath) {
@@ -272,6 +194,45 @@ export class NPC extends DynamicObject {
 
 		this.path = Util.delIndex(path, 0);
 	}
+	//Moves along the determined path to the target
+	move() {
+		//If there is no target, find a target
+		if (this.target.length == 0) {
+			this.findTarget();
+		}
+		//Basic movement, moves towards the target at all times regardless of physical surroundings
+		if (!this.pathfinding) {
+			this.simplePathfinding();
+			return;
+		}
+
+		if (this.path.length == 0) {
+			//If the npc is within the wander distance of the target, allow the npc to wander
+			if (this.x <= this.target[0] - this.wanderDistance && this.x >= this.target[0] + this.wanderDistance) {
+				this.path.push(((this.x < this.target[0])? this.target[0] + this.wanderDistance : this.target[0] - this.wanderDistance));
+			} else {
+				//Calculate a new path because we aren't at the target and don't have a path
+				this.calculatePath();
+				return;
+			}
+		}
+
+		if (this.y > this.path[0][1] + this.velocity.y && this.isGrounded) {
+			this.velocity.y = -this.jumpspeed;
+		}
+		if (this.x < this.path[0][0] - this.targetCompleteDistance) {
+			if (!(this.velocity.x > this.speed)) {
+				this.accelerations.push(new Vector([this.speed/((this.velocity.x < 0)? 5 : 20), 0]));
+			}
+		} else if (this.x > this.path[0][0] + this.targetCompleteDistance) {
+			if (!(this.velocity.x < -this.speed)) {
+				this.accelerations.push(new Vector([-this.speed/((this.velocity.x > 0)? 5 : 20), 0]));
+			}
+		} else {
+			this.velocity.x = 0;
+			this.path = Util.delIndex(this.path, 0);
+		}
+	}
 
 	/** Finds the target point for the NPC to move to */
 	findTarget() {
@@ -279,9 +240,47 @@ export class NPC extends DynamicObject {
 		//this.target = [460, 420];
 	}
 
+	//Simple pathfinding, can't navigate around obstacles
+	simplePathfinding() {
+		if (this.x < this.target[0]) {
+			if (!(this.velocity.x > this.speed)) {
+				this.accelerations.push(new Vector([this.speed/((this.velocity.x < 0)? 5 : 20), 0]));
+			}
+		} else if (this.x > this.target[0]) {
+			if (!(this.velocity.x < -this.speed)) {
+				this.accelerations.push(new Vector([-this.speed/((this.velocity.x > 0)? 5 : 20), 0]));
+			}
+		} else {
+			this.velocity.x = 0;
+		}
+		if (this.y - this.height/2 > this.target[1] && this.isGrounded) {
+			this.velocity.y = -this.jumpspeed;
+		}
+		if (this.accelerations.length == 0) { return; }
+		//Don't look for blocks if the NPC isn't in the bounds
+		let col;
+		let row;
+		[col, row] = Scene.calcBlockCoordinates(this.x, this.y);
+		if ((col < 1 || col >= Scene.structure[0].length - 1 || row < 1 || row >= Scene.structure.length - 1)) {
+			return;
+		}
+		//Don't let the NPC fall off of ledges
+		for (let i = Scene.calcBlockCoordinates(this.x, this.y)[1]; i < Scene.structure.length; i++) {
+			//If there is a tile under the next tile that the NPC is trying to move to
+			//console.log(Scene.getTile(this.x + ((this.velocity.x > 0)? Scene.tileSize : -Scene.tileSize), i * Scene.tileSize).hasCollision);
+			if (Scene.getTile(this.x + ((this.velocity.x > 0)? Scene.tileSize : -Scene.tileSize), i * Scene.tileSize).hasCollision) {
+				//Let the NPC move
+				return;
+			}
+		}
+		//Don't let the NPC move because there are no tiles that it can move to
+		this.accelerations = Util.delIndex(this.accelerations, this.accelerations.length - 1);
+		this.velocity.x = 0;
+	}
+
 	/** Updates the NPC */
 	update() {
-		this.#move();
+		this.move();
 		super.update();
 	}
 }

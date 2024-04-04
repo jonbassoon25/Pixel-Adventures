@@ -10,8 +10,8 @@ export class SceneTile extends VisualObject {
 
 	/**
 	 * @param {string} image - image of the scene tile
-	 * @param {number} row - row of the scene structure this scene tile is at
 	 * @param {number} col - column of the scene structure this scene tile is at
+	 * @param {number} row - row of the scene structure this scene tile is at
 	 * @param {boolean} hasCollision - if this SceneTile has collision
 	 * @param {boolean} hasVines - if this SceneTile has vines
 	*/

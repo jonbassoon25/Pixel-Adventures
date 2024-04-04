@@ -13,6 +13,7 @@ export class Display {
 	static verticalOffset = 0;
 	static resized = false;
 	static frames = 0;
+	static fps = 0;
 	
 
 	//*********************************************************************//
@@ -54,6 +55,18 @@ export class Display {
 		yield (y - height/2) * this.sizeMult + this.verticalOffset;
 		yield width * this.sizeMult;
 		yield height * this.sizeMult;
+	}
+
+	/** Draws black bounding boxes on the screen edges to ensure relative 1920 by 1080 canvas */
+	static drawBounds() {
+		//Top bounding box
+		ctx.drawImage(textures["blackTile"], 0, 0, canvas.width, this.verticalOffset);
+		//Right bounding box
+		ctx.drawImage(textures["blackTile"], canvas.width - this.horizontalOffset, canvas.height, this.horizontalOffset, canvas.height);
+		//Bottom bounding box
+		ctx.drawImage(textures["blackTile"], 0, canvas.height - this.verticalOffset, canvas.width, this.verticalOffset);
+		//Left bounding box
+		ctx.drawImage(textures["blackTile"], 0, 0, this.horizontalOffset, canvas.height);
 	}
 
 	/** 
@@ -98,7 +111,7 @@ export class Display {
 	 * @param {number} height - The height of the object
 	 * @param {boolean} resize - Are the passed in values absolute (true) or relative (false) (optional)
 	 */
-	static draw(image, x, y, width, height, resize = true) {
+	static draw(image, x, y, width, height, resize = true, flipped = false) {
 		//If there is no image to draw, return
 		if (image == "none") {
 			return;
@@ -111,7 +124,11 @@ export class Display {
 		//y = canvas.height - y;
 		//Determine if the image given needs to be taken from textures
 		if (typeof image === "string") {
-			ctx.drawImage(textures[image], x, y, width, height);
+			if (!flipped) {
+				ctx.drawImage(textures[image], x, y, width, height);
+			} else {
+				ctx.drawImage(textures[image + "Flipped"], x, y, width, height);
+			}
 		//The image is a plain image
 		} else {
 			ctx.drawImage(image, x, y, width, height);
@@ -148,7 +165,7 @@ export class Display {
 		//If the coordinates passed in are absolute (they need to be resized)
 		if (resize) {
 			//Use trash variable to store the unneeded return from Display.calcElementDimensions
-			let trash;
+			let trash;//🗑️
 			[x, y, trash, size] = this.calcElementDimensions(x, y, 0, size);
 		}
 		//Set the font size to fill the textbox from top to bottom

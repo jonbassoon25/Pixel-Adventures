@@ -10,6 +10,7 @@ import { SceneCreator } from "./SceneCreator.js";
 
 //Game Object Imports
 import { ChestTile } from "../gameObjects/ChestTile.js";
+import { Door } from "../gameObjects/Door.js";
 import { LightTile } from "../gameObjects/LightTile.js";
 import { SceneTile } from "../gameObjects/SceneTile.js";
 
@@ -19,10 +20,8 @@ export class SceneBuilder {
 	static cursorX = 0;
 	static cursorY = 0;
 	static structure = [[]];
-	static shaderStructure = null;
 	static mouseControlsEnabled = false;
 	static collisionEditor = false;
-	static shaderEditor = false;
 	static instructions = 
 	"Controls:\n" + 
 	"	WASD to move\n" + 
@@ -34,14 +33,14 @@ export class SceneBuilder {
 	"	Press 'm' to enable mouse controls\n" + 
 	"	Press 'n' to toggle collision for placed blocks\n" +
 	"	Press 'o' to toggle collision editor\n" +
-	"	Press 'p' to toggle shader editor\n" +
 	"	Press 'z' to log the currently selected tile\n" +
 	"	Press '1' to replace tile with air\n" + 
 	"	Press '2' to replace tile with stone bricks\n" + 
 	"	Press '4' to replace tile with rotten wood\n" + 
 	"	Press '6' to place light\n" + 
 	"	Press '7' to place vines\n" +
-	"	Press '8' to place chest" +
+	"	Press '8' to place chest\n" +
+	"	Press '9' to place door\n" +
 	"	Press '=' to replace tile with placeholder\n" + 
   "\n	Press 'h' to relog instructions";
 
@@ -55,7 +54,7 @@ export class SceneBuilder {
 	}
 
 	static #moveRight() {
-		if (this.cursorX < this.structure[0].length * ((this.shaderEditor)? 2 : 1) - 1) {
+		if (this.cursorX < this.structure[0].length - 1) {
 			this.cursorX += 1;
 		}
 	}
@@ -67,7 +66,7 @@ export class SceneBuilder {
 	}
 
 	static #moveDown() {
-		if (this.cursorY < this.structure.length * ((this.shaderEditor)? 2 : 1) - 1) {
+		if (this.cursorY < this.structure.length - 1) {
 			this.cursorY += 1;
 		}
 	}
@@ -90,12 +89,17 @@ export class SceneBuilder {
 	}
 
 	static #setRottenWood() {
-		this.structure[this.cursorY][this.cursorX] = new SceneTile("rottedWoodPlanks", this.cursorX, this.cursorY, false);
+		this.structure[this.cursorY][this.cursorX] = new SceneTile("wood", this.cursorX, this.cursorY, false);
 	}
 
 	static #setChest() {
 		let replacedTile = this.structure[this.cursorY][this.cursorX];
-		this.structure[this.cursorY][this.cursorX] = new ChestTile(replacedTile.image, this.cursorX, this.cursorY, replacedTile.hasVines, [0, 10]);
+		this.structure[this.cursorY][this.cursorX] = new ChestTile(replacedTile.image, this.cursorX, this.cursorY, replacedTile.hasVines);
+	}
+
+	static #setDoor() {
+		let replacedTile = this.structure[this.cursorY][this.cursorX];
+		this.structure[this.cursorY][this.cursorX] = new Door(replacedTile.image, this.cursorX, this.cursorY, replacedTile.hasVines);
 	}
 
 	static #save() {
@@ -110,18 +114,17 @@ export class SceneBuilder {
 		Scene.structure = null;
 		Scene.shaderStructure = null;
 		this.structure = null;
-		this.shaderStructure = null;
 		console.log("loading scene");
 		return;
 	}
 
 	static #updateCoords() {
-		for (let i = 0; i < ((this.shaderEditor)? this.shaderStructure.length : this.structure.length); i++) {
-			for (let j = 0; j < ((this.shaderEditor)? this.shaderStructure[i].length : this.structure[i].length); j++) {
-				let x = j * Scene.tileSize / (this.shaderEditor? 2 : 1);
-				let y = i * Scene.tileSize / (this.shaderEditor? 2 : 1);
-				let width = Scene.tileSize / (this.shaderEditor? 2 : 1);
-				let height = Scene.tileSize / (this.shaderEditor? 2 : 1);
+		for (let i = 0; i < this.structure.length; i++) {
+			for (let j = 0; j < this.structure[i].length; j++) {
+				let x = j * Scene.tileSize;
+				let y = i * Scene.tileSize;
+				let width = Scene.tileSize;
+				let height = Scene.tileSize;
 				[x, y, width, height] = Display.calcElementDimensions(x, y, width, height);
 				if (Mouse.x - width/2 >= x && Mouse.x - width/2 <= x + width && Mouse.y - height/2 >= y && Mouse.y - height/2 <= y + height) {
 					this.cursorX = j;
@@ -145,11 +148,7 @@ export class SceneBuilder {
 
 		//Erase
 		if (Keyboard.isKeyPressed("c")) {
-			if (this.shaderEditor) {
-				this.shaderStructure = SceneCreator.createShaderStructure(48, 27);
-			} else {
-				this.structure = SceneCreator.createEmptyScene(48, 27);
-			}
+			this.structure = SceneCreator.createEmptyScene(48, 27);
 		}
 
 		//Toggle mouse controls
@@ -158,23 +157,11 @@ export class SceneBuilder {
 			console.log("Mouse control " + ((this.mouseControlsEnabled)? "enabled" : "disabled"));
 		}
 
-		//Toggle shader edit mode
-		if (Keyboard.isKeyPressed("p")) {
-			if (this.shaderStructure == null) {
-				console.log("No shader data. Creating new shader data array");
-				this.shaderStructure = SceneCreator.createShaderStructure(Scene.structure[0].length, Scene.structure.length);
-			}
-			this.shaderEditor = !this.shaderEditor;
-			console.log("Shader editor " + ((this.shaderEditor)? "enabled" : "disabled"));
-			this.cursorX = 0;
-			this.cursorY = 0;
-		}
-
 		let currentTile = this.structure[this.cursorY][this.cursorX];
 
 		//Print tile components
 		if (Keyboard.isKeyPressed("z")) {
-			(this.shaderEditor)? console.log(this.shaderStructure[this.cursorY][this.cursorX]) : console.log(currentTile);
+			console.log(currentTile);
 		}
 
 		//Bake lighting
@@ -212,49 +199,67 @@ export class SceneBuilder {
 
 		//Tile editing inputs
 		if (Keyboard.isKeyPressed("up")) {
-			if (this.shaderEditor) {
-				this.shaderStructure[this.cursorY][this.cursorX].shaderLevel += 1;
-				console.log("New Shader Value: " + this.shaderStructure[this.cursorY][this.cursorX].shaderLevel.toString());
-				return;
-			}
-
 			if (currentTile instanceof LightTile) {
 				currentTile.strength += 1;
 				console.log("New Light Strength: " + currentTile.strength);
-				return;
+			}
+			if (currentTile instanceof ChestTile) {
+				currentTile.coinRange[1]++;
+				console.log("New Coin Range: " + currentTile.coinRange);
 			}
 		}
+		
 		if (Keyboard.isKeyPressed("down")) {
-			if (this.shaderEditor) {
-				this.shaderStructure[this.cursorY][this.cursorX].shaderLevel -= 1;
-				console.log("New Shader Value: " + this.shaderStructure[this.cursorY][this.cursorX].shaderLevel.toString());
-				return;
-			}
-
 			if (currentTile instanceof LightTile) {
 				currentTile.strength -= 1;
 				console.log("New Light Strength: " + currentTile.strength);
-				return;
+			}
+			if (currentTile instanceof ChestTile) {
+				if (currentTile.coinRange[1] > currentTile.coinRange[0]) {
+					currentTile.coinRange[1]--;
+					console.log("New Coin Range: " + currentTile.coinRange);
+				} else if (currentTile.coinRange[0] > 1) {
+					currentTile.coinRange[0]--;
+					currentTile.coinRange[1]--;
+					console.log("New Coin Range: " + currentTile.coinRange);
+				} else {
+					console.log("coinRange cannot go lower");
+				}
 			}
 		}
+		
 		if (Keyboard.isKeyPressed("left")) {
 			if (currentTile instanceof LightTile) {
 				currentTile.radius -= 1;
 				console.log("New Light Radius: " + currentTile.radius);
-				return;
+			}
+			if (currentTile instanceof ChestTile) {
+				if (currentTile.coinRange[0] > 1) {
+					currentTile.coinRange[0]--;
+					console.log("New Coin Range: " + currentTile.coinRange);
+				} else {
+					console.log("Min coins cannot go lower")
+				}
 			}
 		}
+		
 		if (Keyboard.isKeyPressed("right")) {
 			if (currentTile instanceof LightTile) {
 				currentTile.radius += 1;
 				console.log("New Light Radius: " + currentTile.radius);
-				return;
+			}
+			if (currentTile instanceof ChestTile) {
+				if (currentTile.coinRange[0] < currentTile.coinRange[1]) {
+					currentTile.coinRange[0]++;
+					console.log("New Coin Range: " + currentTile.coinRange);
+				} else {
+					currentTile.coinRange[0]++;
+					currentTile.coinRange[1]++;
+					console.log("New Coin Range: " + currentTile.coinRange);
+				}
 			}
 		}
 
-		if (this.shaderEditor) {
-			return;
-		}
 		//Toggle collision for sceneTile
 		if (Keyboard.isKeyPressed("n")) {
 			currentTile.hasCollision = !currentTile.hasCollision;
@@ -281,6 +286,9 @@ export class SceneBuilder {
 		}
 		if (Keyboard.isKeyPressed("8")) {
 			this.#setChest();
+		}
+		if (Keyboard.isKeyPressed("9")) {
+			this.#setDoor();
 		}
 		if (Keyboard.isKeyDown("=")) {
 			this.#setPlaceholder();
@@ -339,8 +347,8 @@ export class SceneBuilder {
 	/** Resets all SceneBuilder variables to defaults */
 	static init() {
 		[this.structure, this.shaderStructure] = [Scene.structure, Scene.shaderStructure];
-		this.shaderEditor = false;
 		this.collision = false;
+		this.mouseControlsEnabled = false;
 		this.cursorX = 0;
 		this.cursorY = 0;
 	}
@@ -359,7 +367,7 @@ export class SceneBuilder {
 
 	/** Draws the scene editor cursor */
 	static drawCursor() {
-		Display.draw("crosshair", (this.cursorX * Scene.tileSize + Scene.tileSize/2)  / ((this.shaderEditor)? 2 : 1), (this.cursorY * Scene.tileSize + 20)  / ((this.shaderEditor)? 2 : 1), Scene.tileSize / ((this.shaderEditor)? 2 : 1), Scene.tileSize / ((this.shaderEditor)? 2 : 1));
+		Display.draw("crosshair", (this.cursorX * Scene.tileSize + Scene.tileSize/2), (this.cursorY * Scene.tileSize + 20), Scene.tileSize, Scene.tileSize);
 	}
 	
 	/** Prints the SceneBuilder Instructions */
@@ -382,18 +390,9 @@ export class SceneBuilder {
 		if (this.structure == null) {
 			return;
 		}
-		if (this.shaderEditor && this.collisionEditor) {
-			this.shaderEditor = false;
-			this.collisionEditor = false;
-			console.log("Returned to main editor");
-		}
-		if (this.shaderEditor) {
-			Scene.displayAll();
-		} else {
-			for (let i = 0; i < Scene.structure.length; i++) {
-				for (let j = 0; j < Scene.structure[i].length; j++) {
-					Scene.structure[i][j].update();
-				}
+		for (let i = 0; i < Scene.structure.length; i++) {
+			for (let j = 0; j < Scene.structure[i].length; j++) {
+				Scene.structure[i][j].update();
 			}
 		}
 		if (this.collisionEditor) {
