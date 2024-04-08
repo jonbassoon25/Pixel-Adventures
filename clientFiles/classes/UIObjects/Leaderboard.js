@@ -1,7 +1,7 @@
 //Util Imports
 import { Display } from "../util/Display.js";
 import { VisualObject } from "../util/VisualObject.js";
-
+import { textures } from "../util/Textures.js";
 
 //Leaderboard Class
 export class Leaderboard extends VisualObject {
@@ -10,9 +10,9 @@ export class Leaderboard extends VisualObject {
 
 	//*********************************************************************//
 	//Constructor
-	//1920/2, 1080/2, 850, 990
+	//1920/2, 1080/2, 780, 1140
 	constructor(x, y, width, height) {
-		super("placeholder", x, y, width, height);
+		super("leaderboardPlaque", x, y, width, height);
 	}
 
 	//*********************************************************************//
@@ -22,7 +22,7 @@ export class Leaderboard extends VisualObject {
 	update() {
 		super.update();
 		//Bounding box
-		Display.drawText("Leaderboard", this.x - "Leaderboard".length * 30 / 2, 130, 50, true, "white");
+		Display.drawText("Leaderboard", this.x - "Leaderboard".length * 50 * 0.55/2, 130, 50, true, "white");
 
 		if (Leaderboard.data == null) {
 			Display.drawText("Loading...", 545, 200, 25, true, "white");
@@ -31,9 +31,9 @@ export class Leaderboard extends VisualObject {
 		//For each user on the leaderboard
 		for (let i = 0; i < Leaderboard.data["order"].length && i <= 20; i++) {
 			//Draw placement and username text
-			Display.drawText("#" + (i + 1).toString() + " " + Leaderboard.data["order"][i] + ":", 545, 200 + i * 40, 25, true, "white");
+			Display.drawText("#" + (i + 1).toString() + " " + Leaderboard.data["order"][i] + ":", 1920/2 - textures["leaderboardPlaque"].width/2 + 50, 250 + i * 40, 25, true, "white");
 			//Draw score
-			Display.drawText(Leaderboard.data[Leaderboard.data["order"][i]].toString(), 1370 - Leaderboard.data[Leaderboard.data["order"][i]].toString().length * 25 * 0.6, 200 + i * 40, 25, true, "white");
+			Display.drawText(Leaderboard.data[Leaderboard.data["order"][i]].toString(), 1920/2 + textures["leaderboardPlaque"].width/2 - 50 - Leaderboard.data[Leaderboard.data["order"][i]].toString().length * 25 * 0.55, 250 + i * 40, 25, true, "white");
 		}
 	}
 }

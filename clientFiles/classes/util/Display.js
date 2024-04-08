@@ -169,7 +169,7 @@ export class Display {
 			[x, y, trash, size] = this.calcElementDimensions(x, y, 0, size);
 		}
 		//Set the font size to fill the textbox from top to bottom
-		ctx.font = size.toString() + "px Monospace";
+		ctx.font = "bold " + size.toString() + "px Monospace";
 		//Set the text color to the given color
 		ctx.fillStyle = color;
 		//Draw the text onto the canvas

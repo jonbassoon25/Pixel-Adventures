@@ -22,6 +22,7 @@ export class Grave extends SceneTile {
 		super(background, col, row, false, hasVines);
 		this.player = player;
 		this.coins = player.coins;
+		this.type = "grave";
 		player.coins = 0;
 		Grave.graves.push(this);
 	}

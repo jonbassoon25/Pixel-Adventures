@@ -45,7 +45,7 @@ export class DialogueBox extends VisualObject {
 			}
 			if (this.textQueue.length != 1 && this.textQueue.substring(0, 1) == "\n") {
 				this.text.push("");
-				this.textQueue = this.textQueue.substring(2);
+				this.textQueue = this.textQueue.substring(1);
 			}
 			this.text[this.text.length - 1] += this.textQueue[0];
 			this.textLength++;

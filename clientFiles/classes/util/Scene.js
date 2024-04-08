@@ -4,6 +4,7 @@ import { Util } from "./Util.js";
 
 //Game Object Imports
 import { SceneTile } from "../gameObjects/SceneTile.js";
+import { Door } from "../gameObjects/Door.js";
 
 //Scene Class
 export class Scene {
@@ -29,9 +30,8 @@ export class Scene {
 		this.tileSize = tileSize;
 		this.displayAll();
 		this.background = Display.imageData;
-		this.level = 0;
-		this.loadedLevel = 0;
 	}
+
 
 	/** 
 	 * Updates all scene objects in the scene structure
@@ -115,6 +115,8 @@ export class Scene {
 								this.shadersToUpdate = Util.combine(this.shadersToUpdate, [this.shaderStructure[j * 2 + l][k * 2 + n]]);
 							}
 						}
+
+						
 					}
 				}
 			}
@@ -183,6 +185,22 @@ export class Scene {
 			}
 			if (this.shaderStructure == null) {
 				i += 0.5; //improves efficiency by 25% when shader structure doesn't exist
+			}
+		}
+	}
+
+	static updateDoor() {
+		for (let i = 0; i < this.structure.length; i++) {
+			for (let j = 0; j < this.structure[i].length; j++) {
+				if (this.structure[i][j] instanceof Door) {
+					this.structure[i - 1][j].update();
+					this.structure[i][j].update();
+					for (let k = 0; k < 4; k++) {
+						for (let l = 0; l < 2; l++) {
+							this.shadersToUpdate = Util.combine(this.shadersToUpdate, [this.shaderStructure[(i - 1) * 2 + k][j * 2 + l]]);
+						}
+					}
+				}
 			}
 		}
 	}

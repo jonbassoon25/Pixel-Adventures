@@ -89,7 +89,7 @@ export class SceneBuilder {
 	}
 
 	static #setRottenWood() {
-		this.structure[this.cursorY][this.cursorX] = new SceneTile("wood", this.cursorX, this.cursorY, false);
+		this.structure[this.cursorY][this.cursorX] = new SceneTile("wood", this.cursorX, this.cursorY, true);
 	}
 
 	static #setChest() {
@@ -136,12 +136,12 @@ export class SceneBuilder {
 
 	static #takeInput() {
 		//Save
-		if (Keyboard.isKeyPressed("k")) {
+		if (Keyboard.isKeyDown("`") && Keyboard.isKeyPressed("k")) {
 			this.#save();
 		}
 
 		//Load
-		if (Keyboard.isKeyPressed("l")) {
+		if (Keyboard.isKeyDown("`") && Keyboard.isKeyPressed("l")) {
 			this.#load();
 			return;
 		}

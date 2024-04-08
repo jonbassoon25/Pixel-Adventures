@@ -1,7 +1,13 @@
 //Util Imports
 import { Display } from "../util/Display.js";
 import { VisualObject } from "../util/VisualObject.js";
-import { AnimationPlayer } from "../util/AnimationPlayer.js";
+import { Vector } from "../util/Vector.js";
+
+//Game Entity Imports
+import { Enemy } from "../gameEntities/Enemy.js";
+import { Slime } from "../gameEntities/Slime.js";
+import { Player } from "../gameEntities/Player.js";
+import { DynamicObject } from "../gameEntities/DynamicObject.js";
 
 //Sword, Mace, Claymore, Dual Knives
 //Weapon Class
@@ -31,6 +37,7 @@ export class MeleeWeapon extends VisualObject {
 		this.relY = relY;
 		this.animationName = "idle";
 		this.animationFrame = 0;
+		this.knockback = new Vector([2.5, -4]);
 	}
 
 	//*********************************************************************//
@@ -67,8 +74,28 @@ export class MeleeWeapon extends VisualObject {
 	//Public Methods
 
 	attack() {
-		if (this.animationName == "attack") return;
+		let attackBox = new VisualObject("none", this.parent.x + ((this.parent.facingLeft)? -this.reach/2 : this.reach/2), this.parent.y, this.reach, this.parent.height);
+		attackBox.update();
+		if (this.animationName != "idle") return;
 		this.animationName = "attack";
+		for (let i = 0; i < DynamicObject.dynamicObjects.length; i++) {
+			let curObj = DynamicObject.dynamicObjects[i];
+			//Don't let enemies attack enemies or let players attack players
+			if ((this.parent instanceof Enemy && curObj instanceof Enemy) || (this.parent instanceof Player && curObj instanceof Player)) {
+				continue;
+			}
+			if (attackBox.isColliding(curObj)) {
+				curObj.health -= this.damage;
+				curObj.takeKnockback(this);
+				if (curObj.health < 0 && this.parent instanceof Player) {
+					if (curObj instanceof Slime) {
+						
+					} else if (curObj instanceof Skeleton) {
+						
+					}
+				}
+			}
+		}
 	}
 
 	cancelAttack() {

@@ -29,7 +29,10 @@ const path = require('path');
 let leaderboard = require("./serverFiles/leaderboard.json");
 
 let scenes = {
-	"lastSaved": require("./serverFiles/lastSaved.json")
+	"lastSaved": require("./serverFiles/lastSaved.json"),
+	"level1": require("./serverFiles/level1.json"),
+	"level2": require("./serverFiles/level2.json"),
+	"level3": require("./serverFiles/level3.json")
 };
 
 //------------------------------------------------------------------------------------//

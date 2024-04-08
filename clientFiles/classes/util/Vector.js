@@ -54,6 +54,16 @@ export class Vector {
 		yield Util.round(standardVector[0] * Math.sin(standardVector[1]), 3);
 	}
 
+	/**
+	 * Multiplies a vector by a scalar value
+	 * @param {Vector} vector - vector to multiply
+	 * @param {number} scalar - scalar value to mulitply by
+	 * @return {Vector} - new vector with multiplied components. Not lined to passed in vector
+	 */
+	static multiply(vector, scalar) {
+		return new Vector(vector.name, [vector.x * scalar, vector.y * scalar]);
+	}
+
 	//Returns a string of all of the vectors contained in this object
 	static toString() {
 		let output = "All Vectors: ";

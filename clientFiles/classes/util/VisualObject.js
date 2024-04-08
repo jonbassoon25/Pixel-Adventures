@@ -51,7 +51,7 @@ export class VisualObject {
 	}
 
 	/** 
-	 * @returns {boolean} is the point inside of this object
+	 * @returns {boolean} is the point inside of this object (Inclusive of borders)
 	 */
 	isEnclosing(point) {
 		return point[0] >= this.x - this.width/2 && point[0] <= this.x + this.width/2 && point[1] >= this.y - this.height/2 && point[1] <= this.y + this.height/2;

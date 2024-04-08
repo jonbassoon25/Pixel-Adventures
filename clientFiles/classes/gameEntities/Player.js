@@ -15,11 +15,12 @@ import { Door } from "../gameObjects/Door.js";
 import { Sword } from "../gameObjects/Sword.js";
 import { Vector } from "../util/Vector.js";
 import { Grave } from "../gameObjects/Grave.js";
+import { Level } from "../util/Level.js";
 
 //Player Class
 export class Player extends DynamicObject {
+	static upgradesBought = {"playerOneWeapon": 0, "playerOneHealth": 0, "playerOneRegen": 0, "playerOneSpeed": 0, "playerOneJump": 0, "playerTwoWeapon": 0, "playerTwoHealth": 0, "playerTwoRegen": 0, "playerTwoSpeed": 0, "playerTwoJump": 0};
 	//Constructor
-
 	/**
 	 * @param {string} image - image to display
 	 * @param {number} x - initial x position of player
@@ -41,19 +42,20 @@ export class Player extends DynamicObject {
 		}
 		this.color = color;
 		this.coins = 0;
-		this.speed = 3;
+		this.speed = 3 + Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Speed"] * 0.25;
 		this.stunned = 0;
 		this.deaths = 0;
 		this.health = 100;
-		this.maxHealth = 100;
-		this.regen = 0.1;
+		this.maxHealth = 100 + Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Health"] * 25;
+		this.regen = 0.1 + Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Regen"] * 0.02;
 		this.isDead = false;
 		this.visualWidth = 80;
 		this.visualHeight = 80;
 		this.weapon = new Sword(this, 20);
+		this.weapon.damage += Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Weapon"] * 5;
 		this.grave = null;
-		this.facingLeft = false;
-		this.jumpSpeed = 7.5;
+		this.points = 0;
+		this.jumpSpeed = 7.5 + Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Jump"] * 0.25;
 	}
 
 	//*********************************************************************//
@@ -141,7 +143,8 @@ export class Player extends DynamicObject {
 		}
 
 		if (Scene.structure[row][col] instanceof Door) {
-			Scene.level++;
+			Level.level++;
+			//Switch scene to initGame
 		}
 
 		if (Scene.structure[row][col] instanceof Grave) {
@@ -154,10 +157,19 @@ export class Player extends DynamicObject {
 		let col;
 		let row;
 		[col, row] = Scene.calcBlockCoordinates(this.x, this.y);
-		let prevTile = Scene.getTile(this.x, this.y);
-		for (let i = 2; !(prevTile.type == "SceneTile") || prevTile.hasCollision; i++) {
-			//Find another prevTile
-			prevTile = null;
+		let nextRow = row;
+		//Find collision tile below the grave col
+		for (let i = row; i < Scene.structure.length; i++) {
+			if (Scene.structure[i][col].hasCollision) {
+				nextRow = i - 1;
+				break;
+			}
+		}
+		let potentialTile = Scene.structure[nextRow][col];
+		
+		for (let i = 2; !(potentialTile.type == "SceneTile") || potentialTile.hasCollision; i++) {
+			//Find another potentialTile
+			potentialTile = null;
 			let nextCol = 0;
 			//Check left, right, left, right, left, ...
 			if (i % 2 == 0 && col - i/2 > 0) {
@@ -166,18 +178,19 @@ export class Player extends DynamicObject {
 				nextCol = col + (i - 1)/2;
 			}
 			if (Scene.structure[row][nextCol].hasCollision) {
-				continue;
+				//continue;
 			}
 			let nextRow = 0;
 			//Find collision tile below the grave col
 			for (let i = row; i < Scene.structure.length; i++) {
 				if (Scene.structure[i][nextCol].hasCollision) {
 					nextRow = i - 1;
+					break;
 				}
 			}
-			prevTile = Scene.structure[nextRow][nextCol];
+			potentialTile = Scene.structure[nextRow][nextCol];
 		}
-		Scene.structure[row][col] = new Grave(this, prevTile.col, prevTile.row, prevTile.image, prevTile.hasVines);
+		Scene.structure[potentialTile.row][potentialTile.col] = new Grave(this, potentialTile.col, potentialTile.row, potentialTile.image, potentialTile.hasVines);
 	}
 
 	#takeDamage() {
@@ -190,13 +203,6 @@ export class Player extends DynamicObject {
 				if (this.isColliding(other)) {
 					this.health -= other.damage;
 					this.stunned = 30;
-					/*
-					@Zac
-					Push vectors to accelerations. Not simpleVector arrays
-					Error was this.velocity.y = NAN because it called Vector.add([1, -1])
-					Correct is Vector.add(Vector)
-					Terinary operator is used to have direction to the knockback
-					*/
 					this.accelerations.push(new Vector([(this.x > other.x)? 2 : -2, -4]));
 					return;
 				}
@@ -226,6 +232,9 @@ export class Player extends DynamicObject {
 		this.health = this.maxHealth;
 		//Create grave that other players can use coins to respawn this player from
 		this.#spawnGrave();
+		if (this.points > 0) {
+			this.points -= 1000;
+		}
 	}
 
 	/** Draws the player with animations */
@@ -234,18 +243,16 @@ export class Player extends DynamicObject {
 			this.weapon.update(this.facingLeft, this.isGrounded);
 			if (!this.isGrounded) {
 				Display.draw(this.color + "PlayerJump", this.visualX, this.visualY, 60, 60, true, this.facingLeft);
-			} else if (this.velocity.x == 0) {
-				Display.draw(this.color + "Player", this.visualX, this.visualY, 60, 60, true, this.facingLeft);
-			} else if ((Display.frames % 20) < 10) {
+			} else if (this.velocity.x == 0 || (Display.frames % 20) < 10) {
 				Display.draw(this.color + "Player", this.visualX, this.visualY, 60, 60, true, this.facingLeft);
 			} else {
 				Display.draw(this.color + "PlayerWalk", this.visualX, this.visualY, 60, 60, true, this.facingLeft);
 			}
 			//Draw player healthbar
-			let totalWidth = this.width * (this.maxHealth / 100);
-			Display.draw("shader_05", this.x, this.y - this.height/2 - 5, totalWidth, 5);
-			let redWidth = this.width * (this.maxHealth / 100) * (this.health / this.maxHealth);
-			Display.draw("redTile", this.x - (totalWidth - redWidth)/2, this.y - this.height/2 - 5, redWidth, 5);
+			let totalWidth = this.width * 2;
+			Display.draw("shader_05", this.x, this.y - this.height/2 - 7, totalWidth, 10);
+			let redWidth = this.width * 2 * (this.health / this.maxHealth);
+			Display.draw("redTile", this.x - (totalWidth - redWidth)/2, this.y - this.height/2 - 7, redWidth, 10);
 		} else {
 			if ((Display.frames % 20) < 10) {
 				Display.draw(this.color + "Ghost", this.visualX, this.visualY, 60, 60, true, this.facingLeft);
@@ -257,7 +264,6 @@ export class Player extends DynamicObject {
 	/** Updates the Player */
 	update() {
 		super.update();
-		
 		//Keep the player in bounds
 		if (this.x > 1920) {
 			this.x = 1920;
@@ -277,7 +283,7 @@ export class Player extends DynamicObject {
 			return;
 		}
 		this.#takeDamage();
-		if (this.health <= 0) {
+		if (this.health <= 0 && !this.isDead) {
 			this.die();
 		}
 		if (this.health < this.maxHealth) this.health += this.regen;
@@ -289,7 +295,6 @@ export class Player extends DynamicObject {
 		this.#interact();
 		this.#collectItems();
 	}
-	
 	upgradeHealth() {
 		if (this.maxHealth < 300) this.maxHealth += 25;
 		console.log("Max health increased to " + this.maxHealth);
@@ -304,10 +309,10 @@ export class Player extends DynamicObject {
 	}
 
 	upgradeSpeed() {
-		this.speed += 0.5;
+		this.speed += 0.25;
 	}
 
 	upgradeJump() {
-		this.jumpSpeed += 0.5;
+		this.jumpSpeed += 0.25;
 	}
 }

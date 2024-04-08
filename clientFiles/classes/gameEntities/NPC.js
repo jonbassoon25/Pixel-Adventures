@@ -196,10 +196,8 @@ export class NPC extends DynamicObject {
 	}
 	//Moves along the determined path to the target
 	move() {
-		//If there is no target, find a target
-		if (this.target.length == 0) {
-			this.findTarget();
-		}
+		//Find the target
+		this.findTarget();
 		//Basic movement, moves towards the target at all times regardless of physical surroundings
 		if (!this.pathfinding) {
 			this.simplePathfinding();
@@ -242,21 +240,34 @@ export class NPC extends DynamicObject {
 
 	//Simple pathfinding, can't navigate around obstacles
 	simplePathfinding() {
-		if (this.x < this.target[0]) {
+		if (this.target == null) {
+			this.velocity.x = Math.trunc(this.velocity.x);
+			if (this.velocity.x != 0) {
+				this.accelerations.push(new Vector([this.velocity.x / -2, 0]));
+			}
+			return;
+		}
+		if (this.x < this.target[0] - this.targetCompleteDistance/2) {
 			if (!(this.velocity.x > this.speed)) {
 				this.accelerations.push(new Vector([this.speed/((this.velocity.x < 0)? 5 : 20), 0]));
 			}
-		} else if (this.x > this.target[0]) {
+		} else if (this.x > this.target[0] + this.targetCompleteDistance/2) {
 			if (!(this.velocity.x < -this.speed)) {
 				this.accelerations.push(new Vector([-this.speed/((this.velocity.x > 0)? 5 : 20), 0]));
 			}
 		} else {
 			this.velocity.x = 0;
 		}
-		if (this.y - this.height/2 > this.target[1] && this.isGrounded) {
+		if (!this.isGrounded) {
+			return;
+		}
+		if (this.velocity.x != 0 && Scene.getTile(this.x + ((this.velocity.x < 0)? -1 : 1) * Scene.tileSize, this.y).hasCollision) {
+			this.velocity.y = -this.jumpspeed;
+		} else if (this.velocity.x == 0 && (this.target[0] + this.targetCompleteDistance < this.x || this.target[0] - this.targetCompleteDistance > this.x) && Scene.getTile(this.x + ((this.target[0] < this.x)? -1 : 1) * Scene.tileSize, this.y).hasCollision) {
 			this.velocity.y = -this.jumpspeed;
 		}
-		if (this.accelerations.length == 0) { return; }
+		//if (this.accelerations.length == 0) { return; }
+		/*
 		//Don't look for blocks if the NPC isn't in the bounds
 		let col;
 		let row;
@@ -276,6 +287,7 @@ export class NPC extends DynamicObject {
 		//Don't let the NPC move because there are no tiles that it can move to
 		this.accelerations = Util.delIndex(this.accelerations, this.accelerations.length - 1);
 		this.velocity.x = 0;
+		*/
 	}
 
 	/** Updates the NPC */

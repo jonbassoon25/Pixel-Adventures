@@ -3,6 +3,7 @@ import { Scene } from "../util/Scene.js";
 import { Util } from "../util/Util.js";
 import { Vector } from "../util/Vector.js";
 import { VisualObject } from "../util/VisualObject.js";
+import { Enemy } from "./Enemy.js";
 
 //Class DynamicObject
 export class DynamicObject extends VisualObject {
@@ -17,6 +18,13 @@ export class DynamicObject extends VisualObject {
 	/** Despawns all dynamic objects */
 	static clear() {
 		this.dynamicObjects = [];
+	}
+
+	/** Despawns all enemies */
+	static clearEnemies() {
+		for (let i = this.dynamicObjects.length - 1; i >= 0; i--) {
+			if (this.dynamicObjects[i] instanceof Enemy) this.dynamicObjects[i].delete();
+		}
 	}
 
 	/** Draws all currently spawned dynamic objects */
@@ -47,6 +55,8 @@ export class DynamicObject extends VisualObject {
 		this.accelerations = [];
 		this.isGrounded = false;
 		this.hasCollision = hasCollision;
+		this.facingLeft = false;
+		this.knockbackMultiplier = 1;
 		DynamicObject.dynamicObjects.push(this);
 	}
 
@@ -75,7 +85,6 @@ export class DynamicObject extends VisualObject {
 			for (let j = 0; j < Scene.structure[i].length; j++) {
 				let sceneTile = Scene.structure[i][j];
 				if (sceneTile.hasCollision && this.isColliding(sceneTile)) {
-					//if the collision is vertical
 					let startPos = [this.x - this.velocity.x, this.y - this.velocity.y];
 					//What time this obj collides with the sceneTile
 					//small values added/subtracted to avoid 0/0 errors
@@ -95,11 +104,21 @@ export class DynamicObject extends VisualObject {
 					 * Min time is on top or bottom, not left or right
 					 * right side of this and left side of sceneTile aren't the same
 					 * left side of this and right side of sceneTile aren't the same
-					 * bottom of this + gravity is less than top of sceneTile
+					 * bottom of this + gravity is above top of sceneTile
 					 * top of this and bottom of sceneTile aren't the same
 					 * All other cases: Horizontal
 					*/
-					if ((Math.min(times["top"], times["bottom"]) <= Math.min(times["left"], times["right"]) && this.x + this.width/2 != sceneTile.x - sceneTile.width/2 && this.x - this.width/2 != sceneTile.x + sceneTile.width/2) || this.y + this.height/2 <= sceneTile.y - sceneTile.height/2 + Vector.GRAVITY.magnitude || this.y - this.height/2 == sceneTile.y + sceneTile.height/2) {
+					//Will this collide with the top/bottom sides of the sceneTile before collding with the left/right sides?
+					let check1 = (Math.min(times["top"], times["bottom"]) <= Math.min(times["left"], times["right"]));
+					//Is this not exactly beside the sceneTile on the right?
+					let check2 = (this.x + this.width/2 != sceneTile.x - sceneTile.width/2);
+					//Is this not exactly beside the sceneTile on the left?
+					let check3 = (this.x - this.width/2 != sceneTile.x + sceneTile.width/2);
+					//Prevents horizontal collisions while travelling horizontally across sceneTiles
+					let check4 = !check1 && (this.y + this.height/2 <= sceneTile.y - sceneTile.height/2 + Vector.GRAVITY.magnitude);
+					//Top of this and bottom of sceneTile aren't the same
+					let check5 = (this.y - this.height/2 == sceneTile.y + sceneTile.height/2);
+					if ((check1 && check2 && check3) || check4 || check5) {
 						//Vertical collision
 						if (times["top"] < times["bottom"]) {
 							this.y = sceneTile.y - sceneTile.height/2 - this.height/2;
@@ -108,6 +127,11 @@ export class DynamicObject extends VisualObject {
 							this.y = sceneTile.y + sceneTile.height/2 + this.height/2;
 						}
 						this.velocity.y = 0;
+						/*
+						if (this.color == "blue") {
+							if (!(check1 && check2 && check3) && check4) console.log([check1, check2, check3, check4]);
+						};
+						*/
 					} else {
 						//Horizontal collision
 						if (times["left"] < times["right"]) {
@@ -125,6 +149,10 @@ export class DynamicObject extends VisualObject {
 	/** Deletes this object from the dynamicObjects list */
 	delete() {
 		DynamicObject.dynamicObjects = Util.delValue(DynamicObject.dynamicObjects, this);
+	}
+
+	takeKnockback(weapon) {
+		this.accelerations.push(new Vector([weapon.knockback.x * this.knockbackMultiplier * ((weapon.parent.x < this.x)? 1 : -1), weapon.knockback.y * this.knockbackMultiplier]));
 	}
 
 	/** Applies forces and moves this object */

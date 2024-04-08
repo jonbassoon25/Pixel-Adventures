@@ -58,7 +58,52 @@ export class Animation {
 			{"image": "shader_11"}, {"image": "shader_10"}, {"image": "shader_09"}, {"image": "shader_08"},
 			{"image": "shader_07"}, {"image": "shader_06"}, {"image": "shader_05"}, {"image": "shader_04"},
 			{"image": "shader_03"}, {"image": "shader_02"}, {"image": "shader_01"}, {"image": "shader_00"}
-		]
+		],
+		"level1Shard": [
+			{
+				"image": "educationShard", 
+				"initialPosition": [1920/2, 1080/2], 
+				"initialDimensions": [0, 0], 
+				"frames": 0
+			},
+			{"finalDimensions": [540, 480], "frames": 30}  //Initial position needs to be changed in order to center the shard
+		],
+		"educationShard": [
+			{
+				"image": "educationShard", 
+				"initialPosition": [1920/2 - 120 + 15, 1080/2 - 30], 
+				"initialDimensions": [0, 0], "frames": 0, 
+				"transitionType": "sinusoidal"
+			},
+			{"finalDimensions": [363, 462], "frames": 30},
+			{"finalDimensions": [330, 420], "frames": 15},
+			{"frames": 60}
+		],
+		"progressShard": [
+			{
+				"image": "progressShard", 
+				"initialPosition": [1920/2, 1080/2 + 180 - 45], 
+				"initialDimensions": [0, 0], 
+				"frames": 0,
+				"transitionType": "sinusoidal"
+			},
+			{"frames": 30},
+			{"finalDimensions": [528, 231], "frames": 30},
+			{"finalDimensions": [480, 210], "frames": 15},
+			{"frames": 30}
+		],
+		"serviceShard": [
+			{
+				"image": "serviceShard", 
+				"initialPosition": [1920/2 + 120 + 15, 1080/2 - 30], 
+				"initialDimensions": [0, 0], 
+				"frames": 0,
+				"transitionType": "sinusoidal"
+			},
+			{"frames": 60},
+			{"finalDimensions": [297, 462], "frames": 30},
+			{"finalDimensions": [270, 420], "frames": 15},
+		],
     };
 
 	static compileTemplates() {
@@ -168,6 +213,9 @@ export class Animation {
                 return true;
             }
         }
+		//No frame was drawn, draw final frame
+		let fk = this.keyframes[this.keyframes.length - 1];
+		fk.draw(fk.endFrame);
         //No frame was drawn, return false unless this animation loops, in which case reset frames and call update() again
         //Don't let frames be equal to zero because that can cause stack overflow errors
         if (this.loops && this.frames != 0) {
