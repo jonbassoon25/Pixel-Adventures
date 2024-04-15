@@ -1,6 +1,7 @@
 //Util Imports
 import { Display } from "../util/Display.js";
 import { VisualObject } from "../util/VisualObject.js";
+import { Keyboard } from "../util/Keyboard.js";
 
 //UI Object Imports
 import { Button } from "../UIObjects/Button.js";
@@ -32,6 +33,7 @@ export class DialogueBox extends VisualObject {
 		this.textLength = 0;
 		this.textQueue = text;
 		this.speed = speed;
+		this.frames = 0;
 	}
 
 	/** Updates and Draws this Dialogue Box */
@@ -61,6 +63,17 @@ export class DialogueBox extends VisualObject {
 			
 			if (Button.simpleButton(this.x + this.width/2 - "continue".length * 15 + 20, this.y + this.height/2 - 28, "continue".length * 20, 25)) {
 				return false;
+			}
+		}
+		if (Keyboard.isKeyPressed(" ")) {
+			if (this.textQueue == "") {
+				return false;
+			} else {
+				this.text[this.text.length - 1] += this.textQueue.split("\n")[0];
+				let leftoverLines = this.textQueue.split("\n");
+				leftoverLines.shift();
+				this.text.push(...leftoverLines);
+				this.textQueue = "";
 			}
 		}
 

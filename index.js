@@ -94,6 +94,7 @@ function sort(dict) {
 		sortedDict[smallest] = dict[smallest];
 		delete dict[smallest];
 	}
+	sortedDict["order"].reverse();
 	return sortedDict;
 }
 
@@ -134,10 +135,12 @@ io.on('connection', (socket) => {
 
 	socket.on("updateLeaderboard", (data) => {
 		//Data formatted as name, score
-		leaderboard[data[0]] = data[1];
-		leaderboard = sort(leaderboard);
-		save("leaderboard", leaderboard);
-		io.emit("leaderboardUpdate", leaderboard);
+		if (leaderboard[data[0]] == undefined || leaderboard[data[0]] < data[1]) {
+			leaderboard[data[0]] = data[1];
+			leaderboard = sort(leaderboard);
+			save("leaderboard", leaderboard);
+			io.emit("leaderboardUpdate", leaderboard);
+		}
 	});
 
 	//When a user has disconnected

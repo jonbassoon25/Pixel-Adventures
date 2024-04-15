@@ -9,6 +9,10 @@ import { SceneTile } from "./SceneTile.js";
 //ChestTile Class
 export class ChestTile extends SceneTile {
 	static chestTiles = [];
+
+	static clear() {
+		this.chestTiles = [];
+	}
 	
 	//Constructor
 	/**

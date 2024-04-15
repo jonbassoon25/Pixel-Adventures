@@ -1,6 +1,8 @@
 //Util Imports
 import { textures } from "./Textures.js";
 
+//Game entity imports
+
 //Define the canvas
 const canvas = document.getElementById("gameScreen");
 const ctx = canvas.getContext("2d", {willReadFrequently: true});
@@ -174,6 +176,21 @@ export class Display {
 		ctx.fillStyle = color;
 		//Draw the text onto the canvas
 		ctx.fillText(text, x, y);
+	}
+
+	static markPlayerDisplay(player1, player2) {
+		//Player display has a minimum width of 320
+		//Player display has a maximum width of 1920
+		//Player display must retain aspect ratio of 16:9
+		//Player display (preferably) won't exit the bounds of the scene
+		let width = ((Math.abs(player2.x - player1.x) + 300 < 480)? 480 : 0);
+		let dimensions;
+		dimensions = {"x": (player1.x + player2.x)/2, 
+						  "y": (player1.y + player2.y)/2,
+						  "width": width, 
+						  "height": width * 9/16
+						 }
+		Display.draw("selectionBox", dimensions["x"], dimensions["y"], dimensions["width"], dimensions["height"]);
 	}
 
 	//*********************************************************************//

@@ -5,6 +5,7 @@ import { Enemy } from "./Enemy.js";
 import { Util } from "../util/Util.js";
 import { Vector } from "../util/Vector.js";
 import { Scene } from "../util/Scene.js";
+import { AudioPlayer } from "../util/AudioPlayer.js";
 
 
 
@@ -35,10 +36,12 @@ export class Slime extends Enemy {
 			return;
 		}
 		if (this.x%Scene.tileSize == 15 && this.isGrounded) {
+			AudioPlayer.play("slime");
 			this.accelerations.push(new Vector([2.4, -3]));
 			return;
 		}
 		if (this.x%Scene.tileSize == (Scene.tileSize - 15) && this.isGrounded) {
+			AudioPlayer.play("slime");
 			this.accelerations.push(new Vector([-2.4, -3]));
 			return;
 		}
@@ -60,10 +63,12 @@ export class Slime extends Enemy {
 		if (this.x < this.target[0]) {
 			if (!(this.velocity.x > this.speed)) {
 				this.accelerations.push(new Vector([this.speed/90 * Util.randInt(1, 3), -7]));
+				AudioPlayer.play("slime");
 			}
 		} else if (this.x > this.target[0]) {
 			if (!(this.velocity.x < -this.speed)) {
 				this.accelerations.push(new Vector([-this.speed/90 * Util.randInt(1, 3), -7]));
+				AudioPlayer.play("slime");
 			}
 		} else {
 			this.velocity.x = 0;

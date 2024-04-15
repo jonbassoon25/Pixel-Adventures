@@ -28,8 +28,8 @@ export class Animation {
 		"pano": [ //initial keyframe requires "image", "initialPosition", "initialDimensions", "frames"
 			{
 				"image": "mainMenuPanoTinted",
-			 	"initialPosition": [1920/2, textures["mainMenuPanoTinted"].height/2],
-			 	"initialDimensions": [textures["mainMenuPanoTinted"].width, textures["mainMenuPanoTinted"].height],
+			 	"initialPosition": [1920/2, 7980/2],
+			 	"initialDimensions": [1920, 7980],
 			 	"frames": 120,
 			 	"transitionType": "linear"
 			},
@@ -51,9 +51,9 @@ export class Animation {
 		], 
 		"fadeIn": [
 			{
-				"image": "shader_20", "initialPosition": [1920/2, 1080/2], "initialDimensions": [1920, 1080], "frames": 4
+				"image": "shader_20", "initialPosition": [1920/2, 1080/2], "initialDimensions": [1920, 1080], "frames": 60
 			},
-			{"image": "shader_19"}, {"image": "shader_18"}, {"image": "shader_17"}, {"image": "shader_16"},
+			{"image": "shader_19", "frames": 4}, {"image": "shader_18"}, {"image": "shader_17"}, {"image": "shader_16"},
 			{"image": "shader_15"}, {"image": "shader_14"}, {"image": "shader_13"}, {"image": "shader_12"},
 			{"image": "shader_11"}, {"image": "shader_10"}, {"image": "shader_09"}, {"image": "shader_08"},
 			{"image": "shader_07"}, {"image": "shader_06"}, {"image": "shader_05"}, {"image": "shader_04"},
@@ -102,8 +102,28 @@ export class Animation {
 			},
 			{"frames": 60},
 			{"finalDimensions": [297, 462], "frames": 30},
-			{"finalDimensions": [270, 420], "frames": 15},
+			{"finalDimensions": [270, 420], "frames": 15}
 		],
+		"redHelp": [
+			{
+				"image": "redPlayer", 
+				"initialPosition": [1920/2 - 450, 1080/2],
+				"finalPosition": [1920/2, 1080/2],
+				"initialDimensions": [600, 600],
+				"frames": 60,
+				"transitionType": "sinusoidal"
+			}
+		],
+		"blueHelp": [
+			{
+				"image": "bluePlayerFlipped", 
+				"initialPosition": [1920/2 + 450, 1080/2],
+				"finalPosition": [1920/2, 1080/2],
+				"initialDimensions": [600, 600],
+				"frames": 60,
+				"transitionType": "sinusoidal"
+			}
+		]
     };
 
 	static compileTemplates() {

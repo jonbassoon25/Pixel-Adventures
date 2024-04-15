@@ -1,8 +1,8 @@
 //Util imports
+import { AudioPlayer } from "../util/AudioPlayer.js";
 import { Display } from "../util/Display.js";
 import { Keyboard } from "../util/Keyboard.js";
 import { Scene } from "../util/Scene.js";
-import { Util } from "../util/Util.js";
 
 //Game Entity Imports
 import { DynamicObject } from "./DynamicObject.js";
@@ -20,6 +20,7 @@ import { Level } from "../util/Level.js";
 //Player Class
 export class Player extends DynamicObject {
 	static upgradesBought = {"playerOneWeapon": 0, "playerOneHealth": 0, "playerOneRegen": 0, "playerOneSpeed": 0, "playerOneJump": 0, "playerTwoWeapon": 0, "playerTwoHealth": 0, "playerTwoRegen": 0, "playerTwoSpeed": 0, "playerTwoJump": 0};
+	static retainedValues = {"p1Score": 0, "p2Score": 0, "p1Coins": 0, "p2Coins": 0};
 	//Constructor
 	/**
 	 * @param {string} image - image to display
@@ -41,12 +42,12 @@ export class Player extends DynamicObject {
 			"interact": controlType[4]
 		}
 		this.color = color;
-		this.coins = 0;
+		this.coins = Player.retainedValues["p" + ((color == "red")? "1": "2") + "Coins"];
 		this.speed = 3 + Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Speed"] * 0.25;
 		this.stunned = 0;
 		this.deaths = 0;
-		this.health = 100;
 		this.maxHealth = 100 + Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Health"] * 25;
+		this.health = this.maxHealth;
 		this.regen = 0.1 + Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Regen"] * 0.02;
 		this.isDead = false;
 		this.visualWidth = 80;
@@ -54,7 +55,7 @@ export class Player extends DynamicObject {
 		this.weapon = new Sword(this, 20);
 		this.weapon.damage += Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Weapon"] * 5;
 		this.grave = null;
-		this.points = 0;
+		this.points = Player.retainedValues["p" + ((color == "red")? "1": "2") + "Score"];
 		this.jumpSpeed = 7.5 + Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Jump"] * 0.25;
 	}
 
@@ -137,12 +138,14 @@ export class Player extends DynamicObject {
 		if (Scene.structure[row][col] instanceof ChestTile) {
 			let startCoins = this.coins;
 			let chest = Scene.structure[row][col];
+			this.points += chest.coins * 10;
 			this.coins += chest.coins;
 			chest.coins = 0;
 			console.log("Got " + (this.coins - startCoins) + " Coins");
 		}
 
 		if (Scene.structure[row][col] instanceof Door) {
+			AudioPlayer.play("door");
 			Level.level++;
 			//Switch scene to initGame
 		}
@@ -216,6 +219,7 @@ export class Player extends DynamicObject {
 			if (this.isColliding(item)) {
 				if (item.type == "coin") {
 					this.coins++;
+					this.points += 10;
 					item.delete();
 				}
 			}
@@ -230,10 +234,13 @@ export class Player extends DynamicObject {
 		this.isDead = true;
 		this.hasCollision = false;
 		this.health = this.maxHealth;
+		AudioPlayer.play("die");
 		//Create grave that other players can use coins to respawn this player from
 		this.#spawnGrave();
-		if (this.points > 0) {
+		if (this.points >= 1000) {
 			this.points -= 1000;
+		} else {
+			this.points = 0;
 		}
 	}
 
@@ -247,6 +254,7 @@ export class Player extends DynamicObject {
 				Display.draw(this.color + "Player", this.visualX, this.visualY, 60, 60, true, this.facingLeft);
 			} else {
 				Display.draw(this.color + "PlayerWalk", this.visualX, this.visualY, 60, 60, true, this.facingLeft);
+				AudioPlayer.play("step");
 			}
 			//Draw player healthbar
 			let totalWidth = this.width * 2;
@@ -314,5 +322,10 @@ export class Player extends DynamicObject {
 
 	upgradeJump() {
 		this.jumpSpeed += 0.25;
+	}
+
+	static resetData() {
+		Player.upgradesBought = {"playerOneWeapon": 0, "playerOneHealth": 0, "playerOneRegen": 0, "playerOneSpeed": 0, "playerOneJump": 0, "playerTwoWeapon": 0, "playerTwoHealth": 0, "playerTwoRegen": 0, "playerTwoSpeed": 0, "playerTwoJump": 0};
+		Player.retainedValues = {"p1Score": 0, "p2Score": 0, "p1Coins": 0, "p2Coins": 0};
 	}
 }

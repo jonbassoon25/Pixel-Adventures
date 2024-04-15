@@ -25,11 +25,13 @@ export class Leaderboard extends VisualObject {
 		Display.drawText("Leaderboard", this.x - "Leaderboard".length * 50 * 0.55/2, 130, 50, true, "white");
 
 		if (Leaderboard.data == null) {
-			Display.drawText("Loading...", 545, 200, 25, true, "white");
+			Display.drawText("Loading...", 600, 200, 25, true, "white");
 			return;
 		}
 		//For each user on the leaderboard
 		for (let i = 0; i < Leaderboard.data["order"].length && i <= 20; i++) {
+			//Prevent scores of 0 from being displayed
+			if (Leaderboard.data[Leaderboard.data["order"][i]] <= 0) return;
 			//Draw placement and username text
 			Display.drawText("#" + (i + 1).toString() + " " + Leaderboard.data["order"][i] + ":", 1920/2 - textures["leaderboardPlaque"].width/2 + 50, 250 + i * 40, 25, true, "white");
 			//Draw score

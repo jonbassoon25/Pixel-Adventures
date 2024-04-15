@@ -2,6 +2,7 @@
 import { Display } from "../util/Display.js";
 import { VisualObject } from "../util/VisualObject.js";
 import { Vector } from "../util/Vector.js";
+import { AudioPlayer } from "../util/AudioPlayer.js";
 
 //Game Entity Imports
 import { Enemy } from "../gameEntities/Enemy.js";
@@ -77,6 +78,7 @@ export class MeleeWeapon extends VisualObject {
 		let attackBox = new VisualObject("none", this.parent.x + ((this.parent.facingLeft)? -this.reach/2 : this.reach/2), this.parent.y, this.reach, this.parent.height);
 		attackBox.update();
 		if (this.animationName != "idle") return;
+		AudioPlayer.play("swordSwing");
 		this.animationName = "attack";
 		for (let i = 0; i < DynamicObject.dynamicObjects.length; i++) {
 			let curObj = DynamicObject.dynamicObjects[i];
@@ -89,9 +91,9 @@ export class MeleeWeapon extends VisualObject {
 				curObj.takeKnockback(this);
 				if (curObj.health < 0 && this.parent instanceof Player) {
 					if (curObj instanceof Slime) {
-						
-					} else if (curObj instanceof Skeleton) {
-						
+						this.parent.points += 500;
+					} else {
+						this.parent.points += 1500;
 					}
 				}
 			}

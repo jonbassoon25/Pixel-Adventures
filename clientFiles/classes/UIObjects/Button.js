@@ -2,6 +2,7 @@
 import { Display } from "../util/Display.js";
 import { Mouse } from "../util/Mouse.js";
 import { VisualObject } from "../util/VisualObject.js";
+import { PauseMenu } from "./PauseMenu.js";
 
 
 //Button Class
@@ -23,7 +24,7 @@ export class Button extends VisualObject {
 			[x, y, width, height] = Display.calcElementDimensions(x, y, width, height);
 		}
 		//Return if the mouse is over the simpleButton area and the mouse is released
-		return Mouse.x > x && Mouse.x < x + width && Mouse.y > y && Mouse.y < y + height && Mouse.button1Released;
+		return Mouse.x > x && Mouse.x < x + width && Mouse.y > y && Mouse.y < y + height && Mouse.button1Released && !PauseMenu.paused;
 	}
 
 	//*********************************************************************//
@@ -36,9 +37,10 @@ export class Button extends VisualObject {
 	@param {number} width - Absolute width of the button
   	@param {number} height - Absolute height of the button
   	*/
-	constructor(image, x, y, width, height) {
+	constructor(image, x, y, width, height, ignorePaused = false) {
 		//Call super constructor to assign absolute and relative values of: x, y, width, height
 		super(image, x, y, width, height);
+		this.ignorePaused = ignorePaused;
 	}
 
 	//*********************************************************************//
@@ -53,7 +55,7 @@ export class Button extends VisualObject {
 		let relWidth;
 		let relHeight;
 		[relX, relY, relWidth, relHeight] = Display.calcElementDimensions(this.x, this.y, this.width, this.height);
-		return Mouse.x > relX && Mouse.x < relX + relWidth && Mouse.y > relY && Mouse.y < relY + relHeight;
+		return Mouse.x > relX && Mouse.x < relX + relWidth && Mouse.y > relY && Mouse.y < relY + relHeight && (!PauseMenu.paused || this.ignorePaused);
 	}
 
 
@@ -88,6 +90,12 @@ export class Button extends VisualObject {
  	*/
 	update() {
 		//Draw the base button image
+		if (this.image == "redPlayer" || this.image == "redPlayerJump") {
+			if (this.#isHovered()) this.image = "redPlayerJump"; else this.image = "redPlayer";
+		}
+		if (this.image == "bluePlayerFlipped" || this.image == "bluePlayerJumpFlipped") {
+			if (this.#isHovered()) this.image = "bluePlayerJumpFlipped"; else this.image = "bluePlayerFlipped";
+		}
 		Display.draw(this.image, this.x, this.y, this.width, this.height);
 		//If the button is pressed
 		if (this.isPressed()) {

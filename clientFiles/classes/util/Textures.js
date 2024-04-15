@@ -3,15 +3,15 @@ function loadAssets() {
 	let foldersToLoad = {};
 	let textures = {};
 	//Assign folders to load
-	foldersToLoad["tiles"] = ["stoneBrick", "rottedWoodPlanks", "vines", "blueTile", "redTile", "blackTile", "insetLantern", "chest", "chestOpened", "wood", "door"];
-	foldersToLoad["util"] = ["placeholder", "crosshair"];
-	foldersToLoad["buttons"] = ["buttonHovered", "buttonPressed", "playButton", "back", "cog", "leaderboard", "upgradeJump", "upgradeMaxHealth", "upgradeRegen", "upgradeSpeed", "upgradeWeapon", "continue", "easy", "medium", "hard", "custom", "sliderFrame", "sliderHandle"];
 	foldersToLoad["shaders"] = ["shader_00", "shader_01", "shader_02", "shader_03", "shader_04", "shader_05", "shader_06", "shader_07", "shader_08", "shader_09", "shader_10", "shader_11", "shader_12", "shader_13", "shader_14", "shader_15", "shader_16", "shader_17", "shader_18", "shader_19", "shader_20"];
+	foldersToLoad["tiles"] = ["stoneBrick", "rottedWoodPlanks", "vines", "blueTile", "redTile", "blackTile", "insetLantern", "chest", "chestOpened", "wood", "door"];
+	foldersToLoad["menu"] = ["mainMenuPanoTinted", "plaque", "banner", "stoneBrickBackground", "woodenPlaque", "leaderboardPlaque", "upgradePlaque", "selectionBox"];
+	foldersToLoad["buttons"] = ["buttonHovered", "buttonPressed", "playButton", "back", "cog", "leaderboard", "upgradeJump", "upgradeMaxHealth", "upgradeRegen", "upgradeSpeed", "upgradeWeapon", "continue", "easy", "medium", "hard", "custom", "sliderFrame", "sliderHandle", "saveScore", "textBox", "escape", "musicEnabled", "musicDisabled", "plus", "minus", "help"];
+	foldersToLoad["util"] = ["placeholder", "crosshair"];
 	foldersToLoad["player"] = ["bluePlayer", "bluePlayerJump", "bluePlayerWalk", "blueGhost", "blueGhostAlt", "redPlayer", "redPlayerJump", "redPlayerWalk", "redGhost", "redGhostAlt", "redGrave", "blueGrave"];
 	foldersToLoad["player/flipped"] = ["blueGhostAltFlipped", "blueGhostFlipped", "bluePlayerFlipped", "bluePlayerJumpFlipped", "bluePlayerWalkFlipped", "redGhostAltFlipped", "redGhostFlipped", "redPlayerFlipped", "redPlayerJumpFlipped", "redPlayerWalkFlipped"];
 	foldersToLoad["items"] = ["coin", "educationShard", "progressShard", "serviceShard", "fbla", "shard1", "shard2", "shard3"];
 	foldersToLoad["weapons/sword"] = ["sword+0", "sword+15", "sword+30", "sword+45", "sword+60", "sword+75", "sword+90", "sword-90", "sword+0Flipped", "sword+15Flipped", "sword+30Flipped", "sword+45Flipped", "sword+60Flipped", "sword+75Flipped", "sword+90Flipped", "sword-90Flipped"];
-	foldersToLoad["menu"] = ["mainMenuPanoTinted", "plaque", "banner", "stoneBrickBackground", "woodenPlaque", "leaderboardPlaque", "upgradePlaque"];
 	foldersToLoad["monsters"] = ["slime", "skeleton", "skeletonFlipped", "skeletonWalk", "skeletonWalkFlipped", "skeletonJump", "skeletonJumpFlipped"];
 	console.log("Loading Textures:");
 	//For every folder to load
@@ -31,9 +31,13 @@ function loadAssets() {
 	console.log("done");
 	return textures;
 }
-
 /** Dictionary of all game textures. Formatted as: {"name": img} */
-let textures = loadAssets();
+let textures;
+
+document.addEventListener("readystatechange", () => {
+	textures = loadAssets();;
+	document.dispatchEvent(new Event("texturesLoaded"));
+});
 
 //Export textures
 export { textures };

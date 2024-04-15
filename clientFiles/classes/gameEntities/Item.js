@@ -7,6 +7,10 @@ export class Item extends VisualObject {
 	//Static Variables
 
 	static items = [];
+
+	static clear() {
+		this.items = [];
+	}
 	
 	//*********************************************************************//
 	//Static Methods

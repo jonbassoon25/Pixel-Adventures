@@ -4,11 +4,14 @@ import { Coin } from "../gameEntities/Coin.js";
 import { Slime } from "../gameEntities/Slime.js";
 import { Skeleton } from "../gameEntities/Skeleton.js";
 import { DynamicObject } from "../gameEntities/DynamicObject.js";
+import { TriggerRegion } from "../gameObjects/TriggerRegion.js";
+import { ObscuredRegion } from "../gameObjects/ObscuredRegion.js";
 
 export class Level {
 	static level = 1;
 	static init(level = Level.level) {
 		DynamicObject.clearEnemies();
+		TriggerRegion.clear();
 		Scene.structure = null;
 		Scene.shaderStructure = null;
 		SocketCommunicator.send("loadScene", "level" + level.toString());
@@ -18,6 +21,7 @@ export class Level {
 			case 1:
 				new Slime(1259, 575);
 				new Skeleton(778, 979);
+				new TriggerRegion(1777, 257, 200, 100, [new ObscuredRegion(0, 5, 14, 26), new ObscuredRegion(15, 6, 18, 26), new ObscuredRegion(19, 7, 19, 26), new ObscuredRegion(20, 8, 47, 26)]);
 				break;
 			case 2:
 				new Slime(1293, 938);

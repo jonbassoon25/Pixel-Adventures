@@ -19,13 +19,13 @@ export class Textbox extends VisualObject {
 	*/
 	constructor(x, y, width, height) {
 		//Call super constructor to assign absolute and relative values of: x, y, width, height
-		super(x, y, width, height);
+		super("textBox", x, y, width, height);
 		//Set inital textbox text to an empty string
 		this.text = "";
 		//The textbox is not selected by the user
 		this.isSelected = false;
 		//Calculate and set the character limit of the textbox
-		this.charLimit = Math.floor((2 * this.width) / (this.height + 5));
+		this.charLimit = Math.floor((this.width - 10) / ((this.height - 5) * 0.55));
 	}
 
 	//*********************************************************************//
@@ -68,16 +68,19 @@ export class Textbox extends VisualObject {
   	Draws the Textbox and updates it with new values
  	*/
 	update() {
+		super.update();
 		//Check to see if the textbox has been selected or deselected this frame
 		this.#checkIsSelected();
 		//If the textbox is selected
 		if (this.isSelected) {
 			//Log keyboard text input in the textbox
 			this.#logInput();
+			//Display flashing position indicator
+			if (Display.frames % 60 < 30) {
+				Display.draw("shader_20", this.x - this.width/2 + 20 + this.text.length * (this.height - 5) * 0.58, this.y, 15, this.height * 3/4);
+			}
 		}
-		//Draw the textbox
-		Display.draw("placeholder", this.x, this.y, this.width, this.height);
 		//Draw the textbox text
-		Display.drawText(this.text, this.x - this.width / 2 + 2.5, this.y + this.height / 2 + 10, this.height - 5);
+		Display.drawText(this.text, this.x - this.width / 2 + 10, this.y + this.height / 2 + 30, this.height - 5);
 	}
 }
