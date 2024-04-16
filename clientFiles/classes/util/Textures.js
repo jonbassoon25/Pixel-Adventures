@@ -13,7 +13,7 @@ function loadAssets() {
 	foldersToLoad["items"] = ["coin", "educationShard", "progressShard", "serviceShard", "fbla", "shard1", "shard2", "shard3"];
 	foldersToLoad["weapons/sword"] = ["sword+0", "sword+15", "sword+30", "sword+45", "sword+60", "sword+75", "sword+90", "sword-90", "sword+0Flipped", "sword+15Flipped", "sword+30Flipped", "sword+45Flipped", "sword+60Flipped", "sword+75Flipped", "sword+90Flipped", "sword-90Flipped"];
 	foldersToLoad["monsters"] = ["slime", "skeleton", "skeletonFlipped", "skeletonWalk", "skeletonWalkFlipped", "skeletonJump", "skeletonJumpFlipped"];
-	console.log("Loading Textures:");
+	console.log("Loading Textures...");
 	//For every folder to load
 	for (let currentFolderIndex = 0; currentFolderIndex < Object.keys(foldersToLoad).length; currentFolderIndex++) {
 		//Assign the current folder name

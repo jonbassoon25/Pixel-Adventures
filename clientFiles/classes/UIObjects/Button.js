@@ -97,6 +97,7 @@ export class Button extends VisualObject {
 			if (this.#isHovered()) this.image = "bluePlayerJumpFlipped"; else this.image = "bluePlayerFlipped";
 		}
 		Display.draw(this.image, this.x, this.y, this.width, this.height);
+		if (this.image == "redPlayerJump" || this.image == "bluePlayerJumpFlipped") return;
 		//If the button is pressed
 		if (this.isPressed()) {
 			//Draw the partially transparent "buttonPressed" image over the button

@@ -123,6 +123,26 @@ export class Animation {
 				"frames": 60,
 				"transitionType": "sinusoidal"
 			}
+		],
+		"redHelpReturn": [
+			{
+				"image": "redPlayer",
+				"initialPosition": [1920/2, 1080/2],
+				"finalPosition": [1920/2 - 450, 1080/2],
+				"initialDimensions": [600, 600],
+				"frames": 60,
+				"transitionType": "sinusoidal"
+			}
+		],
+		"blueHelpReturn": [
+			{
+				"image": "bluePlayerFlipped", 
+				"initialPosition": [1920/2, 1080/2],
+				"finalPosition": [1920/2 + 450, 1080/2],
+				"initialDimensions": [600, 600],
+				"frames": 60,
+				"transitionType": "sinusoidal"
+			}
 		]
     };
 

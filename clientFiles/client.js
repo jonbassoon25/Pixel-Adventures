@@ -26,41 +26,40 @@ import { Level } from "./classes/util/Level.js";
 import { Mouse } from "./classes/util/Mouse.js";
 import { Scene } from "./classes/util/Scene.js";
 import { SceneBuilder } from "./classes/util/SceneBuilder.js";
-import { SceneCreator } from "./classes/util/SceneCreator.js";
-import { textures } from "./classes/util/Textures.js";
-import { Util } from "./classes/util/Util.js";
-import { Vector } from "./classes/util/Vector.js";
-import { VisualObject } from "./classes/util/VisualObject.js";
-import { Dialogue } from "./classes/util/Dialogue.js";
 import { AudioPlayer } from "./classes/util/AudioPlayer.js";
-
 
 //UI Object Imports
 import { Button } from "./classes/UIObjects/Button.js";
-import { DialogueBox } from "./classes/UIObjects/DialogueBox.js";
-import { Leaderboard } from "./classes/UIObjects/Leaderboard.js";
+import { DialogueBox } from "./classes/UIObjects/DialogueBox.js"
 import { PauseMenu } from "./classes/UIObjects/PauseMenu.js";
 import { Slider } from "./classes/UIObjects/Slider.js";
 import { Textbox } from "./classes/UIObjects/Textbox.js";
 import { BackButton } from "./classes/UIObjects/BackButton.js";
+
+//Gamestate Imports
+import { Cutscene } from "/classes/gamestates/Cutscene.js";
+import { Dialogue } from "./classes/gamestates/Dialogue.js";
+import { DifficultySelect } from "./classes/gamestates/DifficultySelect.js";
+import { Game } from "./classes/gamestates/Game.js";
+import { Help } from "./classes/gamestates/Help.js";
+import { Leaderboard } from "./classes/gamestates/Leaderboard.js";
+import { Lose } from "./classes/gamestates/Lose.js";
+import { Menu } from "./classes/gamestates/Menu.js";
+import { SaveScore } from "./classes/gamestates/SaveScore.js";
+import { Shop } from "./classes/gamestates/Shop.js";
+import { Win } from "./classes/gamestates/Win.js";
 
 //Game Object Imports
 import { ChestTile } from "./classes/gameObjects/ChestTile.js";
 import { Door } from "./classes/gameObjects/Door.js";
 import { LightTile } from "./classes/gameObjects/LightTile.js";
 import { SceneTile } from "./classes/gameObjects/SceneTile.js";
-import { ShaderTile } from "./classes/gameObjects/ShaderTile.js";
 import { Grave } from "./classes/gameObjects/Grave.js";
 
 //Game Entity Imports
 import { DynamicObject } from "./classes/gameEntities/DynamicObject.js";
 import { Player } from "./classes/gameEntities/Player.js";
-import { NPC } from "./classes/gameEntities/NPC.js";
-import { Coin } from "./classes/gameEntities/Coin.js";
 import { Item } from "./classes/gameEntities/Item.js";
-import { Slime } from "./classes/gameEntities/Slime.js";
-import { Skeleton } from "./classes/gameEntities/Skeleton.js";
-import { TriggerRegion } from "./classes/gameObjects/TriggerRegion.js";
 
 
 //------------------------------------------------------------------------------------//
@@ -138,103 +137,34 @@ function updateGame() {
 		lastLevel = 1;
 		scene = "initWin";
 	}
+	
 	switch (scene) {
+		//Menu Gamestate
 		case "initMenu":
 			clearUI();
-			AudioPlayer.pauseAll();
-			AnimationPlayer.load("pano", true, true);
-			AnimationPlayer.load("fadeIn");
-			player1 = null;
-			player2 = null;
+			Game.player1 = null;
+			Game.player2 = null;
 			Player.resetData();
-			buttons["play"] = new Button("playButton", 1920/2, 1080/2, 408, 144);
-			buttons["leaderboard"] = new Button("leaderboard", 1920/2, 1080/2 + 144 - 25, 408, 96);
-			buttons["help"] = new Button("help", 1920/2, 1080/2 + 240, 408, 144);
-			scene = "menu";
-			//scene = "initLose";
+			Menu.init();
 		case "menu":
-			Display.draw("banner", 1920/2, 1080/2 - 150, 600, 300);
-			buttons["play"].update();
-			buttons["leaderboard"].update();
-			buttons["help"].update();
-			if (buttons["play"].isReleased()) {
-				scene = "initDifficultySelect";
-			}
-			if (buttons["leaderboard"].isReleased()) {
-				AnimationPlayer.clear();
-				scene = "initLeaderboard";
-			}
-			if (buttons["help"].isReleased()) {
-				AnimationPlayer.clear();
-				scene = "initHelp";
-			}
-			//Delete the dialoge box when it is done updating
-			//if (dialogueBoxes["dia"] != undefined && !dialogueBoxes["dia"].update()) {
-			//	delete dialogueBoxes["dia"];
-			//}
+			Menu.update();
 			break;
+
+		//Help Gamestate
 		case "initHelp":
-			AnimationPlayer.clear();
-			buttons["red"] = new Button("redPlayer", 1920/2 - 450, 1080/2, 600, 600);
-			buttons["blue"] = new Button("bluePlayerFlipped", 1920/2 + 450, 1080/2, 600, 600);
-			scene = "help";
+			Help.init();
 		case "help":
-			if (back.subsistAsButton()) scene = "initMenu";
-			if (buttons["red"].subsistAsButton()) {
-				AnimationPlayer.load("redHelp");
-				scene = "redHelp";
-			}
-			if (buttons["blue"].subsistAsButton()) {
-				AnimationPlayer.load("blueHelp");
-				scene = "blueHelp";
-			}
+			Help.update();
 			break;
-		case "redHelp":
-			if (back.subsistAsButton()) scene = "initHelp";
-			if (AnimationPlayer.currentAnimations.length == 0) Display.draw("redPlayer", 1920/2, 1080/2, 600, 600);
-			Display.drawText("The red player", 1920/2 - 600, 1080/2 - 50, 20, true, "white");
-			Display.drawText("uses WAD to move,", 1920/2 - 600, 1080/2 - 10, 20, true, "white");
-			Display.drawText("S to interact,", 1920/2 - 600, 1080/2 + 30, 20, true, "white");
-			Display.drawText("and F to attack.", 1920/2 - 600, 1080/2 + 70, 20, true, "white");
-			break;
-		case "blueHelp":
-			if (back.subsistAsButton()) scene = "initHelp";
-			if (AnimationPlayer.currentAnimations.length == 0) Display.draw("bluePlayerFlipped", 1920/2, 1080/2, 600, 600);
-			Display.drawText("The blue player uses", 1920/2 + 600 - "the blue player uses".length * 20 * 0.6, 1080/2 - 50, 20, true, "white");
-			Display.drawText("arrow keys to move,", 1920/2 + 600 - "arrow keys to move".length * 20 * 0.6, 1080/2 - 10, 20, true, "white");
-			Display.drawText("down to interact,", 1920/2 + 600 - "down to interact".length * 20 * 0.6, 1080/2 + 30, 20, true, "white");
-			Display.drawText("and / to attack.", 1920/2 + 600 - "and / to attack".length * 20 * 0.6, 1080/2 + 70, 20, true, "white");
-			break;
+
+		//Cutscene Gamestate
 		case "initCutscene":
-			dialogueBoxes["diaBox"] = new DialogueBox(1920/2, 1080 * 3 / 4 + 80, 1920/2, 140);
-			switch(Level.level) {
-				case 2:
-					AnimationPlayer.load("educationShard");
-					dialogueBoxes["diaBox"].displayText("You found the shard of education!\nYou've learned how to play the game.", 50);
-					break;
-				case 3:
-					AnimationPlayer.load("educationShard");
-					AnimationPlayer.load("progressShard");
-					dialogueBoxes["diaBox"].displayText("You found the shard of progress!\nYou've advanced on your quest to reassemble the shards.\nOne more shard left!", 50);
-					break;
-				
-			}
-			
-			
-			scene = "cutscene";
+			Cutscene.init();
 		case "cutscene":
-			//Update SceneTiles and shaders
-			Scene.drawBackground();
-			Scene.updateDoor();
-			Scene.shade();
-			if (AnimationPlayer.currentAnimations.length == 0) {
-				Display.draw((Level.level == 2)? "shard1" : "shard2", 1920/2, 1080/2, 540, 480);
-			}
-			//Dialogue box
-			if(!dialogueBoxes["diaBox"].update()) {
-				scene = "initShop";
-			}
+			Cutscene.update();
 			break;
+
+		//Dialogue Gamestate
 		case "initDialogue":
 			Dialogue.loadDialogue(Level.level);
 			scene = "dialogue";
@@ -268,339 +198,81 @@ function updateGame() {
 			}
 			
 			break;
+
+		//Game Gamestate
 		case "initGame":
-			Display.clear();
-			clearUI();
-			//let structure = SceneCreator.createTestScene(48, 27);
-			//Scene.initScene(structure, SceneBuilder.bakeScene(structure), 40);
-			ChestTile.clear();
-			Item.clear();
-			Level.init();
-			scene = "requestingLevel";
-			break;
-		case "requestingLevel":
-			if (!(Scene.structure == null)) {
-				scene = "spawningEntities";
-			}
-			break;
-		case "spawningEntities":
-			//console.log("entities spawned");
-			player1.x = 100;
-			player1.y = 100;
-			player2.x = 300;
-			player2.y = 100;
-			player1.health = player1.maxHealth;
-			player2.health = player2.maxHealth;
-			player1.isDead = false;
-			player2.isDead = false;
-			player1.hasCollision = true;
-			player2.hasCollision = true;
-			player1.facingLeft = false;
-			player2.facingLeft = false;
-			Level.spawnEntities();
-			scene = "game";
-			break;
+			Game.init();
 		case "game":
-			//Game calculations
-			if (player1.isDead && player2.isDead) {
-				AnimationPlayer.clear();
-				AnimationPlayer.load("fadeOut");
-				scene = "initLose";
-				player1 = null;
-				player2 = null;
-				break;
-			}
-
-			Scene.drawBackground();
-
-			//Update/move items and dynamic objects
-			Item.updateItems();
-			DynamicObject.updateObjects();
-
-			//Scene Editor
-			if (Keyboard.shiftPressed) {
-				Player.retainedValues["p1Coins"] = player1.coins;
-				Player.retainedValues["p2Coins"] = player2.coins;
-				Player.retainedValues["p1Score"] = player1.points;
-				Player.retainedValues["p2Score"] = player2.points;
-				DynamicObject.clear();
-				player1 = null;
-				player2 = null;
-				//console.log("Scene builder");
-				SceneBuilder.printInstructions();
-				SceneBuilder.init();
-				scene = "sceneCreator";
-				break;
-			}
-			
-			//Update backgrounds of new moving objects in Scene
-			Scene.update(Item.items);
-			Scene.update(DynamicObject.dynamicObjects);
-			Scene.update(ChestTile.chestTiles);
-			Scene.update(Grave.graves);
-
-			//Update Doors
-			Scene.updateDoor();
-			
-			//Draw items and dynamicObjects in Scene
-			Item.drawItems();
-			DynamicObject.drawObjects();
-			
-			//Shade the scene
-			Scene.shade();
-			Display.drawText("Player 1 Coins: " + player1.coins.toString(), 50, 50, 40, true, "white");
-			Display.drawText("Player 2 Coins: " + player2.coins.toString(), 1920 - ("Player 2 Coins: " + player2.coins.toString()).length * 30, 50, 40, true, "white");
-			Display.drawText("Score: " + Math.round((player1.points + player2.points) * Difficulty.pointMultiplier).toString(), 1920/2 - ("Combined Points: " + Math.round((player1.points + player2.points) * Difficulty.pointMultiplier).toString()).length * 40 * 0.55 / 2, 50, 40, true, "white");
-			
-			//Update trigger regions
-			//TriggerRegion.update();
-			//(For Testing) Display player visual dimensions
-			//Display.markPlayerDisplay(player1, player2);
+			Game.update();
 			break;
+
+		//Shop Gamestate
 		case "initShop":
 			clearUI();
-			
-			//Player 1 Upgrades
-			buttons["player1UpgradeWeapon"] = new Button("upgradeWeapon", 1920/4 - 30, 1080/2 - 300 + 40, 408, 96);
-			buttons["player1UpgradeHealth"] = new Button("upgradeMaxHealth", 1920/4 - 30, 1080/2 - 150 + 40, 408, 96);
-			buttons["player1UpgradeRegen"] = new Button("upgradeRegen", 1920/4 - 30, 1080/2 + 0 + 40, 408, 96);
-			buttons["player1UpgradeSpeed"] = new Button("upgradeSpeed", 1920/4 - 30, 1080/2 + 150 + 40, 408, 96);
-			buttons["player1UpgradeJump"] = new Button("upgradeJump", 1920/4 - 30, 1080/2 + 300 + 40, 408, 96);
-
-			//Player 2 Upgrades
-			buttons["player2UpgradeWeapon"] = new Button("upgradeWeapon", 1920/4 * 3 + 30, 1080/2 - 300 + 40, 408, 96);
-			buttons["player2UpgradeHealth"] = new Button("upgradeMaxHealth", 1920/4 * 3 + 30, 1080/2 - 150 + 40, 408, 96);
-			buttons["player2UpgradeRegen"] = new Button("upgradeRegen", 1920/4 * 3 + 30, 1080/2 + 0 + 40, 408, 96);
-			buttons["player2UpgradeSpeed"] = new Button("upgradeSpeed", 1920/4 * 3 + 30, 1080/2 + 150 + 40, 408, 96);
-			buttons["player2UpgradeJump"] = new Button("upgradeJump", 1920/4 * 3 + 30, 1080/2 + 300 + 40, 408, 96);
-
-			buttons["continue"] = new Button("continue", 1920/2, 1080/2, 456 * 3/4, 64 * 3/4);
-			scene = "shop";
+			Shop.init();
 		case "shop":
-			//Display Shop Background, player icons, and plaques
-			Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
-			Display.draw("upgradePlaque", 420, 1080/2, 702, 1026);
-			Display.draw("upgradePlaque", 1920-420, 1080/2, 702, 1026);
-			Display.draw("redPlayer", 1920/2 - 800, 1080/2, 240, 240);
-			Display.draw("bluePlayerFlipped", 1920/2 + 800, 1080/2, 240, 240);
-
-			let p1WCost = Math.round((6 + Player.upgradesBought["playerOneWeapon"] * 4) * Difficulty.priceMult);
-			let p2WCost = Math.round((6 + Player.upgradesBought["playerTwoWeapon"] * 4) * Difficulty.priceMult);
-			let p1HCost = Math.round((6 + Player.upgradesBought["playerOneHealth"] * 4) * Difficulty.priceMult);
-			let p2HCost = Math.round((6 + Player.upgradesBought["playerTwoHealth"] * 4) * Difficulty.priceMult);
-			let p1RCost = Math.round((6 + Player.upgradesBought["playerOneRegen"] * 4) * Difficulty.priceMult);
-			let p2RCost = Math.round((6 + Player.upgradesBought["playerTwoRegen"] * 4) * Difficulty.priceMult);
-			let p1SCost = Math.round((6 + Player.upgradesBought["playerOneSpeed"] * 4) * Difficulty.priceMult);
-			let p2SCost = Math.round((6 + Player.upgradesBought["playerTwoSpeed"] * 4) * Difficulty.priceMult);
-			let p1JCost = Math.round((6 + Player.upgradesBought["playerOneJump"] * 4) * Difficulty.priceMult);
-			let p2JCost = Math.round((6 + Player.upgradesBought["playerTwoJump"] * 4) * Difficulty.priceMult);
-			
-			//Update Shop Buttons and price displays for Player 1
-			buttons["player1UpgradeWeapon"].update();
-			Display.drawText(p1WCost.toString() + "￠", 1920/4 - 45 + 260, 1080/2 - 300 + 70, 40, true, "white");
-			buttons["player1UpgradeHealth"].update();
-			Display.drawText(p1HCost.toString() + "￠", 1920/4 - 45 + 260, 1080/2 - 150 + 70, 40, true, "white");
-			buttons["player1UpgradeRegen"].update();
-			Display.drawText(p1RCost.toString() + "￠", 1920/4 - 45 + 260, 1080/2 + 0 + 70, 40, true, "white");
-			buttons["player1UpgradeSpeed"].update();
-			Display.drawText(p1SCost.toString() + "￠", 1920/4 - 45 + 260, 1080/2 + 150 + 70, 40, true, "white");
-			buttons["player1UpgradeJump"].update();
-			Display.drawText(p1JCost.toString() + "￠", 1920/4 - 45 + 260, 1080/2 + 300 + 70, 40, true, "white");
-			
-			//Update Shop Buttons and price displays for Player 2
-			buttons["player2UpgradeWeapon"].update();
-			Display.drawText(p2WCost + "￠", 1920/4 * 3 + 30 - 260 - p2WCost.toString().length * 40 * 0.55, 1080/2 - 300 + 70, 40, true, "white");
-			buttons["player2UpgradeHealth"].update();
-			Display.drawText(p2HCost + "￠", 1920/4 * 3 + 30 - 260 - p2HCost.toString().length * 40 * 0.55, 1080/2 - 150 + 70, 40, true, "white");
-			buttons["player2UpgradeRegen"].update();
-			Display.drawText(p2RCost + "￠", 1920/4 * 3 + 30 - 260 - p2RCost.toString().length * 40 * 0.55, 1080/2 + 0 + 70, 40, true, "white");
-			buttons["player2UpgradeSpeed"].update();
-			Display.drawText(p2SCost + "￠", 1920/4 * 3 + 30 - 260 - p2SCost.toString().length * 40 * 0.55, 1080/2 + 150 + 70, 40, true, "white");
-			buttons["player2UpgradeJump"].update();
-			Display.drawText(p2JCost + "￠", 1920/4 * 3 + 30 - 260 - p2JCost.toString().length * 40 * 0.55, 1080/2 + 300 + 70, 40, true, "white");
-
-			buttons["continue"].update();
-			//Detect upgrade button presses and upgrade selected
-			//Player 1
-			if (buttons["player1UpgradeWeapon"].isReleased() && player1.coins >= p1WCost) { player1.upgradeWeapon(); player1.coins -= p1WCost; Player.upgradesBought["playerOneWeapon"]++; AudioPlayer.play("upgrade");}
-			if (buttons["player1UpgradeHealth"].isReleased() && player1.coins >= p1HCost) { player1.upgradeHealth(); player1.coins -= p1HCost; Player.upgradesBought["playerOneHealth"]++; AudioPlayer.play("upgrade");}
-			if (buttons["player1UpgradeRegen"].isReleased() && player1.coins >= p1RCost) { player1.upgradeRegen(); player1.coins -= p1RCost; Player.upgradesBought["playerOneRegen"]++; AudioPlayer.play("upgrade");}
-			if (buttons["player1UpgradeSpeed"].isReleased() && player1.coins >= p1SCost) { player1.upgradeSpeed(); player1.coins -= p1SCost; Player.upgradesBought["playerOneSpeed"]++; AudioPlayer.play("upgrade");}
-			if (buttons["player1UpgradeJump"].isReleased() && player1.coins >= p1JCost) { player1.upgradeJump(); player1.coins -= p1JCost;Player.upgradesBought["playerOneJump"]++; AudioPlayer.play("upgrade");}
-			
-			//Player 2
-			if (buttons["player2UpgradeWeapon"].isReleased() && player2.coins >= p2WCost) { player2.upgradeWeapon();  player2.coins -= p2WCost; Player.upgradesBought["playerTwoWeapon"]++; AudioPlayer.play("upgrade");}
-			if (buttons["player2UpgradeHealth"].isReleased() && player2.coins >= p2HCost) { player2.upgradeHealth();  player2.coins -= p2HCost; Player.upgradesBought["playerTwoHealth"]++; AudioPlayer.play("upgrade");}
-			if (buttons["player2UpgradeRegen"].isReleased() && player2.coins >= p2RCost) { player2.upgradeRegen();  player2.coins -= p2RCost;Player.upgradesBought["playerTwoRegen"]++; AudioPlayer.play("upgrade");}
-			if (buttons["player2UpgradeSpeed"].isReleased() && player2.coins >= p2SCost) { player2.upgradeSpeed();  player2.coins -= p2SCost; Player.upgradesBought["playerTwoSpeed"]++; AudioPlayer.play("upgrade");}
-			if (buttons["player2UpgradeJump"].isReleased() && player2.coins >= p2JCost) { player2.upgradeJump();  player2.coins -= p2JCost; Player.upgradesBought["playerTwoJump"]++; AudioPlayer.play("upgrade");}
-
-			if (buttons["continue"].isReleased()) scene = "initGame";
-			
-			//Display Player Balances
-			Display.drawText("Player 1 Coins: " + player1.coins.toString(), 240, 220, 40, true, "white");
-			Display.drawText("Player 2 Coins: " + player2.coins.toString(), 1920 - ("Player 2 Coins: " + player2.coins.toString()).length * 40 * 0.55 - 240, 220, 40, true, "white");
+			Shop.update();
 			break;
+
+		//DifficultySelect Gamestate
 		case "initDifficultySelect":
-			clearUI();
-			buttons["easy"] = new Button("easy", 1920/2, 1080/2 - 300, 500, 150);
-			buttons["medium"] = new Button("medium", 1920/2, 1080/2 - 100, 500, 150);
-			buttons["hard"] = new Button("hard", 1920/2, 1080/2 + 100, 500, 150);
-			buttons["custom"] = new Button("custom", 1920/2, 1080/2 + 300, 500, 150);
-			scene = "difficultySelect";
+			DifficultySelect.init();
 		case "difficultySelect":
-			Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
-			back.update();
-			if (back.isReleased()) scene = "initMenu";
-			buttons["easy"].update();
-			buttons["medium"].update();
-			buttons["hard"].update();
-			buttons["custom"].update();
-			if (buttons["easy"].isReleased()) {
-				Difficulty.setEasy();
-				AudioPlayer.play("ambience", true);
-				scene = "initGame";
-			}
-			if (buttons["medium"].isReleased()) {
-				Difficulty.setMedium();
-				AudioPlayer.play("ambience", true);
-				scene = "initGame";
-			}
-			if (buttons["hard"].isReleased()) {
-				Difficulty.setHard();
-				AudioPlayer.play("ambience", true);
-				scene = "initGame";
-			}
-			if (buttons["custom"].isReleased()) {
-				scene = "initCustomDifficulty";
-			}
-			if (scene == "initGame") {
-				player1 = new Player(100, 100, "red", "wadfs");
-				player2 = new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
-				Player.upgradesBought = {"playerOneWeapon": 0, "playerOneHealth": 0, "playerOneRegen": 0, "playerOneSpeed": 0, "playerOneJump": 0, "playerTwoWeapon": 0, "playerTwoHealth": 0, "playerTwoRegen": 0, "playerTwoSpeed": 0, "playerTwoJump": 0};
-			}
+			DifficultySelect.update();
 			break;
-		case "initCustomDifficulty":
-			clearUI();
-			sliders["customEnemyHealthMult"] = new Slider(1920/2, 1080/2 - 300, 600, 90, 0.25, 3, 0.25, 1);
-			sliders["customEnemyDamageMult"] = new Slider(1920/2, 1080/2 - 120, 600, 90, 0.25, 3, 0.25, 1);
-			sliders["customEnemySpeedMult"] = new Slider(1920/2, 1080/2 + 60, 600, 90, 0.25, 3, 0.25, 1);
-			sliders["customPriceMult"] = new Slider(1920/2, 1080/2 + 240, 600, 90, 0.25, 3, 0.25, 1);
 
-			buttons["continue"] = new Button("continue", 1920/2, 1080/2 + 420, 456, 64);
-			
-			scene = "customDifficulty";
-		case "customDifficulty":
-			Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
-			back.update();
-			if (back.isReleased()) scene = "initDifficultySelect";
-			
-			//Enemy Health Slider
-			Display.drawText("Enemy Health Multiplier", 1920/2 - "Enemy Health Multiplier".length*60*0.55/2, 1080/2 - 300 - 40, 60, true, "black");
-			sliders["customEnemyHealthMult"].update();
-			Display.drawText(sliders["customEnemyHealthMult"].snappedOutput.toString(), 1920/2 + 320, 1080/2 - 300 + 50, 60, true, "black");
-			
-			//Enemy Damage Slider
-			Display.drawText("Enemy Damage Multiplier", 1920/2 - "Enemy Damage Multiplier".length*60*0.55/2, 1080/2 - 120 - 40, 60, true, "black");
-			sliders["customEnemyDamageMult"].update();
-			Display.drawText(sliders["customEnemyDamageMult"].snappedOutput.toString(), 1920/2 + 320, 1080/2 - 120 + 50, 60, true, "black");
-			
-			//Enemy Speed Slider
-			Display.drawText("Enemy Speed Multiplier", 1920/2 - "Enemy Speed Multiplier".length*60*0.55/2, 1080/2 + 60 - 40, 60, true, "black");
-			sliders["customEnemySpeedMult"].update();
-			Display.drawText(sliders["customEnemySpeedMult"].snappedOutput.toString(), 1920/2 + 320, 1080/2 + 60 + 50, 60, true, "black");
-
-			//Price Slider
-			Display.drawText("Price Multiplier", 1920/2 - "Price Multiplier".length*60*0.55/2, 1080/2 + 240 - 40, 60, true, "black");
-			sliders["customPriceMult"].update();
-			Display.drawText(sliders["customPriceMult"].snappedOutput.toString(), 1920/2 + 320, 1080/2 + 240 + 50, 60, true, "black");
-
-			//Continue Button
-			buttons["continue"].update();
-			if (buttons["continue"].isReleased()) {
-				Difficulty.enemyDamageMult = sliders["customEnemyDamageMult"].snappedOutput;
-				Difficulty.enemyHealthMult = sliders["customEnemyHealthMult"].snappedOutput;
-				Difficulty.enemySpeedMult = sliders["customEnemySpeedMult"].snappedOutput;
-				Difficulty.priceMult = sliders["customPriceMult"].snappedOutput;
-				player1 = new Player(100, 100, "red", "wadfs");
-				player2 = new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
-				Player.upgradesBought = {"playerOneWeapon": 0, "playerOneHealth": 0, "playerOneRegen": 0, "playerOneSpeed": 0, "playerOneJump": 0, "playerTwoWeapon": 0, "playerTwoHealth": 0, "playerTwoRegen": 0, "playerTwoSpeed": 0, "playerTwoJump": 0};
-				AudioPlayer.play("ambience", true);
-				scene = "initGame";
-			}
-			break;
+		//Win Gamestate
 		case "initWin":
 			clearUI();
-			AudioPlayer.play("win");
-			AnimationPlayer.load("educationShard", false, false);
-			AnimationPlayer.load("progressShard", false, false);
-			AnimationPlayer.load("serviceShard", false, false);
-			dialogueBoxes["diaBox"] = new DialogueBox(1920/2, 1080 * 3 / 4 + 80, 1920/2, 140);
-			dialogueBoxes["diaBox"].displayText("You've found the shard of service!\nYou've reassembled the FBLA logo. Congratulations!\nThanks for playing!", 50);
-			scene = "win";
+			Win.init();
 		case "win":
-			Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
-			if (!dialogueBoxes["diaBox"].update()) {
-				scene = "initSaveScore";
-			}
-			if (AnimationPlayer.currentAnimations.length == 0) {
-				Display.draw("shard3", 1920/2, 1080/2, 540, 480);
-			}
+			Win.update();
 			break;
+
+		//Lose Gamestate
 		case "initLose":
 			clearUI();
-			AnimationPlayer.clear();
-			AnimationPlayer.load("fadeIn");
-			AudioPlayer.play("lose");
-			Display.clear();
-			DynamicObject.clear();
-			Level.level = 1;
 			lastLevel = 1;
-			buttons["return"] = new Button("none", 1920/2, 1080/2 + 150, 1000, 144);
-			scene = "lose";
+			Lose.init();
 		case "lose":
-			Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
-			Display.drawText("you lost...", 1920/2 - "you lost...".length*60/2, 1080/2, 100, true, "black");
-			if (!AnimationPlayer.isPlaying("fadeIn")) {
-				Display.drawText("click to return", 1920/2 - "click to return".length*60/2, 1080/2 + 250, 100, true, "black");
-				buttons["return"].update();
-				if (buttons["return"].isReleased()) {
-					AnimationPlayer.clear();
-					scene = "initMenu";
-				}
-			}
+			Lose.update();
 			break;
+
+		//Scene Creator Gamestate
 		case "sceneCreator":
 			if (Keyboard.shiftPressed) {
 				Display.clear();
 				Scene.displayAll();
 				Scene.background = Display.imageData;
-				player1 = new Player(100, 100, "red", "wadfs");
-				player2 = new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
+				Game.player1 = new Player(100, 100, "red", "wadfs");
+				Game.player2 = new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
 				Level.spawnEntities();
 				scene = "game";
 			}
 			SceneBuilder.update();
 			break;
+
+		//Save Score Gamestate
 		case "initSaveScore":
 			clearUI();
-			textBoxes["box"] = new Textbox(1920/2, 1080/2, 580, 100);
-			textBoxes["box"].isSelected = true;
-			buttons["submit"] = new Button("saveScore", 1920/2, 1080/2 + 200, 385, 40);
+			SaveScore.textbox.isSelected = true;
 			scene = "saveScore";
 		case "saveScore":
-			Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
+			SaveScore.update();
+			/*Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
 			Display.drawText("Your Score: " + Math.round((player1.points + player2.points) * Difficulty.pointMultiplier).toString(), 1920/2 - ("Your Score: " + Math.round((player1.points + player2.points) * Difficulty.pointMultiplier).toString()).length * 40 * 0.55 / 2, 1920/2 - 300, 40, true, "white");
 			textBoxes["box"].update();
 			buttons["submit"].update();
 			if (buttons["submit"].isReleased() && textBoxes["box"].text != "") {
 				socket.emit("updateLeaderboard", [textBoxes["box"].text, Math.round((player1.points + player2.points) * Difficulty.pointMultiplier)]);
-				player1 = null;
-				player2 = null;
+				Game.player1 = null;
+				Game.player2 = null;
 				DynamicObject.dynamicObjects = [];
 				scene = "initMenu";
-			}
+			}*/
 			break;
+
+		//Leaderboard Gamestate
 		case "initLeaderboard":
 			clearUI();
 			socket.emit("getLeaderboard", null);
@@ -613,6 +285,8 @@ function updateGame() {
 			if (back.isReleased()) scene = back.destination;
 			leaderboard.update();
 			break;
+
+		//Other Gamestates
 		case "animationTest":
 			break;
 		default:
@@ -783,6 +457,10 @@ document.addEventListener("keyup", (event) => {
 
 document.addEventListener("readystatechange", () => {
 	Animation.compileTemplates();
+});
+
+document.addEventListener("sceneChange", (event) => {
+	scene = event.detail;
 });
 
 //------------------------------------------------------------------------------------//
