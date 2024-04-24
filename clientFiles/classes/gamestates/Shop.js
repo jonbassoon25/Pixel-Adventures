@@ -36,7 +36,14 @@ export class Shop extends Gamestate {
 	//Continue Button
 	
 	static continue = new Button("continue", 1920/2, 1080/2, 456 * 3/4, 64 * 3/4);
+	
+	//*********************************************************************//
+	//Private Static Methods
+	static #getCostOf(upgrade) {
+		return Math.round((6 + Player.upgradesBought[upgrade] * 4) * Difficulty.priceMult);
+	}
 
+	
 	//*********************************************************************//
 	//Public Static Methods - Must Have JSDocs
 	
@@ -44,7 +51,7 @@ export class Shop extends Gamestate {
 		super.init();
 		this.setScene("shop");
 	}
-
+	
 	static update() {
 		//Display Shop Background, player icons, and plaques
 		Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
@@ -53,58 +60,47 @@ export class Shop extends Gamestate {
 		Display.draw("redPlayer", 1920/2 - 800, 1080/2, 240, 240);
 		Display.draw("bluePlayerFlipped", 1920/2 + 800, 1080/2, 240, 240);
 
-		let p1WCost = Math.round((6 + Player.upgradesBought["playerOneWeapon"] * 4) * Difficulty.priceMult);
-		let p2WCost = Math.round((6 + Player.upgradesBought["playerTwoWeapon"] * 4) * Difficulty.priceMult);
-		let p1HCost = Math.round((6 + Player.upgradesBought["playerOneHealth"] * 4) * Difficulty.priceMult);
-		let p2HCost = Math.round((6 + Player.upgradesBought["playerTwoHealth"] * 4) * Difficulty.priceMult);
-		let p1RCost = Math.round((6 + Player.upgradesBought["playerOneRegen"] * 4) * Difficulty.priceMult);
-		let p2RCost = Math.round((6 + Player.upgradesBought["playerTwoRegen"] * 4) * Difficulty.priceMult);
-		let p1SCost = Math.round((6 + Player.upgradesBought["playerOneSpeed"] * 4) * Difficulty.priceMult);
-		let p2SCost = Math.round((6 + Player.upgradesBought["playerTwoSpeed"] * 4) * Difficulty.priceMult);
-		let p1JCost = Math.round((6 + Player.upgradesBought["playerOneJump"] * 4) * Difficulty.priceMult);
-		let p2JCost = Math.round((6 + Player.upgradesBought["playerTwoJump"] * 4) * Difficulty.priceMult);
+		let p1WCost = this.#getCostOf("playerOneWeapon");
+		let p2WCost = this.#getCostOf("playerTwoWeapon");
+		let p1HCost = this.#getCostOf("playerOneHealth");
+		let p2HCost = this.#getCostOf("playerTwoHealth");
+		let p1RCost = this.#getCostOf("playerOneRegen");
+		let p2RCost = this.#getCostOf("playerTwoRegen");
+		let p1SCost = this.#getCostOf("playerOneSpeed");
+		let p2SCost = this.#getCostOf("playerTwoSpeed");
+		let p1JCost = this.#getCostOf("playerOneJump");
+		let p2JCost = this.#getCostOf("playerTwoJump");
 
-		//Update Shop Buttons and price displays for Player 1
-		this.player1UpgradeWeapon.update();
+		//Update price displays for Player 1
 		Display.drawText(p1WCost.toString() + "￠", 1920/4 - 45 + 260, 1080/2 - 300 + 70, 40, true, "white");
-		this.player1UpgradeHealth.update();
 		Display.drawText(p1HCost.toString() + "￠", 1920/4 - 45 + 260, 1080/2 - 150 + 70, 40, true, "white");
-		this.player1UpgradeRegen.update();
 		Display.drawText(p1RCost.toString() + "￠", 1920/4 - 45 + 260, 1080/2 + 0 + 70, 40, true, "white");
-		this.player1UpgradeSpeed.update();
 		Display.drawText(p1SCost.toString() + "￠", 1920/4 - 45 + 260, 1080/2 + 150 + 70, 40, true, "white");
-		this.player1UpgradeJump.update();
 		Display.drawText(p1JCost.toString() + "￠", 1920/4 - 45 + 260, 1080/2 + 300 + 70, 40, true, "white");
 
-		//Update Shop Buttons and price displays for Player 2
-		this.player2UpgradeWeapon.update();
+		//Update price displays for Player 2
 		Display.drawText(p2WCost + "￠", 1920/4 * 3 + 30 - 260 - p2WCost.toString().length * 40 * 0.55, 1080/2 - 300 + 70, 40, true, "white");
-		this.player2UpgradeHealth.update();
 		Display.drawText(p2HCost + "￠", 1920/4 * 3 + 30 - 260 - p2HCost.toString().length * 40 * 0.55, 1080/2 - 150 + 70, 40, true, "white");
-		this.player2UpgradeRegen.update();
 		Display.drawText(p2RCost + "￠", 1920/4 * 3 + 30 - 260 - p2RCost.toString().length * 40 * 0.55, 1080/2 + 0 + 70, 40, true, "white");
-		this.player2UpgradeSpeed.update();
 		Display.drawText(p2SCost + "￠", 1920/4 * 3 + 30 - 260 - p2SCost.toString().length * 40 * 0.55, 1080/2 + 150 + 70, 40, true, "white");
-		this.player2UpgradeJump.update();
 		Display.drawText(p2JCost + "￠", 1920/4 * 3 + 30 - 260 - p2JCost.toString().length * 40 * 0.55, 1080/2 + 300 + 70, 40, true, "white");
-
-		this.continue.update();
+		
 		//Detect upgrade button presses and upgrade selected
 		//Player 1
-		if (this.player1UpgradeWeapon.isReleased() && Game.player1.coins >= p1WCost) { Game.player1.upgradeWeapon(); Game.player1.coins -= p1WCost; Player.upgradesBought["playerOneWeapon"]++; AudioPlayer.play("upgrade");}
-		if (this.player1UpgradeHealth.isReleased() && Game.player1.coins >= p1HCost) { Game.player1.upgradeHealth(); Game.player1.coins -= p1HCost; Player.upgradesBought["playerOneHealth"]++; AudioPlayer.play("upgrade");}
-		if (this.player1UpgradeRegen.isReleased() && Game.player1.coins >= p1RCost) { Game.player1.upgradeRegen(); Game.player1.coins -= p1RCost; Player.upgradesBought["playerOneRegen"]++; AudioPlayer.play("upgrade");}
-		if (this.player1UpgradeSpeed.isReleased() && Game.player1.coins >= p1SCost) { Game.player1.upgradeSpeed(); Game.player1.coins -= p1SCost; Player.upgradesBought["playerOneSpeed"]++; AudioPlayer.play("upgrade");}
-		if (this.player1UpgradeJump.isReleased() && Game.player1.coins >= p1JCost) { Game.player1.upgradeJump(); Game.player1.coins -= p1JCost;Player.upgradesBought["playerOneJump"]++; AudioPlayer.play("upgrade");}
+		if (this.player1UpgradeWeapon.subsistAsButton() && Game.player1.coins >= p1WCost) { Game.player1.upgradeWeapon(); Game.player1.coins -= p1WCost; Player.upgradesBought["playerOneWeapon"]++; AudioPlayer.play("upgrade");}
+		if (this.player1UpgradeHealth.subsistAsButton() && Game.player1.coins >= p1HCost) { Game.player1.upgradeHealth(); Game.player1.coins -= p1HCost; Player.upgradesBought["playerOneHealth"]++; AudioPlayer.play("upgrade");}
+		if (this.player1UpgradeRegen.subsistAsButton() && Game.player1.coins >= p1RCost) { Game.player1.upgradeRegen(); Game.player1.coins -= p1RCost; Player.upgradesBought["playerOneRegen"]++; AudioPlayer.play("upgrade");}
+		if (this.player1UpgradeSpeed.subsistAsButton() && Game.player1.coins >= p1SCost) { Game.player1.upgradeSpeed(); Game.player1.coins -= p1SCost; Player.upgradesBought["playerOneSpeed"]++; AudioPlayer.play("upgrade");}
+		if (this.player1UpgradeJump.subsistAsButton() && Game.player1.coins >= p1JCost) { Game.player1.upgradeJump(); Game.player1.coins -= p1JCost;Player.upgradesBought["playerOneJump"]++; AudioPlayer.play("upgrade");}
 
 		//Player 2
-		if (this.player2UpgradeWeapon.isReleased() && Game.player2.coins >= p2WCost) { Game.player2.upgradeWeapon();  Game.player2.coins -= p2WCost; Player.upgradesBought["playerTwoWeapon"]++; AudioPlayer.play("upgrade");}
-		if (this.player2UpgradeHealth.isReleased() && Game.player2.coins >= p2HCost) { Game.player2.upgradeHealth();  Game.player2.coins -= p2HCost; Player.upgradesBought["playerTwoHealth"]++; AudioPlayer.play("upgrade");}
-		if (this.player2UpgradeRegen.isReleased() && Game.player2.coins >= p2RCost) { Game.player2.upgradeRegen();  Game.player2.coins -= p2RCost;Player.upgradesBought["playerTwoRegen"]++; AudioPlayer.play("upgrade");}
-		if (this.player2UpgradeSpeed.isReleased() && Game.player2.coins >= p2SCost) { Game.player2.upgradeSpeed();  Game.player2.coins -= p2SCost; Player.upgradesBought["playerTwoSpeed"]++; AudioPlayer.play("upgrade");}
-		if (this.player2UpgradeJump.isReleased() && Game.player2.coins >= p2JCost) { Game.player2.upgradeJump();  Game.player2.coins -= p2JCost; Player.upgradesBought["playerTwoJump"]++; AudioPlayer.play("upgrade");}
+		if (this.player2UpgradeWeapon.subsistAsButton() && Game.player2.coins >= p2WCost) { Game.player2.upgradeWeapon();  Game.player2.coins -= p2WCost; Player.upgradesBought["playerTwoWeapon"]++; AudioPlayer.play("upgrade");}
+		if (this.player2UpgradeHealth.subsistAsButton() && Game.player2.coins >= p2HCost) { Game.player2.upgradeHealth();  Game.player2.coins -= p2HCost; Player.upgradesBought["playerTwoHealth"]++; AudioPlayer.play("upgrade");}
+		if (this.player2UpgradeRegen.subsistAsButton() && Game.player2.coins >= p2RCost) { Game.player2.upgradeRegen();  Game.player2.coins -= p2RCost;Player.upgradesBought["playerTwoRegen"]++; AudioPlayer.play("upgrade");}
+		if (this.player2UpgradeSpeed.subsistAsButton() && Game.player2.coins >= p2SCost) { Game.player2.upgradeSpeed();  Game.player2.coins -= p2SCost; Player.upgradesBought["playerTwoSpeed"]++; AudioPlayer.play("upgrade");}
+		if (this.player2UpgradeJump.subsistAsButton() && Game.player2.coins >= p2JCost) { Game.player2.upgradeJump();  Game.player2.coins -= p2JCost; Player.upgradesBought["playerTwoJump"]++; AudioPlayer.play("upgrade");}
 
-		if (this.continue.isReleased()) this.setScene("initGame");
+		if (this.continue.subsistAsButton()) this.setScene("initGame");
 
 		//Display Player Balances
 		Display.drawText("Player 1 Coins: " + Game.player1.coins.toString(), 240, 220, 40, true, "white");

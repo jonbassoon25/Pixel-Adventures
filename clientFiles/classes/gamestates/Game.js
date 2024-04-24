@@ -1,9 +1,11 @@
 //Util Imports
+import { Keyboard } from "../util/Keyboard.js";
 import { AnimationPlayer } from "../util/AnimationPlayer.js";
 import { Display } from "../util/Display.js";
 import { Difficulty } from "../util/Difficulty.js";
 import { Level } from "../util/Level.js";
 import { Scene } from "../util/Scene.js";
+import { SceneBuilder } from "../util/SceneBuilder.js";
 
 //UI Object Imports
 
@@ -124,7 +126,7 @@ export class Game extends Gamestate {
 				Display.drawText("Score: " + Math.round((this.player1.points + this.player2.points) * Difficulty.pointMultiplier).toString(), 1920/2 - ("Combined Points: " + Math.round((this.player1.points + this.player2.points) * Difficulty.pointMultiplier).toString()).length * 40 * 0.55 / 2, 50, 40, true, "white");
 
 				//Update trigger regions
-				TriggerRegion.update();
+				//TriggerRegion.update();
 				//(For Testing) Display player visual dimensions
 				//Display.markPlayerDisplay(this.player1, this.player2);
 				break;

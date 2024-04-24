@@ -1,12 +1,10 @@
-//Socket Communicator Import
-import { SocketCommunicator } from "../SocketCommunicator.js";
-
 //Util Imports
 import { Display } from "./Display.js"
 import { Keyboard } from "./Keyboard.js";
 import { Mouse } from "./Mouse.js";
 import { Scene } from "./Scene.js";
 import { SceneCreator } from "./SceneCreator.js";
+import { Util } from "./Util.js";
 
 //Game Object Imports
 import { ChestTile } from "../gameObjects/ChestTile.js";
@@ -103,12 +101,12 @@ export class SceneBuilder {
 	}
 
 	static #save() {
-		SocketCommunicator.send("saveScene", ["lastSaved", this.structure]);
+		document.dispatchEvent(new CustomEvent("emit", {"detail": {"name": "lastSaved", "data": this.structure}}));
 		console.log("saving scene");
 	}
 
 	static #load(name = "lastSaved") {
-		SocketCommunicator.send("loadScene", name);
+		document.dispatchEvent(new CustomEvent("emit", {"detail": {"name": "loadScene", "data": name}}));
 		this.init();
 		this.clear();
 		Scene.structure = null;
@@ -309,7 +307,8 @@ export class SceneBuilder {
 		//set all shaderTiles to have maximum darkness
 		for (let i = 0; i < this.shaderStructure.length; i++) {
 			for (let j = 0; j < this.shaderStructure[i].length; j++) {
-				this.shaderStructure[i][j].shaderLevel = 20;
+				//this.shaderStructure[i][j].shaderLevel = 20;
+				this.shaderStructure[i][j].shaderLevel = 1;
 			}
 		}
 
@@ -317,11 +316,11 @@ export class SceneBuilder {
 		for (let i = 0; i < lightTiles.length; i++) {
 			let light = lightTiles[i];
 			//loop through the box around every light tile (determined by radius) and change the shaderTile values on a linear scale based on their distance from the light source. If not 20, assign the lighter of the 2
-			for (let j = Math.max(2 * (light.row - light.radius + 1), 0); j < this.shaderStructure.length && j < 2 * (light.row + light.radius); j++) {
-				for (let i = Math.max(2 * (light.col - light.radius + 1), 0); i < this.shaderStructure[j].length && i < 2 * (light.col + light.radius); i++) {
+			for (let j = Math.max(Scene.lightQuality * (light.row - light.radius + 1), 0); j < this.shaderStructure.length && j < Scene.lightQuality * (light.row + light.radius); j++) {
+				for (let i = Math.max(Scene.lightQuality * (light.col - light.radius + 1), 0); i < this.shaderStructure[j].length && i < Scene.lightQuality * (light.col + light.radius); i++) {
 					let shaderTile = this.shaderStructure[j][i];
-					
-					let shaderLevel = Math.min(-1 + (20 - light.strength) + Math.round(20 * (Math.sqrt(Math.pow((0.5 * (shaderTile.col - 1/2)) - light.col, 2) + Math.pow((0.5 * (shaderTile.row - 1/2)) - light.row, 2))) / light.radius), shaderTile.shaderLevel);
+					let shaderLevel = (Util.pythagorean(((1/Scene.lightQuality) * (shaderTile.col - Scene.lightQuality/2 + 1/2)) - light.col, ((1/Scene.lightQuality) * (shaderTile.row - Scene.lightQuality/2 + 1/2)) - light.row)/light.radius) * 20/light.strength;
+					shaderLevel = Math.min(shaderLevel, shaderTile.shaderLevel);
 					shaderTile.shaderLevel = shaderLevel;
 				}
 			}

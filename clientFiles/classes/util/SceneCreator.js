@@ -1,3 +1,6 @@
+//Util Imports
+import { Scene } from "../util/Scene.js";
+
 //Game Object Imports
 import { LightTile } from "../gameObjects/LightTile.js";
 import { SceneTile } from "../gameObjects/SceneTile.js";
@@ -82,14 +85,12 @@ export class SceneCreator {
 	*/
 	static createShaderStructure(width, height) {
 		let structure = [];
-			
-		for (let row = 0; row < height * 2; row++) {
+		for (let row = 0; row < height * Scene.lightQuality; row++) {
 			structure.push([]);
-			for (let col = 0; col < width * 2; col++) {
+			for (let col = 0; col < width * Scene.lightQuality; col++) {
 				structure[row].push(new ShaderTile(col, row));
 			}
 		}
-
 		return structure;
 	}
 

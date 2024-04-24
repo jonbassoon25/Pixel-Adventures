@@ -19,22 +19,17 @@ Created: 11.4.23
 //Util Imports
 import { Animation } from "./classes/util/Animation.js";
 import { AnimationPlayer } from "./classes/util/AnimationPlayer.js";
-import { Difficulty } from "./classes/util/Difficulty.js";
 import { Display } from "./classes/util/Display.js";
 import { Keyboard } from "./classes/util/Keyboard.js";
 import { Level } from "./classes/util/Level.js";
 import { Mouse } from "./classes/util/Mouse.js";
 import { Scene } from "./classes/util/Scene.js";
 import { SceneBuilder } from "./classes/util/SceneBuilder.js";
-import { AudioPlayer } from "./classes/util/AudioPlayer.js";
+import { Util } from "./classes/util/Util.js";
 
 //UI Object Imports
-import { Button } from "./classes/UIObjects/Button.js";
-import { DialogueBox } from "./classes/UIObjects/DialogueBox.js"
+import { Leaderboard } from "./classes/UIObjects/Leaderboard.js";
 import { PauseMenu } from "./classes/UIObjects/PauseMenu.js";
-import { Slider } from "./classes/UIObjects/Slider.js";
-import { Textbox } from "./classes/UIObjects/Textbox.js";
-import { BackButton } from "./classes/UIObjects/BackButton.js";
 
 //Gamestate Imports
 import { Cutscene } from "/classes/gamestates/Cutscene.js";
@@ -42,7 +37,7 @@ import { Dialogue } from "./classes/gamestates/Dialogue.js";
 import { DifficultySelect } from "./classes/gamestates/DifficultySelect.js";
 import { Game } from "./classes/gamestates/Game.js";
 import { Help } from "./classes/gamestates/Help.js";
-import { Leaderboard } from "./classes/gamestates/Leaderboard.js";
+import { Scoreboard } from "./classes/gamestates/Scoreboard.js";
 import { Lose } from "./classes/gamestates/Lose.js";
 import { Menu } from "./classes/gamestates/Menu.js";
 import { SaveScore } from "./classes/gamestates/SaveScore.js";
@@ -54,12 +49,10 @@ import { ChestTile } from "./classes/gameObjects/ChestTile.js";
 import { Door } from "./classes/gameObjects/Door.js";
 import { LightTile } from "./classes/gameObjects/LightTile.js";
 import { SceneTile } from "./classes/gameObjects/SceneTile.js";
-import { Grave } from "./classes/gameObjects/Grave.js";
 
 //Game Entity Imports
 import { DynamicObject } from "./classes/gameEntities/DynamicObject.js";
 import { Player } from "./classes/gameEntities/Player.js";
-import { Item } from "./classes/gameEntities/Item.js";
 
 
 //------------------------------------------------------------------------------------//
@@ -73,16 +66,6 @@ const socket = io();
 //------------------------------------------------------------------------------------//
 //Variables
 
-let buttons = {};
-
-let sliders = {};
-
-let textBoxes = {};
-
-let dialogueBoxes = {};
-
-let leaderboard = null;
-
 let lastFrameTime = new Date().getTime();
 
 let lastLevel = 1;
@@ -90,28 +73,15 @@ let lastLevel = 1;
 //------------------------------------------------------------------------------------//
 //Util Functions
 
-function clearUI() {
-	buttons = {};
-	sliders = {};
-	textBoxes = {};
-	dialogueBoxes = {};
-	AnimationPlayer.clear();
-}
-
 //------------------------------------------------------------------------------------//
 //Main Function
 
 //State variable
-let scene = "initMenu";
-let player1;
-let player2;
-let back = new BackButton(150, 100);
+let scene = "initClient";
 
 function updateGame() {
 	//Update Display values
 	Display.calcScreenSize();
-
-	AnimationPlayer.playUnderlayAnimations();
 
 	if (Mouse.button2Pressed) {
 		let mouse = [...Display.inverseCalcElementDimensions(Mouse.x, Mouse.y, 0, 0)];
@@ -124,7 +94,6 @@ function updateGame() {
 	if (Level.level == 0) {
 		Level.level = 1;
 		lastLevel = 1;
-		clearUI();
 		DynamicObject.clear();
 		scene = "initMenu";
 	}
@@ -139,11 +108,22 @@ function updateGame() {
 	}
 	
 	switch (scene) {
-		//Menu Gamestate
-		case "initMenu":
-			clearUI();
+		//Initializes menu and other client elements
+		case "initClient":
+			Menu.init();
 			Game.player1 = null;
 			Game.player2 = null;
+			Player.resetData();
+
+			AnimationPlayer.remove("fadeIn");
+			AnimationPlayer.load("menuFadeIn");
+			scene = "menu";
+			break;
+		//Menu Gamestate
+		case "initMenu":
+			Game.player1 = null;
+			Game.player2 = null;
+			DynamicObject.dynamicObjects = [];
 			Player.resetData();
 			Menu.init();
 		case "menu":
@@ -208,7 +188,6 @@ function updateGame() {
 
 		//Shop Gamestate
 		case "initShop":
-			clearUI();
 			Shop.init();
 		case "shop":
 			Shop.update();
@@ -223,7 +202,6 @@ function updateGame() {
 
 		//Win Gamestate
 		case "initWin":
-			clearUI();
 			Win.init();
 		case "win":
 			Win.update();
@@ -231,7 +209,6 @@ function updateGame() {
 
 		//Lose Gamestate
 		case "initLose":
-			clearUI();
 			lastLevel = 1;
 			Lose.init();
 		case "lose":
@@ -254,36 +231,18 @@ function updateGame() {
 
 		//Save Score Gamestate
 		case "initSaveScore":
-			clearUI();
 			SaveScore.textbox.isSelected = true;
-			scene = "saveScore";
+			SaveScore.init();
+			break;
 		case "saveScore":
 			SaveScore.update();
-			/*Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
-			Display.drawText("Your Score: " + Math.round((player1.points + player2.points) * Difficulty.pointMultiplier).toString(), 1920/2 - ("Your Score: " + Math.round((player1.points + player2.points) * Difficulty.pointMultiplier).toString()).length * 40 * 0.55 / 2, 1920/2 - 300, 40, true, "white");
-			textBoxes["box"].update();
-			buttons["submit"].update();
-			if (buttons["submit"].isReleased() && textBoxes["box"].text != "") {
-				socket.emit("updateLeaderboard", [textBoxes["box"].text, Math.round((player1.points + player2.points) * Difficulty.pointMultiplier)]);
-				Game.player1 = null;
-				Game.player2 = null;
-				DynamicObject.dynamicObjects = [];
-				scene = "initMenu";
-			}*/
 			break;
 
 		//Leaderboard Gamestate
 		case "initLeaderboard":
-			clearUI();
-			socket.emit("getLeaderboard", null);
-			Leaderboard.data = null;
-			leaderboard = new Leaderboard(1920/2, 1080/2, 780, 1140);
-			scene = "leaderboard";
+			Scoreboard.init();
 		case "leaderboard":
-			Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
-			back.update();
-			if (back.isReleased()) scene = back.destination;
-			leaderboard.update();
+			Scoreboard.update();
 			break;
 
 		//Other Gamestates
@@ -463,12 +422,12 @@ document.addEventListener("sceneChange", (event) => {
 	scene = event.detail;
 });
 
+document.addEventListener("emit", (event) => {
+	socket.emit(event.detail["name"], event.detail["data"]);
+});
+
 //------------------------------------------------------------------------------------//
 //Server Events
-
-export function sendRequest(name, data) {
-	socket.emit(name, data);
-}
 
 //Catch scene from server
 socket.on("scene", (data) => {
@@ -496,7 +455,6 @@ socket.on("scene", (data) => {
 	
 	SceneBuilder.structure = structure;
 	SceneBuilder.shaderStructure = Scene.shaderStructure;
-	
 	console.log("recieved");
 });
 

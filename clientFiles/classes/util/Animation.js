@@ -1,6 +1,5 @@
 //Util Imports
 import { Keyframe } from "./Keyframe.js";
-import { textures } from "./Textures.js";
 
 //Animation Class
 export class Animation {
@@ -10,21 +9,6 @@ export class Animation {
 
     //Templates formatted as {"name": keyframe properties dictionary}
     static templates = {
-		"dictTest": [ //initial keyframe requires "image", "initialPosition", "initialDimensions", "frames"
-			{
-				"image": "redPlayer",
-			 	"initialPosition": [50, 50],
-			 	"finalPosition": [100, 500],
-			 	"initialDimensions": [0,0],
-			 	"finalDimensions": [500, 500],
-			 	"frames": 120,
-			 	"transitionType": "sinusoidal"
-			},
-			{
-				"finalPosition": [50, 50], 
-				"finalDimensions": [0, 0]
-			}
-		],
 		"pano": [ //initial keyframe requires "image", "initialPosition", "initialDimensions", "frames"
 			{
 				"image": "mainMenuPanoTinted",
@@ -35,9 +19,29 @@ export class Animation {
 			},
 			{
 				"finalPosition": [1920/2, 30],
-				"frames": 2100,
+				"frames": 1050,
 				"transitionType": "sinusoidal"
 			},
+		],
+		"menuFadeIn": [
+			{
+				"image": "shader_20", "initialPosition": [1920/2, 1080/2], "initialDimensions": [1920, 1080], "frames": 90
+			},
+			{"image": "shader_19", "frames": 4}, {"image": "shader_18"}, {"image": "shader_17"}, {"image": "shader_16"},
+			{"image": "shader_15"}, {"image": "shader_14"}, {"image": "shader_13"}, {"image": "shader_12"},
+			{"image": "shader_11"}, {"image": "shader_10"}, {"image": "shader_09"}, {"image": "shader_08"},
+			{"image": "shader_07"}, {"image": "shader_06"}, {"image": "shader_05"}, {"image": "shader_04"},
+			{"image": "shader_03"}, {"image": "shader_02"}, {"image": "shader_01"}, {"image": "shader_00"}
+		],
+		"fadeIn": [
+			{
+				"image": "shader_20", "initialPosition": [1920/2, 1080/2], "initialDimensions": [1920, 1080], "frames": 4
+			},
+			{"image": "shader_19"}, {"image": "shader_18"}, {"image": "shader_17"}, {"image": "shader_16"},
+			{"image": "shader_15"}, {"image": "shader_14"}, {"image": "shader_13"}, {"image": "shader_12"},
+			{"image": "shader_11"}, {"image": "shader_10"}, {"image": "shader_09"}, {"image": "shader_08"},
+			{"image": "shader_07"}, {"image": "shader_06"}, {"image": "shader_05"}, {"image": "shader_04"},
+			{"image": "shader_03"}, {"image": "shader_02"}, {"image": "shader_01"}, {"image": "shader_00"}
 		],
 		"fadeOut": [
 			{
@@ -48,16 +52,6 @@ export class Animation {
 			{"image": "shader_09"}, {"image": "shader_10"}, {"image": "shader_11"}, {"image": "shader_12"},
 			{"image": "shader_13"}, {"image": "shader_14"}, {"image": "shader_15"}, {"image": "shader_16"},
 			{"image": "shader_17"}, {"image": "shader_18"}, {"image": "shader_19"}, {"image": "shader_20"}
-		], 
-		"fadeIn": [
-			{
-				"image": "shader_20", "initialPosition": [1920/2, 1080/2], "initialDimensions": [1920, 1080], "frames": 60
-			},
-			{"image": "shader_19", "frames": 4}, {"image": "shader_18"}, {"image": "shader_17"}, {"image": "shader_16"},
-			{"image": "shader_15"}, {"image": "shader_14"}, {"image": "shader_13"}, {"image": "shader_12"},
-			{"image": "shader_11"}, {"image": "shader_10"}, {"image": "shader_09"}, {"image": "shader_08"},
-			{"image": "shader_07"}, {"image": "shader_06"}, {"image": "shader_05"}, {"image": "shader_04"},
-			{"image": "shader_03"}, {"image": "shader_02"}, {"image": "shader_01"}, {"image": "shader_00"}
 		],
 		"level1Shard": [
 			{
@@ -153,20 +147,20 @@ export class Animation {
 				let currentKeyframe = currentTemplate[j];
 				let previousKeyframe;
 				if (j == 0) {
+					//Needed elements in animation template
 					if (currentKeyframe["image"] == undefined) {
-						console.error("No Initial Image in Animation Template.\n\t" + Object.keys(this.templates)[i]);
-						continue;
-					}
-					if (currentKeyframe["finalPosition"] == undefined) {
-						currentKeyframe["finalPosition"] = currentKeyframe["initialPosition"];
+						throw new SyntaxError("\nNo Initial Image in Animation Template: " + Object.keys(this.templates)[i]);
 					}
 					if (currentKeyframe["initialPosition"] == undefined) {
-						console.error("No Initial Position in Animation Template.\n\t" + Object.keys(this.templates)[i]);
-						continue;
+						throw new SyntaxError("\nNo Initial Position in Animation Template: " + Object.keys(this.templates)[i]);
 					}
 					if (currentKeyframe["initialDimensions"] == undefined) {
-						console.error("No Initial Dimensions in Animation Template.\n\t" + Object.keys(this.templates)[i]);
-						continue;
+						throw new SyntaxError("\nNo Initial Dimensions in Animation Template: " + Object.keys(this.templates)[i]);
+					}
+
+					//Implicitly defined elements
+					if (currentKeyframe["finalPosition"] == undefined) {
+						currentKeyframe["finalPosition"] = currentKeyframe["initialPosition"];
 					}
 					if (currentKeyframe["finalDimensions"] == undefined) {
 						currentKeyframe["finalDimensions"] = currentKeyframe["initialDimensions"];
@@ -206,8 +200,7 @@ export class Animation {
 				}
 
 				if (currentKeyframe["endFrame"] == undefined && currentKeyframe["frames"] == undefined) {
-					console.error("No Frames in Animation Template.\n\t" + Object.keys(this.templates)[i]);
-					continue;
+					throw new SyntaxError("\nNo Frames in Animation Template: " + Object.keys(this.templates)[i]);
 				} else if (currentKeyframe["endFrame"] == undefined) {
 					currentKeyframe["endFrame"] = currentKeyframe["startFrame"] + currentKeyframe["frames"];
 				}
@@ -215,6 +208,7 @@ export class Animation {
 				this.templates[Object.keys(this.templates)[i]][j] = new Keyframe(currentKeyframe["image"], currentKeyframe["initialPosition"], currentKeyframe["finalPosition"], currentKeyframe["initialDimensions"], currentKeyframe["finalDimensions"], currentKeyframe["startFrame"], currentKeyframe["endFrame"], currentKeyframe["transitionType"]);
 			}
 		}
+		//Templates have compiled successfully
 		this.compiled = true;
 	}
 
@@ -254,8 +248,8 @@ export class Animation {
             }
         }
 		//No frame was drawn, draw final frame
-		let fk = this.keyframes[this.keyframes.length - 1];
-		fk.draw(fk.endFrame);
+		let finalKeyframe = this.keyframes[this.keyframes.length - 1];
+		finalKeyframe.draw(finalKeyframe.endFrame);
         //No frame was drawn, return false unless this animation loops, in which case reset frames and call update() again
         //Don't let frames be equal to zero because that can cause stack overflow errors
         if (this.loops && this.frames != 0) {

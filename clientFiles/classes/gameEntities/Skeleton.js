@@ -19,7 +19,7 @@ export class Skeleton extends Enemy {
 		super("none", x, y, 16, 52, 2, 50, 120, 300, 0.75);
 		this.targetCompleteDistance = 50;
 		this.visualWidth = 80;
-		this.visualHeight = 80;
+		this.visualHeight = 75;
 		this.weapon = new Sword(this, this.damage);
 		this.weapon.animations["attack"]["40"] = "sword+0";
 		this.weapon.relY = 6;

@@ -1,5 +1,4 @@
 import { Scene } from "./Scene.js";
-import { SocketCommunicator } from "../SocketCommunicator.js";
 import { Coin } from "../gameEntities/Coin.js";
 import { Slime } from "../gameEntities/Slime.js";
 import { Skeleton } from "../gameEntities/Skeleton.js";
@@ -14,7 +13,7 @@ export class Level {
 		TriggerRegion.clear();
 		Scene.structure = null;
 		Scene.shaderStructure = null;
-		SocketCommunicator.send("loadScene", "level" + level.toString());
+		document.dispatchEvent(new CustomEvent("emit", {"detail": {"name": "loadScene", "data": "level" + level.toString()}}));
 	}
 	static spawnEntities(level = Level.level) {
 		switch (level) {

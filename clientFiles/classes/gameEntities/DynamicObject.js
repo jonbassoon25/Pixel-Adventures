@@ -4,6 +4,7 @@ import { Util } from "../util/Util.js";
 import { Vector } from "../util/Vector.js";
 import { VisualObject } from "../util/VisualObject.js";
 import { Enemy } from "./Enemy.js";
+import { Display } from "../util/Display.js";
 
 //Class DynamicObject
 export class DynamicObject extends VisualObject {
@@ -31,6 +32,7 @@ export class DynamicObject extends VisualObject {
 	static drawObjects() {
 		for (let i = 0; i < this.dynamicObjects.length; i++) {
 			this.dynamicObjects[i].draw();
+			//Display.draw("visualDimensions", this.dynamicObjects[i].visualX, this.dynamicObjects[i].visualY, this.dynamicObjects[i].visualWidth, this.dynamicObjects[i].visualHeight);
 		}
 	}
 	

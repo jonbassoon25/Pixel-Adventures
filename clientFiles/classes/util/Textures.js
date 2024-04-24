@@ -3,11 +3,11 @@ function loadAssets() {
 	let foldersToLoad = {};
 	let textures = {};
 	//Assign folders to load
-	foldersToLoad["shaders"] = ["shader_00", "shader_01", "shader_02", "shader_03", "shader_04", "shader_05", "shader_06", "shader_07", "shader_08", "shader_09", "shader_10", "shader_11", "shader_12", "shader_13", "shader_14", "shader_15", "shader_16", "shader_17", "shader_18", "shader_19", "shader_20"];
+	foldersToLoad["shaders"] = ["shader_black"];
 	foldersToLoad["tiles"] = ["stoneBrick", "rottedWoodPlanks", "vines", "blueTile", "redTile", "blackTile", "insetLantern", "chest", "chestOpened", "wood", "door"];
 	foldersToLoad["menu"] = ["mainMenuPanoTinted", "plaque", "banner", "stoneBrickBackground", "woodenPlaque", "leaderboardPlaque", "upgradePlaque", "selectionBox"];
 	foldersToLoad["buttons"] = ["buttonHovered", "buttonPressed", "playButton", "back", "cog", "leaderboard", "upgradeJump", "upgradeMaxHealth", "upgradeRegen", "upgradeSpeed", "upgradeWeapon", "continue", "easy", "medium", "hard", "custom", "sliderFrame", "sliderHandle", "saveScore", "textBox", "escape", "musicEnabled", "musicDisabled", "plus", "minus", "help"];
-	foldersToLoad["util"] = ["placeholder", "crosshair"];
+	foldersToLoad["util"] = ["placeholder", "crosshair", "visualDimensions"];
 	foldersToLoad["player"] = ["bluePlayer", "bluePlayerJump", "bluePlayerWalk", "blueGhost", "blueGhostAlt", "redPlayer", "redPlayerJump", "redPlayerWalk", "redGhost", "redGhostAlt", "redGrave", "blueGrave"];
 	foldersToLoad["player/flipped"] = ["blueGhostAltFlipped", "blueGhostFlipped", "bluePlayerFlipped", "bluePlayerJumpFlipped", "bluePlayerWalkFlipped", "redGhostAltFlipped", "redGhostFlipped", "redPlayerFlipped", "redPlayerJumpFlipped", "redPlayerWalkFlipped"];
 	foldersToLoad["items"] = ["coin", "educationShard", "progressShard", "serviceShard", "fbla", "shard1", "shard2", "shard3"];

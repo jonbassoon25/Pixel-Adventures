@@ -50,7 +50,7 @@ export class Player extends DynamicObject {
 		this.health = this.maxHealth;
 		this.regen = 0.1 + Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Regen"] * 0.02;
 		this.isDead = false;
-		this.visualWidth = 80;
+		this.visualWidth = 65;
 		this.visualHeight = 80;
 		this.weapon = new Sword(this, 20);
 		this.weapon.damage += Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Weapon"] * 5;

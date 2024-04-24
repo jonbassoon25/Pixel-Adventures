@@ -1,5 +1,5 @@
 /*
-Created by Jonathan Hanson, Zac Young
+Created by Jonathan Hanson, Zac Young, Mariasha Taariq
 
 index.js
 

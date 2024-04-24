@@ -9,21 +9,24 @@ const ctx = canvas.getContext("2d", {willReadFrequently: true});
 
 export class Display {
 	//Static Variables
-	
+
 	static sizeMult = 1;
 	static horizontalOffset = 0;
 	static verticalOffset = 0;
 	static resized = false;
 	static frames = 0;
 	static fps = 0;
-	
+
 
 	//*********************************************************************//
 	//Public Static Methods
 
+	static setAlpha(num) {
+		ctx.globalAlpha = num;
+	}
 	/** 
-  	 * Updates Display variables to reflect whatever the user's screen diminsions are
-  	 */
+	 * Updates Display variables to reflect whatever the user's screen diminsions are
+	 */
 	static calcScreenSize() {
 		let prevValues = [this.sizeMult, this.horizontalOffset, this.verticalOffset];
 		//Make sure that the canvas covers the whole screen
@@ -45,13 +48,13 @@ export class Display {
 	}
 
 	/** 
-  	 * Calculates the relative dimensions of an element based on the screen dimensions
+	 * Calculates the relative dimensions of an element based on the screen dimensions
 	 * @param {number} x - The absolute x position of the element
-  	 * @param {number} y - The absolute y position of the element
+	 * @param {number} y - The absolute y position of the element
 	 * @param {number} width - The absolute width of the element
-  	 * @param {number} height - The absolute height of the element
+	 * @param {number} height - The absolute height of the element
 	 * @returns {number[]} The relative dimensions of the element [x, y, width, height]
- 	 */
+	 */
 	static * calcElementDimensions(x, y, width, height) {
 		yield (x - width/2) * this.sizeMult + this.horizontalOffset;
 		yield (y - height/2) * this.sizeMult + this.verticalOffset;
@@ -72,13 +75,13 @@ export class Display {
 	}
 
 	/** 
-  	 * Calculates the absolute dimensions of an element based on the screen dimensions
+	 * Calculates the absolute dimensions of an element based on the screen dimensions
 	 * @param {number} x - The relative x position of the element
-  	 * @param {number} y - The relative y position of the element
+	 * @param {number} y - The relative y position of the element
 	 * @param {number} width - The relative width of the element
-  	 * @param {number} height - The relative height of the element
+	 * @param {number} height - The relative height of the element
 	 * @returns {number[]} The absolute dimensions of the element [x, y, width, height]
- 	 */
+	 */
 	static * inverseCalcElementDimensions(x, y, width, height) {
 		yield (x - this.horizontalOffset) / this.sizeMult + width/2;
 		yield (y - this.verticalOffset) / this.sizeMult + height/2;
@@ -126,14 +129,28 @@ export class Display {
 		//y = canvas.height - y;
 		//Determine if the image given needs to be taken from textures
 		if (typeof image === "string") {
-			if (!flipped) {
-				ctx.drawImage(textures[image], x, y, width, height);
-			} else {
-				ctx.drawImage(textures[image + "Flipped"], x, y, width, height);
+			if (image.length == "shader_##".length && image.substring(0, "shader_".length) == "shader_") {
+				//Draw the shader
+				this.setAlpha(Number(image.substring(image.length - 2)) * 5 / 100);
+				//console.log("alpha" + Number(image.substring(image.length - 2)));
+				ctx.drawImage(textures["shader_black"], x, y, width, height);
+				this.setAlpha(1);
+				return;
 			}
+			if (flipped) {
+				image += "Flipped";
+			}
+			if (textures[image] == undefined) {
+				console.error("Image " + image + " Not Found.");
+				return;
+			}
+			ctx.drawImage(textures[image], x, y, width, height);
+
 		//The image is a plain image
-		} else {
+		} else if (image instanceof Image) {
 			ctx.drawImage(image, x, y, width, height);
+		} else {
+			console.error("Data not recognized as string or Image. " + image);
 		}
 	}
 

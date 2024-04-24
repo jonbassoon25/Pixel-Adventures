@@ -62,6 +62,13 @@ export class Util {
 		return Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals);
 	}
 
+	static square(num) {
+		return Math.pow(num, 2);
+	}
+
+	static pythagorean(a, b) {
+		return Math.sqrt(this.square(a) + this.square(b));
+	}
 	/** 
 	@param {number} num1 - The first number
 	@param {number} num2 - The second number

@@ -1,6 +1,8 @@
 //Util Imports
+import { Display } from "../util/Display.js";
 
 //UI Object Imports
+import { BackButton } from "../UIObjects/BackButton.js";
 import { Leaderboard } from "../UIObjects/Leaderboard.js";
 
 //Gamestate Imports
@@ -16,6 +18,8 @@ export class Scoreboard extends Gamestate {
 
 	static leaderboard = new Leaderboard(1920/2, 1080/2, 780, 1140);
 
+	static backButton = new BackButton(150, 100);
+
 	//*********************************************************************//
 	//Public Static Methods - Must Have JSDocs
 
@@ -29,7 +33,7 @@ export class Scoreboard extends Gamestate {
 	static update() {
 		Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
 		
-		if (back.subsistAsButton()) {
+		if (this.backButton.subsistAsButton()) {
 			this.setScene("initMenu");
 		}
 		

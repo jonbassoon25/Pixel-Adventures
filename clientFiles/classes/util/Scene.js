@@ -15,6 +15,8 @@ export class Scene {
 	static tileSize = 40;
 	static background = null;
 	static shadersToUpdate = [];
+	//Must be in function 2^x power. x >= 1. x is an element of all integers. Recommended under 8
+	static lightQuality = 4;
 
 	//*********************************************************************//
 	//Public Static Methods
@@ -64,9 +66,9 @@ export class Scene {
 			for (let j = 0; j < this.structure.length; j++) {
 				for (let k = 0; k < this.structure[j].length; k++) {
 					if (objects[i].isVisualColliding(this.structure[j][k])) {
-						for (let l = 0; l < 2; l++) {
-							for (let n = 0; n < 2; n++) {
-								Scene.shaderStructure[j * 2 + l][k * 2 + n].update();
+						for (let l = 0; l < this.lightQuality; l++) {
+							for (let n = 0; n < this.lightQuality; n++) {
+								Scene.shaderStructure[j * this.lightQuality + l][k * this.lightQuality + n].update();
 							}
 						}
 					}
@@ -110,9 +112,9 @@ export class Scene {
 						if (this.shaderStructure == null) {
 							continue;
 						}
-						for (let l = 0; l < 2; l++) {
-							for (let n = 0; n < 2; n++) {
-								this.shadersToUpdate = Util.combine(this.shadersToUpdate, [this.shaderStructure[j * 2 + l][k * 2 + n]]);
+						for (let l = 0; l < this.lightQuality; l++) {
+							for (let n = 0; n < this.lightQuality; n++) {
+								this.shadersToUpdate = Util.combine(this.shadersToUpdate, [this.shaderStructure[j * this.lightQuality + l][k * this.lightQuality + n]]);
 							}
 						}
 					}
@@ -170,23 +172,13 @@ export class Scene {
 		if (this.structure == null) {
 			return;
 		}
-		for (let i = 0; i < this.structure.length; i += 0.5) {
-			for (let j = 0; j < this.structure[0].length; j += 0.5) {
+		for (let i = 0; i < this.structure.length; i += 1/Scene.lightQuality) {
+			for (let j = 0; j < this.structure[0].length; j += 1/Scene.lightQuality) {
 				if (i % 1 == 0 && j % 1 == 0) {
 					this.structure[i][j].update();
-					if (this.structure[i][j] instanceof Door) {
-						//update the 2 shader tiles above
-						//this.shaderStructure[(i - 1) * 2 + 1][j * 2].update();
-					}
 				}
-				if (this.shaderStructure == null) {
-					j += 0.5; //improves efficiency by 25% when shader structure doesn't exist
-					continue;
-				}
-				this.shaderStructure[i * 2][j * 2].update();
-			}
-			if (this.shaderStructure == null) {
-				i += 0.5; //improves efficiency by 25% when shader structure doesn't exist
+				//console.log("updated shader tile at " + [j * Scene.lightQuality, i * Scene.lightQuality]);
+				this.shaderStructure[i * Scene.lightQuality][j * Scene.lightQuality].update();
 			}
 		}
 		this.updateDoor();
@@ -198,9 +190,9 @@ export class Scene {
 				if (this.structure[i][j] instanceof Door) {
 					this.structure[i - 1][j].update();
 					this.structure[i][j].update();
-					for (let k = 0; k < 4; k++) {
-						for (let l = 0; l < 2; l++) {
-							this.shadersToUpdate = Util.combine(this.shadersToUpdate, [this.shaderStructure[(i - 1) * 2 + k][j * 2 + l]]);
+					for (let k = 0; k < 2 * this.lightQuality; k++) {
+						for (let l = 0; l < this.lightQuality; l++) {
+							this.shadersToUpdate = Util.combine(this.shadersToUpdate, [this.shaderStructure[(i - 1) * this.lightQuality + k][j * this.lightQuality + l]]);
 						}
 					}
 				}

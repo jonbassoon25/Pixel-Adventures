@@ -25,7 +25,7 @@ export class Textbox extends VisualObject {
 		//The textbox is not selected by the user
 		this.isSelected = false;
 		//Calculate and set the character limit of the textbox
-		this.charLimit = Math.floor((this.width - 10) / ((this.height - 5) * 0.55));
+		this.charLimit = Math.floor((this.width - 10) / ((this.height - 5) * 0.576));
 	}
 
 	//*********************************************************************//
@@ -77,7 +77,7 @@ export class Textbox extends VisualObject {
 			this.#logInput();
 			//Display flashing position indicator
 			if (Display.frames % 60 < 30) {
-				Display.draw("shader_20", this.x - this.width/2 + 20 + this.text.length * (this.height - 5) * 0.58, this.y, 15, this.height * 3/4);
+				Display.draw("shader_20", this.x - this.width/2 + 20 + this.text.length * (this.height - 5) * 0.576, this.y, 15, this.height * 3/4);
 			}
 		}
 		//Draw the textbox text

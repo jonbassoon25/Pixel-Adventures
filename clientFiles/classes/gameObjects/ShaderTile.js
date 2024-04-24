@@ -12,7 +12,7 @@ export class ShaderTile extends VisualObject {
 	 * @param {number} row - Row of this ShaderTile
 	 */
 	constructor(col, row) {
-		super("none", 0, 0, Scene.tileSize/2, Scene.tileSize/2);
+		super("none", 0, 0, Scene.tileSize/Scene.lightQuality, Scene.tileSize/Scene.lightQuality);
 		this.col = col;
 		this.row = row;
 		this.level = 0;
@@ -23,18 +23,20 @@ export class ShaderTile extends VisualObject {
 
 	/** Updates and Draws this ShaderTile */
 	update() {
-		let shaderString = "shader_" + ((this.shaderLevel < 10)? "0" + this.shaderLevel.toString() : this.shaderLevel.toString());
-		Display.draw(shaderString, this.x, this.y, this.width + 0, this.height + 0);
+		Display.setAlpha(this.shaderLevel);
+		//console.log(this.shaderLevel);
+		Display.draw("shader_black", this.x, this.y, this.width, this.height);
+		Display.setAlpha(1);
 	}
 
 	//*********************************************************************//
 	//Getters
 
 	get x() {
-		return this.col * Scene.tileSize/2 + this.width/2;
+		return this.col * Scene.tileSize/Scene.lightQuality + this.width/2;
 	}
 	get y() {
-		return this.row * Scene.tileSize/2 + this.height/2;
+		return this.row * Scene.tileSize/Scene.lightQuality + this.height/2;
 	}
 	get shaderLevel() {
 		return this.level;
@@ -47,12 +49,12 @@ export class ShaderTile extends VisualObject {
 	@param level {number} - shader level to set (0 - 20)
 	 */
 	set shaderLevel(level) {
-		if (level > 20) {
-			this.level = 20;
+		if (level > 1) {
+			this.level = 1;
 		} else if (level < 0) {
 			this.level = 0;
 		} else {
-			this.level = Math.round(level);
+			this.level = Math.round(level*100)/100;
 		}
 	}
 
