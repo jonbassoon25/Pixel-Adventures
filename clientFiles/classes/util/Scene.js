@@ -16,7 +16,7 @@ export class Scene {
 	static background = null;
 	static shadersToUpdate = [];
 	//Must be in function 2^x power. x >= 1. x is an element of all integers. Recommended under 8
-	static lightQuality = 4;
+	static lightQuality = Math.pow(2, 1);
 
 	//*********************************************************************//
 	//Public Static Methods
@@ -107,14 +107,16 @@ export class Scene {
 				}
 				//console.log(objects[i].visualWidth);
 				for (let k = 0; k < this.structure[j].length; k++) {
-					if (objects[i].isVisualColliding(this.structure[j][k])) {
+					if (objects[i].isVisualColliding(this.structure[j][k], true, true)) {
 						this.structure[j][k].update();
 						if (this.shaderStructure == null) {
 							continue;
 						}
 						for (let l = 0; l < this.lightQuality; l++) {
 							for (let n = 0; n < this.lightQuality; n++) {
-								this.shadersToUpdate = Util.combine(this.shadersToUpdate, [this.shaderStructure[j * this.lightQuality + l][k * this.lightQuality + n]]);
+								//if (objects[i].isVisualColliding(this.shaderStructure[j * this.lightQuality + l][k * this.lightQuality + n])) {
+									this.shadersToUpdate = Util.combine(this.shadersToUpdate, [this.shaderStructure[j * this.lightQuality + l][k * this.lightQuality + n]]);
+								//}
 							}
 						}
 					}

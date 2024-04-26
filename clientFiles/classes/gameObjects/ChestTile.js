@@ -30,6 +30,8 @@ export class ChestTile extends SceneTile {
 		this.coins = Util.randInt(coinRange[0], coinRange[1]);
 
 		this.type = "ChestTile";
+		
+		this.visualWidth = 35;
 
 		ChestTile.chestTiles.push(this);
 	}

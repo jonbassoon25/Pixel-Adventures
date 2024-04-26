@@ -90,6 +90,7 @@ export class Game extends Gamestate {
 				Item.updateItems();
 				DynamicObject.updateObjects();
 
+				/*
 				//Scene Editor
 				if (Keyboard.shiftPressed) {
 					Player.retainedValues["p1Coins"] = this.player1.coins;
@@ -105,6 +106,7 @@ export class Game extends Gamestate {
 					this.setScene("sceneCreator");
 					break;
 				}
+				*/
 
 				//Update backgrounds of new moving objects in Scene
 				Scene.update(Item.items);

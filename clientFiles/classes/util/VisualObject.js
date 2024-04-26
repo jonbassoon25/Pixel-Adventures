@@ -7,10 +7,10 @@ export class VisualObject {
 
 	/** 
 	@param {string} image
-	@param {number} x - Absolue x position of the button
-	@param {number} y - Absolue y position of the button
-	@param {number} width - Absolute width of the button
-	@param {number} height - Absolute height of the button
+	@param {number} x - Absolue x position of the visualObject
+	@param {number} y - Absolue y position of the visualObject
+	@param {number} width - Absolute width of the visualObject
+	@param {number} height - Absolute height of the visualObject
 	*/
 	constructor(image, x, y, width, height) {
 		//Set name
@@ -36,29 +36,37 @@ export class VisualObject {
 	 * @param {boolean} firstCall - Is this the first time this function has been called (true)
 	 * @returns {boolean} is this object colliding with the other object
 	 */
-	isColliding(other, firstCall = true) {
+	isColliding(other, firstCall = true, inclusive = true) {
 		if (firstCall) {
-			return this.isEnclosing(other.upperLeft) || this.isEnclosing(other.upperRight) || this.isEnclosing(other.bottomRight) || this.isEnclosing(other.bottomLeft) || other.isColliding(this, false);
+			return this.isEnclosing(other.upperLeft, inclusive) || this.isEnclosing(other.upperRight, inclusive) || this.isEnclosing(other.bottomRight, inclusive) || this.isEnclosing(other.bottomLeft, inclusive) || other.isColliding(this, false, inclusive);
 		}
-		return this.isEnclosing(other.upperLeft) || this.isEnclosing(other.upperRight) || this.isEnclosing(other.bottomRight) || this.isEnclosing(other.bottomLeft);
+		return this.isEnclosing(other.upperLeft, inclusive) || this.isEnclosing(other.upperRight, inclusive) || this.isEnclosing(other.bottomRight, inclusive) || this.isEnclosing(other.bottomLeft, inclusive);
 	}
 
-	isVisualColliding(other, firstCall = true) {
+	isVisualColliding(other, firstCall = true, inclusive = true) {
 		if (firstCall) {
-			return this.isVisualEnclosing(other.vUpperLeft) || this.isVisualEnclosing(other.vUpperRight) || this.isVisualEnclosing(other.vBottomRight) || this.isVisualEnclosing(other.vBottomLeft) || other.isVisualColliding(this, false);
+			return this.isVisualEnclosing(other.vUpperLeft, inclusive) || this.isVisualEnclosing(other.vUpperRight, inclusive) || this.isVisualEnclosing(other.vBottomRight, inclusive) || this.isVisualEnclosing(other.vBottomLeft, inclusive) || other.isVisualColliding(this, false, inclusive);
 		}
-		return this.isVisualEnclosing(other.vUpperLeft) || this.isVisualEnclosing(other.vUpperRight) || this.isVisualEnclosing(other.vBottomRight) || this.isVisualEnclosing(other.vBottomLeft);
+		return this.isVisualEnclosing(other.vUpperLeft, inclusive) || this.isVisualEnclosing(other.vUpperRight, inclusive) || this.isVisualEnclosing(other.vBottomRight, inclusive) || this.isVisualEnclosing(other.vBottomLeft, inclusive);
 	}
 
 	/** 
-	 * @returns {boolean} is the point inside of this object (Inclusive of borders)
+	 * @returns {boolean} is the point inside of this object (Default: inclusive of borders)
 	 */
-	isEnclosing(point) {
-		return point[0] >= this.x - this.width/2 && point[0] <= this.x + this.width/2 && point[1] >= this.y - this.height/2 && point[1] <= this.y + this.height/2;
+	isEnclosing(point, inclusive = true) {
+		if (inclusive) {
+			return point[0] >= this.x - this.width/2 && point[0] <= this.x + this.width/2 && point[1] >= this.y - this.height/2 && point[1] <= this.y + this.height/2;
+		} else {
+			return point[0] > this.x - this.width/2 && point[0] < this.x + this.width/2 && point[1] > this.y - this.height/2 && point[1] < this.y + this.height/2;
+		}
 	}
 
-	isVisualEnclosing(point) {
-		return point[0] >= this.visualX - this.visualWidth/2 && point[0] <= this.visualX + this.visualWidth/2 && point[1] >= this.visualY - this.visualHeight/2 && point[1] <= this.visualY + this.visualHeight/2;
+	isVisualEnclosing(point, inclusive = true) {
+		if (inclusive) {
+			return point[0] >= this.visualX - this.visualWidth/2 && point[0] <= this.visualX + this.visualWidth/2 && point[1] >= this.visualY - this.visualHeight/2 && point[1] <= this.visualY + this.visualHeight/2;
+		} else {
+			return point[0] > this.visualX - this.visualWidth/2 && point[0] < this.visualX + this.visualWidth/2 && point[1] > this.visualY - this.visualHeight/2 && point[1] < this.visualY + this.visualHeight/2;
+		}
 	}
 
 	/** Draws this VisualObject */

@@ -24,7 +24,8 @@ export class Level {
 				break;
 			case 2:
 				new Slime(1293, 938);
-				new Skeleton(947, 547); new Skeleton(947, 547); new Skeleton(947, 547); new Skeleton(295, 433);
+				new Skeleton(947, 547);
+				new Skeleton(295, 433);
 				break;
 			case 3:
 				new Slime(936, 334); new Slime(1298, 339); new Slime(1096, 737); new Slime(1459, 738);

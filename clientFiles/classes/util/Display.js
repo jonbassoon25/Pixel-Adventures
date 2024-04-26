@@ -131,10 +131,7 @@ export class Display {
 		if (typeof image === "string") {
 			if (image.length == "shader_##".length && image.substring(0, "shader_".length) == "shader_") {
 				//Draw the shader
-				this.setAlpha(Number(image.substring(image.length - 2)) * 5 / 100);
-				//console.log("alpha" + Number(image.substring(image.length - 2)));
-				ctx.drawImage(textures["shader_black"], x, y, width, height);
-				this.setAlpha(1);
+				this.drawShader(Number(image.substring(image.length - 2)) * 5 / 100, x, y, width, height, false);
 				return;
 			}
 			if (flipped) {
@@ -152,6 +149,23 @@ export class Display {
 		} else {
 			console.error("Data not recognized as string or Image. " + image);
 		}
+	}
+
+	/**
+	 * Draws a shader
+	 * @param {number} shaderNum - number between 0.01 and 1
+	 */
+	static drawShader(shaderNum, x, y, width, height, resize = true) {
+		//If the coordinates passed in are absolute (they need to be resized)
+		if (resize) {
+			//Calculate the new element dimensions
+			[x, y, width, height] = this.calcElementDimensions(x, y, width, height);
+		}
+		//Draw the shader
+		this.setAlpha(shaderNum);
+		//console.log("alpha " + shaderNum);
+		ctx.drawImage(textures["shader_black"], x, y, width, height);
+		this.setAlpha(1);
 	}
 
 	/**
@@ -197,9 +211,12 @@ export class Display {
 
 	static markPlayerDisplay(player1, player2) {
 		//Player display has a minimum width of 320
-		//Player display has a maximum width of 1920
-		//Player display must retain aspect ratio of 16:9
+		//Two player display must retain aspect ratio of 16:9
+		//One player display must retain aspect ratio of 8:9
 		//Player display (preferably) won't exit the bounds of the scene
+		if (Math.abs(player1.x - player2.x) + 300 < 480) {
+			
+		}
 		let width = ((Math.abs(player2.x - player1.x) + 300 < 480)? 480 : 0);
 		let dimensions;
 		dimensions = {"x": (player1.x + player2.x)/2, 
