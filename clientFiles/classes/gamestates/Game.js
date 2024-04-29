@@ -90,9 +90,9 @@ export class Game extends Gamestate {
 				Item.updateItems();
 				DynamicObject.updateObjects();
 
-				/*
+				
 				//Scene Editor
-				if (Keyboard.shiftPressed) {
+				if (Keyboard.shiftPressed && Keyboard.isKeyDown("`")) {
 					Player.retainedValues["p1Coins"] = this.player1.coins;
 					Player.retainedValues["p2Coins"] = this.player2.coins;
 					Player.retainedValues["p1Score"] = this.player1.points;
@@ -106,7 +106,7 @@ export class Game extends Gamestate {
 					this.setScene("sceneCreator");
 					break;
 				}
-				*/
+				
 
 				//Update backgrounds of new moving objects in Scene
 				Scene.update(Item.items);
@@ -123,6 +123,10 @@ export class Game extends Gamestate {
 
 				//Shade the scene
 				Scene.shade();
+
+				//Update all shaders
+				Display.drawShaders();
+				
 				Display.drawText("Player 1 Coins: " + this.player1.coins.toString(), 50, 50, 40, true, "white");
 				Display.drawText("Player 2 Coins: " + this.player2.coins.toString(), 1920 - ("Player 2 Coins: " + this.player2.coins.toString()).length * 30, 50, 40, true, "white");
 				Display.drawText("Score: " + Math.round((this.player1.points + this.player2.points) * Difficulty.pointMultiplier).toString(), 1920/2 - ("Combined Points: " + Math.round((this.player1.points + this.player2.points) * Difficulty.pointMultiplier).toString()).length * 40 * 0.55 / 2, 50, 40, true, "white");

@@ -183,7 +183,9 @@ export class Scene {
 				this.shaderStructure[i * Scene.lightQuality][j * Scene.lightQuality].update();
 			}
 		}
+		Display.drawShaders();
 		this.updateDoor();
+		Display.drawShaders();
 	}
 
 	static updateDoor() {

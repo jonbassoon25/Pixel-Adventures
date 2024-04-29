@@ -257,6 +257,8 @@ function updateGame() {
 		SceneBuilder.drawCursor();
 	}
 
+	Display.drawShaders();
+
 	AnimationPlayer.playOverlayAnimations();
 	
 

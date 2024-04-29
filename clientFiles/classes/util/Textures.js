@@ -4,6 +4,7 @@ function loadAssets() {
 	let textures = {};
 	//Assign folders to load
 	foldersToLoad["shaders"] = ["shader_black"];
+	
 	foldersToLoad["tiles"] = ["stoneBrick", "rottedWoodPlanks", "vines", "blueTile", "redTile", "blackTile", "insetLantern", "chest", "chestOpened", "wood", "door"];
 	foldersToLoad["menu"] = ["mainMenuPanoTinted", "plaque", "banner", "stoneBrickBackground", "woodenPlaque", "leaderboardPlaque", "upgradePlaque", "selectionBox"];
 	foldersToLoad["buttons"] = ["buttonHovered", "buttonPressed", "playButton", "back", "cog", "leaderboard", "upgradeJump", "upgradeMaxHealth", "upgradeRegen", "upgradeSpeed", "upgradeWeapon", "continue", "easy", "medium", "hard", "custom", "sliderFrame", "sliderHandle", "saveScore", "textBox", "escape", "musicEnabled", "musicDisabled", "plus", "minus", "help"];
@@ -27,6 +28,28 @@ function loadAssets() {
 			textures[currentItem] = new Image();
 			textures[currentItem].src = "/textures/" + currentFolder + "/" + currentItem + ".png";
 		}
+		//if the current folder is for shader, assign all 100 shader images
+		/*
+		if (currentFolder == "shaders") {
+			for (let i = 0; i <= 100; i++) {
+				let name = "shader_";
+				if (i < 10) {
+					name += "00" + i.toString();
+				} else if (i == 100) {
+					name += i.toString();
+				} else {
+					name += "0" + i.toString();
+				}
+
+				console.log("creating " + name);
+				textures[name] = new Image();
+				textures[name].src = "/textures/shaders/shader_black.png";
+				textures[name].style.opacity = (i / 100).toString();
+				console.log(textures[name]);
+				
+			}
+		}
+		*/
 	}
 	console.log("done");
 	return textures;

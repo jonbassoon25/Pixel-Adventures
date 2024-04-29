@@ -29,7 +29,7 @@ export class Leaderboard extends VisualObject {
 			return;
 		}
 		//For each user on the leaderboard, no more than 20
-		for (let i = 0; i < Leaderboard.data["order"].length && i <= 20; i++) {
+		for (let i = 0; i < Leaderboard.data["order"].length && i < 20; i++) {
 			//Prevent scores of 0 from being displayed
 			if (Leaderboard.data[Leaderboard.data["order"][i]] <= 0) return;
 			//Draw placement and username text

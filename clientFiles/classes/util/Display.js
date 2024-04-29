@@ -1,4 +1,5 @@
 //Util Imports
+import { VisualObject } from "./VisualObject.js";
 import { textures } from "./Textures.js";
 
 //Game entity imports
@@ -16,6 +17,8 @@ export class Display {
 	static resized = false;
 	static frames = 0;
 	static fps = 0;
+
+	static queuedShaders = {}
 
 
 	//*********************************************************************//
@@ -129,9 +132,16 @@ export class Display {
 		//y = canvas.height - y;
 		//Determine if the image given needs to be taken from textures
 		if (typeof image === "string") {
-			if (image.length == "shader_##".length && image.substring(0, "shader_".length) == "shader_") {
+			if ((image.length == "shader_##".length || image.length == "shader_###".length) && image.substring(0, "shader_".length) == "shader_") {
 				//Draw the shader
-				this.drawShader(Number(image.substring(image.length - 2)) * 5 / 100, x, y, width, height, false);
+				if (image.length == "shader_##".length) {
+					//console.log(Number(image.substring(image.length - 2)) * 5 / 100);
+					this.drawShader(Number(image.substring(image.length - 2)) * 5 / 100, x, y, width, height, false);
+				} else {
+					//console.log(Number(image.substring(image.length - 2)) / 100);
+					this.drawShader(Number(image.substring(image.length - 3)) / 100, x, y, width, height, false);
+				}
+				
 				return;
 			}
 			if (flipped) {
@@ -153,19 +163,57 @@ export class Display {
 
 	/**
 	 * Draws a shader
-	 * @param {number} shaderNum - number between 0.01 and 1
+	 * @param {number} shaderNum - number between 0.00 and 1
 	 */
-	static drawShader(shaderNum, x, y, width, height, resize = true) {
+	static queueShader(shaderNum, x, y, width, height, resize = true) {
 		//If the coordinates passed in are absolute (they need to be resized)
 		if (resize) {
 			//Calculate the new element dimensions
 			[x, y, width, height] = this.calcElementDimensions(x, y, width, height);
 		}
+		
+		if (this.queuedShaders[shaderNum] == undefined) {
+			this.queuedShaders[shaderNum] = [new VisualObject("shader_black", x, y , width, height)];
+		} else {
+			this.queuedShaders[shaderNum].push(new VisualObject("shader_black", x, y, width, height));
+		}
+		/*
+		//Draw the shader
+		let shaderString = (Math.round(shaderNum * 100)).toString();
+		console.log("drawing " + shaderString);
+		while (shaderString.length < 3) {
+			shaderString = "0" + shaderString;
+		}
+		ctx.drawImage(textures["shader_" + shaderString], x, y, width, height);
+		*/
+		/*
 		//Draw the shader
 		this.setAlpha(shaderNum);
 		//console.log("alpha " + shaderNum);
 		ctx.drawImage(textures["shader_black"], x, y, width, height);
 		this.setAlpha(1);
+		*/
+	}
+
+	static drawShader(shaderNum, x, y, width, height) {
+		//Draw the shader
+		this.setAlpha(shaderNum);
+		ctx.drawImage(textures["shader_black"], x, y, width, height);
+		this.setAlpha(1);
+	}
+
+	static drawShaders() {
+		let keys = Object.keys(this.queuedShaders);
+		for (let j = 0; j < keys.length; j++) {
+			let key = keys[j];
+			this.setAlpha(key);
+			for (let i = 0; i < this.queuedShaders[key].length; i++) {
+				let curShad = this.queuedShaders[key][i];
+				ctx.drawImage(textures["shader_black"], curShad.x, curShad.y, curShad.width, curShad.height);
+			}
+		}
+		this.setAlpha(1);
+		this.queuedShaders = {};
 	}
 
 	/**

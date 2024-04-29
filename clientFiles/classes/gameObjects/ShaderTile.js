@@ -24,10 +24,10 @@ export class ShaderTile extends VisualObject {
 	/** Updates and Draws this ShaderTile */
 	update(qualityDecrease = false) {
 		if (!qualityDecrease) {
-			Display.drawShader(this.shaderLevel, this.x, this.y, this.width, this.height);
+			Display.queueShader(this.shaderLevel, this.x, this.y, this.width, this.height);
 		} else {
 			if (this.col % 2 == 0 & this.row % 2 == 0) {
-				Display.drawShader(this.shaderLevel, this.x + this.width/2, this.y + this.height/2, this.width * 2, this.height * 2);
+				Display.queueShader(this.shaderLevel, this.x + this.width/2, this.y + this.height/2, this.width * 2, this.height * 2);
 			}
 		}
 	}
