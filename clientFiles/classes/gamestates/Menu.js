@@ -18,6 +18,8 @@ export class Menu extends Gamestate {
 	
 	static helpButton = new Button("help", 1920/2, 1080/2 + 240, 408, 144);
 
+	static settingsButton = new Button("settings", 1920 - 100, 1080 - 100, 128, 128);
+
 	//*********************************************************************//
 	//Public Static Methods
 
@@ -39,20 +41,20 @@ export class Menu extends Gamestate {
 		this.playButton.update();
 		this.leaderboardButton.update();
 		this.helpButton.update();
+		this.settingsButton.update();
 
 		//Check for button presses, change scene if button pressed
 		if (this.playButton.isReleased()) {
-			AnimationPlayer.clear();
 			this.setScene("difficultySelect");
 		}
 		if (this.leaderboardButton.isReleased()) {
-			AnimationPlayer.clear();
 			this.setScene("initLeaderboard");
 		}
 		if (this.helpButton.isReleased()) {
-			AnimationPlayer.clear();
 			this.setScene("initHelp");
 		}
-		
+		if (this.settingsButton.isReleased()) {
+			this.setScene("initSettings");
+		}
 	}
 }

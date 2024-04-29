@@ -1,4 +1,5 @@
 //Util Imports
+import { Display } from "../util/Display.js";
 import { Scene } from "../util/Scene.js";
 
 //UI Object Imports
@@ -34,18 +35,23 @@ export class Settings extends Gamestate {
 	 * Initializes the settings menu
 	 * @param {string} destination - destination after exiting the settings menu
 	 */
-	init(destination = "initMenu") {
+	static init(destination = "initMenu") {
+		super.init();
 		this.backButton.destination = destination;
+		this.setScene("settings");
 	}
 
 	/** Updates the Settings menu */
-	update() {
+	static update() {
+		Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
+		
 		if (this.backButton.subsistAsButton()) {
 			this.setScene(this.backButton.destination);
 		}
 
 		this.lightQualitySlider.update();
-		Scene.lightQuality = 
+		
+		Scene.lightQuality = Math.pow(2, this.lightQualitySlider.snappedOutput);
 	}
 
 

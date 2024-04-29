@@ -53,6 +53,7 @@ import { SceneTile } from "./classes/gameObjects/SceneTile.js";
 //Game Entity Imports
 import { DynamicObject } from "./classes/gameEntities/DynamicObject.js";
 import { Player } from "./classes/gameEntities/Player.js";
+import { Settings } from "./classes/gamestates/Settings.js";
 
 
 //------------------------------------------------------------------------------------//
@@ -245,6 +246,12 @@ function updateGame() {
 			Scoreboard.update();
 			break;
 
+		//Settings Gamestate
+		case "initSettings":
+			Settings.init();
+		case "settings":
+			Settings.update();
+			
 		//Other Gamestates
 		case "animationTest":
 			break;
