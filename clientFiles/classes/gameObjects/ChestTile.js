@@ -1,7 +1,6 @@
 //Util Imports
 import { Display } from "../util/Display.js";
 import { Util } from "../util/Util.js";
-import { Scene } from "../util/Scene.js";
 
 //Game Object Imports
 import { SceneTile } from "./SceneTile.js";
@@ -44,6 +43,7 @@ export class ChestTile extends SceneTile {
 	/** Updates and Draws this ChestTile */
 	update() {
 		super.update();
+		console.log("updated");
 		Display.draw(((this.coins == 0)? "chestOpened" : "chest"), this.x, this.y, this.width, this.height)
 	}
 }

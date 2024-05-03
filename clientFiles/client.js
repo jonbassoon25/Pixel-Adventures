@@ -219,9 +219,8 @@ function updateGame() {
 		//Scene Creator Gamestate
 		case "sceneCreator":
 			if (Keyboard.shiftPressed) {
-				Display.clear();
-				Scene.displayAll();
-				Scene.background = Display.imageData;
+				Scene.flash();
+				
 				Game.player1 = new Player(100, 100, "red", "wadfs");
 				Game.player2 = new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
 				Level.spawnEntities();
@@ -460,6 +459,8 @@ socket.on("scene", (data) => {
 			
 		}
 	}
+	console.log("initializing scene");
+	
 	Scene.initScene(structure, SceneBuilder.bakeScene(structure));
 	
 	SceneBuilder.structure = structure;

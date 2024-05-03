@@ -21,6 +21,7 @@ export class Enemy extends NPC {
 		this.visibility = visibility;
 		this.idleTime = 0;
 		this.target = [x, y];
+		this.returnPoint = [x, y];
 		this.knockbackMultiplier = knockbackMultiplier;
 	}
 
@@ -39,6 +40,9 @@ export class Enemy extends NPC {
 					this.target = [curObj.x, curObj.y];
 				}
 			}
+		}
+		if (this.target == null) {
+			this.target = this.returnPoint;
 		}
 	}
 

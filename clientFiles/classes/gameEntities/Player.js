@@ -141,6 +141,7 @@ export class Player extends DynamicObject {
 			this.points += chest.coins * 10;
 			this.coins += chest.coins;
 			chest.coins = 0;
+			Scene.flash();
 			console.log("Got " + (this.coins - startCoins) + " Coins");
 		}
 

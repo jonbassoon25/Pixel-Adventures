@@ -100,6 +100,7 @@ export class Game extends Gamestate {
 					DynamicObject.clear();
 					this.player1 = null;
 					this.player2 = null;
+					Difficulty.pointMultiplier = 0;
 					//console.log("Scene builder");
 					SceneBuilder.printInstructions();
 					SceneBuilder.init();
@@ -107,30 +108,22 @@ export class Game extends Gamestate {
 					break;
 				}
 				
-
-				//Update backgrounds of new moving objects in Scene
-				Scene.update(Item.items);
-				Scene.update(DynamicObject.dynamicObjects);
-				Scene.update(ChestTile.chestTiles);
-				Scene.update(Grave.graves);
-
-				//Update Doors
-				Scene.updateDoor();
-
 				//Draw items and dynamicObjects in Scene
 				Item.drawItems();
 				DynamicObject.drawObjects();
 
-				//Shade the scene
-				Scene.shade();
+				
+				Scene.drawShaderBackground();
 
-				//Update all shaders
-				Display.drawShaders();
+
 				
 				Display.drawText("Player 1 Coins: " + this.player1.coins.toString(), 50, 50, 40, true, "white");
 				Display.drawText("Player 2 Coins: " + this.player2.coins.toString(), 1920 - ("Player 2 Coins: " + this.player2.coins.toString()).length * 30, 50, 40, true, "white");
-				Display.drawText("Score: " + Math.round((this.player1.points + this.player2.points) * Difficulty.pointMultiplier).toString(), 1920/2 - ("Combined Points: " + Math.round((this.player1.points + this.player2.points) * Difficulty.pointMultiplier).toString()).length * 40 * 0.55 / 2, 50, 40, true, "white");
 
+				if (Difficulty.pointMultiplier != 0) {
+					Display.drawText("Score: " + Math.round((this.player1.points + this.player2.points) * Difficulty.pointMultiplier).toString(), 1920/2 - ("Combined Points: " + Math.round((this.player1.points + this.player2.points) * Difficulty.pointMultiplier).toString()).length * 40 * 0.55 / 2, 50, 40, true, "white");
+				}
+				
 				//Update trigger regions
 				//TriggerRegion.update();
 				//(For Testing) Display player visual dimensions

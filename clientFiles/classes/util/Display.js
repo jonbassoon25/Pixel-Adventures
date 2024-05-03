@@ -219,17 +219,88 @@ export class Display {
 	/**
 	 * Draws given image data onto the canvas
 	 */
-	static drawData(imageData, x, y, resize = true) {
+	static drawData(imageData, x, y, drawOn = false, resize = true) {
 		if (resize) {
-			let newX;
-			let newY;
 			let trash;
-			[newX, newY, trash, trash] = Display.calcElementDimensions(x, y, 0, 0);
-			ctx.putImageData(imageData, Math.round(newX), Math.round(newY));
+			[x, y, trash, trash] = Display.calcElementDimensions(x, y, 0, 0);
+		}
+		if (drawOn) {
+			let curData = this.imageData;
+
+			//Linked to refrence to avoid repeting unneeded operation to reference data
+			let curDat = curData.data;
+			let imgDat = imageData.data;
+
+			//Variable declarations to avoid unneeded let operation for every pixel
+			let opac;
+			let invOpac;
+			let index;
+
+			//Optimze everthing below this line heavily
+			for (let i = 0; i < Math.min(curData.data.length, imageData.data.length); i += 4) {
+				//Initial version
+				/*
+				let curRgba = [];
+				let addRgba = [];
+				for (let j = 0; j < 4; j++) {
+					curRgba.push(curData.data[i + j]);
+					addRgba.push(imageData.data[i + j]);
+				}
+
+				opac = addRgba[3] / 255;
+
+				//Assign final color values
+				let finalRgba = [];
+				for (let j = 0; j < 3; j++) {
+					finalRgba.push(Math.round((1 - opac) * curRgba[j] + opac * addRgba[j]));
+				}
+				//opacity 255
+				finalRgba.push(255);
+
+				//Take out the next rgba from curData and replace it with the calculated values
+				for (let j = 0; j < 4; j++) {
+					curData.data[i + j] = finalRgba[j];
+				}
+				*/
+
+				
+				//Optimized version
+				opac = imgDat[i + 3] / 255;
+
+				//Assign to avoid many 1 - opac operations
+				invOpac = 1 - opac;
+
+				//Assign final color values
+				//1 - opacity * current pixel value + opacity * additive pixel value
+
+				//Manual definitions to avoid looping operations
+
+				//Add to index to avoid 2 add statements in next line
+				index = i;
+
+				//~~ is typecasting to 32 bit integer number, much faster than round or floor
+				
+				//R
+				curDat[index] = ~~(invOpac * curDat[index] + opac * imgDat[index]);
+				index++;
+
+				//G
+				curDat[index] = ~~(invOpac * curDat[index] + opac * imgDat[index]);
+				index++;
+
+				//B
+				curDat[index] = ~~(invOpac * curDat[index] + opac * imgDat[index]);
+				index++;
+
+				//A
+				curDat[index] = 255;
+			}
+
+			ctx.putImageData(curData, Math.round(x), Math.round(y));
 		} else {
-			console.log("no resize");
 			ctx.putImageData(imageData, Math.round(x), Math.round(y));
 		}
+		
 	}
 
 	//Draws specified text onto the canvas, can take relative or absolute values

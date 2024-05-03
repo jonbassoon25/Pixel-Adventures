@@ -14,6 +14,7 @@ export class Scene {
 	static shaderStructure = null;
 	static tileSize = 40;
 	static background = null;
+	static shaderBackground = null;
 	static shadersToUpdate = [];
 	//Must be in function 2^x power. x >= 1. x is an element of all integers. Recommended under 8
 	static lightQuality = Math.pow(2, 1);
@@ -30,59 +31,16 @@ export class Scene {
 		this.structure = structure;
 		this.shaderStructure = shaderStructure;
 		this.tileSize = tileSize;
-		this.displayAll();
-		this.background = Display.imageData;
-	}
-
-
-	/** 
-	 * Updates all scene objects in the scene structure
-	 * @param {VisualObject[]} objects - objects that need to have their background updated
-	 */
-	static updateTiles(objects) {
-		if (this.structure == null) {
-			return;
-		}
-		for (let i = 0; i < objects.length; i++) {
-			for (let j = 0; j < this.structure.length; j++) {
-				for (let k = 0; k < this.structure[j].length; k++) {
-					if (objects[i].isVisualColliding(this.structure[j][k])) {
-						this.structure[j][k].update();
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Updates all shaders in the shader structure
-	 * @param {VisualObject[]} objects - objects that need to have their background updated
-	 */
-	static updateShaders(objects) {
-		if (this.shaderStructure == null) {
-			return;
-		}
-		for (let i = 0; i < objects.length; i++) {
-			for (let j = 0; j < this.structure.length; j++) {
-				for (let k = 0; k < this.structure[j].length; k++) {
-					if (objects[i].isVisualColliding(this.structure[j][k])) {
-						for (let l = 0; l < this.lightQuality; l++) {
-							for (let n = 0; n < this.lightQuality; n++) {
-								Scene.shaderStructure[j * this.lightQuality + l][k * this.lightQuality + n].update();
-							}
-						}
-					}
-				}
-			}
-		}
+		
+		this.flash();
 	}
 
 	/** Draws the background of the Scene, flashes the screen on canvas resize */
 	static drawBackground() {
 		//Flash the screen on canvas resize to avoid size errors
 		if (Display.resized) {
-			this.displayAll();
-			this.background = Display.imageData;
+			this.flash();
+
 			return;
 		}
 		if (this.background != null) {
@@ -90,47 +48,11 @@ export class Scene {
 		}
 	}
 
-	/**
-	 * Updates all SceneTiles and ShaderTiles that need to be updated
-	 * @param {VisualObject[]} objects - objects that need to have their background updated
-	 */
-	static update(objects) {
-		if (this.structure == null) {
-			return;
+	/** Draws the shader background of the Scene */
+	static drawShaderBackground() {
+		if (this.shaderBackground != null) {
+			Display.drawData(this.shaderBackground, 0, 0, true);
 		}
-		for (let i = 0; i < objects.length; i++) {
-			for (let j = 0; j < this.structure.length; j++) {
-				//If not the top of the dynamic object is above the bottom of the first structure tile in the row and the bottom of the dynamic object is below the top of the first structure tile in the row
-				if (!(objects[i].y - objects[i].visualHeight/2 < this.structure[j][0].y + this.structure[j][0].height/2 && objects[i].y + objects[i].visualHeight/2 > this.structure[j][0].y - this.structure[j][0].height/2)) {
-					//The dynamic object won't collide with any tiles in that row
-					continue;
-				}
-				//console.log(objects[i].visualWidth);
-				for (let k = 0; k < this.structure[j].length; k++) {
-					if (objects[i].isVisualColliding(this.structure[j][k], true, true)) {
-						this.structure[j][k].update();
-						if (this.shaderStructure == null) {
-							continue;
-						}
-						for (let l = 0; l < this.lightQuality; l++) {
-							for (let n = 0; n < this.lightQuality; n++) {
-								//if (objects[i].isVisualColliding(this.shaderStructure[j * this.lightQuality + l][k * this.lightQuality + n])) {
-									this.shadersToUpdate = Util.combine(this.shadersToUpdate, [this.shaderStructure[j * this.lightQuality + l][k * this.lightQuality + n]]);
-								//}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/** Updates all shaders that need to be updated */
-	static shade() {
-		for (let i = 0; i < this.shadersToUpdate.length; i++) {
-			this.shadersToUpdate[i].update();
-		}
-		this.shadersToUpdate = [];
 	}
 
 	/**
@@ -171,36 +93,40 @@ export class Scene {
 
 	/** Displays all SceneTiles and ShaderTiles */
 	static displayAll() {
-		if (this.structure == null) {
-			return;
-		}
-		for (let i = 0; i < this.structure.length; i += 1/Scene.lightQuality) {
-			for (let j = 0; j < this.structure[0].length; j += 1/Scene.lightQuality) {
-				if (i % 1 == 0 && j % 1 == 0) {
-					this.structure[i][j].update();
-				}
-				//console.log("updated shader tile at " + [j * Scene.lightQuality, i * Scene.lightQuality]);
-				this.shaderStructure[i * Scene.lightQuality][j * Scene.lightQuality].update();
-			}
-		}
-		Display.drawShaders();
-		this.updateDoor();
+		this.displayAllTiles();
 		Display.drawShaders();
 	}
 
-	static updateDoor() {
+	static displayAllTiles() {
+		if (this.structure == null) return;
 		for (let i = 0; i < this.structure.length; i++) {
 			for (let j = 0; j < this.structure[i].length; j++) {
-				if (this.structure[i][j] instanceof Door) {
-					this.structure[i - 1][j].update();
-					this.structure[i][j].update();
-					for (let k = 0; k < 2 * this.lightQuality; k++) {
-						for (let l = 0; l < this.lightQuality; l++) {
-							this.shadersToUpdate = Util.combine(this.shadersToUpdate, [this.shaderStructure[(i - 1) * this.lightQuality + k][j * this.lightQuality + l]]);
-						}
-					}
-				}
+				this.structure[i][j].update();
 			}
 		}
+	}
+
+	static displayAllShaders() {
+		if (this.shaderStructure == null) return;
+		for (let i = 0; i < this.shaderStructure.length; i++) {
+			for (let j = 0; j < this.shaderStructure[i].length; j++) {
+				this.shaderStructure[i][j].update();
+			}
+		}
+		Display.drawShaders();
+	}
+
+	static updateDoor() {};
+
+	/** Flashes the new shader background and background to memory and draws tile background */
+	static flash() {
+		//Capture new backgrounds
+		Display.clear();
+		this.displayAllShaders();
+		this.shaderBackground = Display.imageData;
+		Display.clear();
+
+		this.displayAllTiles();
+		this.background = Display.imageData;
 	}
 }
