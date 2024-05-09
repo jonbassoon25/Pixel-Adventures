@@ -45,7 +45,7 @@ export class Menu extends Gamestate {
 
 		//Check for button presses, change scene if button pressed
 		if (this.playButton.isReleased()) {
-			this.setScene("difficultySelect");
+			this.setScene("initDifficultySelect");
 		}
 		if (this.leaderboardButton.isReleased()) {
 			this.setScene("initLeaderboard");

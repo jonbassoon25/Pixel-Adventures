@@ -1,10 +1,13 @@
 //Util Imports
 import { Display } from "./Display.js";
-import { Util } from "./Util.js";
+import { ShadedObject } from "./ShadedObject.js";
+
+//Gamestate imports
+import { Game } from "../gamestates/Game.js";
 
 //Game Object Imports
 import { SceneTile } from "../gameObjects/SceneTile.js";
-import { Door } from "../gameObjects/Door.js";
+
 
 //Scene Class
 export class Scene {
@@ -14,9 +17,10 @@ export class Scene {
 	static shaderStructure = null;
 	static tileSize = 40;
 	static background = null;
+	static tileBackground = null;
 	static shaderBackground = null;
 	static shadersToUpdate = [];
-	//Must be in function 2^x power. x >= 1. x is an element of all integers. Recommended under 8
+	//Must be in function 2^x power. x >= 1. x is an element of all integers. Recommended 16 or less
 	static lightQuality = Math.pow(2, 1);
 
 	//*********************************************************************//
@@ -48,10 +52,40 @@ export class Scene {
 		}
 	}
 
-	/** Draws the shader background of the Scene */
-	static drawShaderBackground() {
-		if (this.shaderBackground != null) {
-			Display.drawData(this.shaderBackground, 0, 0, true);
+	/** Draws the shaders for all shadedObjects */
+	static drawShadedObjects() {
+		let curObj;
+
+		//Update Tile Backgrounds
+		for (let i = Object.keys(ShadedObject.shadedObjects).length - 1; i >= 0; i--) {
+			for (let j = 0; j < Object.values(ShadedObject.shadedObjects)[i].length; j++) {
+				//Assign current object
+				curObj = Object.values(ShadedObject.shadedObjects)[i][j];
+
+				Display.drawData(this.tileBackground, 0, 0, ...curObj.vUpperLeft, curObj.visualWidth, curObj.visualHeight);
+			}
+			
+		}
+
+		//Draw Shaded Objects
+		for (let i = Object.keys(ShadedObject.shadedObjects).length - 1; i >= 0; i--) {
+			for (let j = 0; j < Object.values(ShadedObject.shadedObjects)[i].length; j++) {
+				//Assign current object
+				Object.values(ShadedObject.shadedObjects)[i][j].draw();
+			}
+
+		}
+
+		Display.updateCurrentData();
+
+		//Update Shader Overlay
+		for (let i = Object.keys(ShadedObject.shadedObjects).length - 1; i >= 0; i--) {
+			for (let j = 0; j < Object.values(ShadedObject.shadedObjects)[i].length; j++) {
+				curObj = Object.values(ShadedObject.shadedObjects)[i][j];
+
+				Display.drawData(this.shaderBackground, 0, 0, ...curObj.vUpperLeft, curObj.visualWidth, curObj.visualHeight, true);
+			}
+
 		}
 	}
 
@@ -116,17 +150,19 @@ export class Scene {
 		Display.drawShaders();
 	}
 
-	static updateDoor() {};
-
 	/** Flashes the new shader background and background to memory and draws tile background */
 	static flash() {
 		//Capture new backgrounds
 		Display.clear();
+		
 		this.displayAllShaders();
 		this.shaderBackground = Display.imageData;
 		Display.clear();
 
 		this.displayAllTiles();
+		this.tileBackground = Display.imageData;
+
+		this.displayAllShaders();
 		this.background = Display.imageData;
 	}
 }

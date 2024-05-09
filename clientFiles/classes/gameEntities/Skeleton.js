@@ -26,11 +26,6 @@ export class Skeleton extends Enemy {
 	}
 
 	//*********************************************************************//
-	//Private Methods
-
-
-
-	//*********************************************************************//
 	//Public Methods
 
 	
@@ -45,6 +40,11 @@ export class Skeleton extends Enemy {
 		} else {
 			Display.draw("skeletonWalk", this.visualX, this.visualY, 34, 52, true, this.facingLeft);
 		}
+	}
+
+	delete() {
+		super.delete();
+		this.weapon.delete();
 	}
 
 	update() {

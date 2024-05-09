@@ -292,7 +292,9 @@ setInterval(() => {
 		if (thisTime - lastFrameTime > 1000/30) {
 			//console.warn("LOW FPS: " + Math.round(1000 / (thisTime - lastFrameTime)));
 		}
-		lastFrameTime = thisTime;
+		if (Display.frames % 120 == 0) {
+			console.log("FPS: " + Display.fps);
+		}
 		Display.clear();
 		//console.log("start frame");
 		updateGame();
@@ -301,6 +303,7 @@ setInterval(() => {
 			Display.frames = 0;
 		}
 		Display.fps = Math.round(1000 / (thisTime - lastFrameTime));
+		lastFrameTime = thisTime;
 		Display.frames++;
 	}
 }, 1000 / 60);

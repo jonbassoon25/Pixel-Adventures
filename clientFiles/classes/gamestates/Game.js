@@ -14,8 +14,6 @@ import { Gamestate } from "./Gamestate.js";
 
 //Game Object Imports
 import { ChestTile } from "../gameObjects/ChestTile.js";
-import { Grave } from "../gameObjects/Grave.js";
-import { TriggerRegion } from "../gameObjects/TriggerRegion.js";
 
 //Game Entity Imports
 import { DynamicObject } from "../gameEntities/DynamicObject.js";
@@ -110,10 +108,8 @@ export class Game extends Gamestate {
 				
 				//Draw items and dynamicObjects in Scene
 				Item.drawItems();
-				DynamicObject.drawObjects();
 
-				
-				Scene.drawShaderBackground();
+				Scene.drawShadedObjects();
 
 
 				
@@ -131,25 +127,4 @@ export class Game extends Gamestate {
 				break;
 		}
 	}
-
-	//*********************************************************************//
-	//Constructor - Must have JSDocs
-
-
-	//*********************************************************************//
-	//Private Methods - No required JSDocs
-
-
-	//*********************************************************************//
-	//Public Methods - Must have JSDocs
-
-
-	//*********************************************************************//
-	//Getters - No required JSDocs
-
-
-	//*********************************************************************//
-	//Setters - Must have JSDocs
-
-
 }

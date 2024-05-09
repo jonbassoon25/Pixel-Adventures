@@ -30,7 +30,7 @@ export class Player extends DynamicObject {
 	 * @param {string} controlType - keys that control the player, default is wadfs (up, left, right, attack, interact)
 	 */
 	constructor(x, y, color, controlType = "wadfs") {
-		super("none", x, y, 20, 52);
+		super("none", 0, x, y, 20, 52);
 		if (controlType.length < 5) {
 			controlType = "wadfs";
 		}
@@ -148,12 +148,12 @@ export class Player extends DynamicObject {
 		if (Scene.structure[row][col] instanceof Door) {
 			AudioPlayer.play("door");
 			Level.level++;
-			//Switch scene to initGame
 		}
 
 		if (Scene.structure[row][col] instanceof Grave) {
 			this.coins += Scene.structure[row][col].coins;
 			Scene.structure[row][col].revive();
+			Scene.flash();
 		}
 	}
 
@@ -195,6 +195,7 @@ export class Player extends DynamicObject {
 			potentialTile = Scene.structure[nextRow][nextCol];
 		}
 		Scene.structure[potentialTile.row][potentialTile.col] = new Grave(this, potentialTile.col, potentialTile.row, potentialTile.image, potentialTile.hasVines);
+		Scene.flash();
 	}
 
 	#takeDamage() {

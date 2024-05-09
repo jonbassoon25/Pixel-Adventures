@@ -1,8 +1,9 @@
 //Util Imports
+import { AudioPlayer } from "../util/AudioPlayer.js";
 import { Display } from "../util/Display.js";
+import { ShadedObject } from "../util/ShadedObject.js";
 import { VisualObject } from "../util/VisualObject.js";
 import { Vector } from "../util/Vector.js";
-import { AudioPlayer } from "../util/AudioPlayer.js";
 
 //Game Entity Imports
 import { Enemy } from "../gameEntities/Enemy.js";
@@ -12,7 +13,7 @@ import { DynamicObject } from "../gameEntities/DynamicObject.js";
 
 //Sword, Mace, Claymore, Dual Knives
 //Weapon Class
-export class MeleeWeapon extends VisualObject {
+export class MeleeWeapon extends ShadedObject {
 	//Constructor
 
 	/**
@@ -26,7 +27,7 @@ export class MeleeWeapon extends VisualObject {
 	 * @param {Object} animations - Animations that this weapon has. Formatted as {"name": {"length": imageName}}. Must have idle animation
 	 */
 	constructor(parentObject, relX, relY, width, height, damage, reach, animations) {
-		super("none", parentObject.x, parentObject.y, width, height);
+		super("none", 2, parentObject.x, parentObject.y, width, height);
 		this.parent = parentObject;
 		this.animations = animations;
 		if (this.animations["idle"] == undefined || this.animations["idle"].length == 0) {
@@ -36,15 +37,17 @@ export class MeleeWeapon extends VisualObject {
 		this.reach = reach;
 		this.relX = relX;
 		this.relY = relY;
+		this.visualWidth = 2 * width; //For flipping
 		this.animationName = "idle";
 		this.animationFrame = 0;
 		this.knockback = new Vector([2.5, -4]);
+		this.flipped = false;
 	}
 
 	//*********************************************************************//
 	//Private Methods
 
-	#drawAnimationFrame(flipped = false) {
+	#updateAnimationFrame() {
 		let currentAnimation = this.animations[this.animationName];
 		let currentAnimationTimes = Object.keys(currentAnimation);
 		//If the frame is more than the highest animation frame
@@ -56,19 +59,7 @@ export class MeleeWeapon extends VisualObject {
 			currentAnimation = this.animations[this.animationName];
 			currentAnimationTimes = Object.keys(currentAnimation);
 		}
-
-		//For every keyframe in the animation
-		for (let i = 0; i < currentAnimationTimes.length; i++) {
-			//If the frame is less than or equal to the current animation time, draw the frame and don't draw any more
-			if (this.animationFrame <= currentAnimationTimes[i]) {
-				Display.draw(currentAnimation[currentAnimationTimes[i]] + ((flipped)? "Flipped": ""), this.x - ((flipped)? (this.width/2 - 15): 0), this.y - ((this.animationName == "jump")? 20 : 0), this.width, this.height);
-				this.animationFrame++;
-				return;
-			}
-		}
-
-		//No image was drawn this frame
-		console.error("Animation Error: No Image Drawn");
+		this.animationFrame++;
 	}
 
 	//*********************************************************************//
@@ -104,6 +95,23 @@ export class MeleeWeapon extends VisualObject {
 		this.animationName = "idle";
 	}
 
+	draw() {
+		if (this.parent.isDead) {
+			return;
+		}
+		let currentAnimation = this.animations[this.animationName];
+		let currentAnimationTimes = Object.keys(currentAnimation);
+		//For every keyframe in the animation
+		for (let i = 0; i < currentAnimationTimes.length; i++) {
+			//If the frame is less than or equal to the current animation time, draw the frame and don't draw any more
+			// - 1 because we add one for the next frame before draw is called
+			if (this.animationFrame - 1 <= currentAnimationTimes[i]) {
+				Display.draw(currentAnimation[currentAnimationTimes[i]] + ((this.flipped)? "Flipped": ""), this.x - ((this.flipped)? (this.width/2 - 15): 0), this.y - ((this.animationName == "jump")? 20 : 0), this.width, this.height);
+				return;
+			}
+		}
+	}
+
 	jumpAnim() {
 		if (this.animationName == "jump") return;
 		this.animationName = "jump";
@@ -111,9 +119,10 @@ export class MeleeWeapon extends VisualObject {
 
 	/** Updates and Draws this MeleeWeapon */
 	update(flipped = false, grounded = false) {
+		this.flipped = flipped;
 		if (!grounded) this.animationName = "jump";
 		if (this.animationName == "jump" && grounded) this.animationName = "idle";
-		this.#drawAnimationFrame(flipped);
+		this.#updateAnimationFrame();
 	}
 
 	upgrade(amount) {

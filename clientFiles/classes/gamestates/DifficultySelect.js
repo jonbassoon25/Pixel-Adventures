@@ -38,7 +38,7 @@ export class DifficultySelect extends Gamestate {
 	static continue = new Button("continue", 1920/2, 1080/2 + 420, 456, 64);
 
 	//Substate of difficulty select
-	static substate = "difficultySelect"
+	static substate = "difficultySelect";
 	
 	//*********************************************************************//
 	//Private Static Methods - No required JSDocs
@@ -49,6 +49,7 @@ export class DifficultySelect extends Gamestate {
 
 	static init() {
 		super.init();
+		this.substate = "difficultySelect";
 		this.setScene("difficultySelect");
 	}
 	

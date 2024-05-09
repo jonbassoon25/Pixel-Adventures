@@ -1,6 +1,9 @@
 //Util Imports
+import { Util } from "./Util.js";
+import { Keyboard } from "./Keyboard.js";
 import { VisualObject } from "./VisualObject.js";
 import { textures } from "./Textures.js";
+import { Scene } from "./Scene.js";
 
 //Game entity imports
 
@@ -17,10 +20,10 @@ export class Display {
 	static resized = false;
 	static frames = 0;
 	static fps = 0;
+	static currentData = null;
 
 	static queuedShaders = {}
-
-
+	
 	//*********************************************************************//
 	//Public Static Methods
 
@@ -51,7 +54,7 @@ export class Display {
 	}
 
 	/** 
-	 * Calculates the relative dimensions of an element based on the screen dimensions
+	 * Calculates the relative dimensions of an element based on the screen dimensions. Put -1 to negate return of the given value
 	 * @param {number} x - The absolute x position of the element
 	 * @param {number} y - The absolute y position of the element
 	 * @param {number} width - The absolute width of the element
@@ -59,10 +62,18 @@ export class Display {
 	 * @returns {number[]} The relative dimensions of the element [x, y, width, height]
 	 */
 	static * calcElementDimensions(x, y, width, height) {
-		yield (x - width/2) * this.sizeMult + this.horizontalOffset;
-		yield (y - height/2) * this.sizeMult + this.verticalOffset;
-		yield width * this.sizeMult;
-		yield height * this.sizeMult;
+		if (x != -1 && width != -1) {
+			yield (x - width/2) * this.sizeMult + this.horizontalOffset;
+		} else if (width == -1) {
+			yield x * this.sizeMult + this.horizontalOffset;
+		}
+		if (y != -1 && height != -1) {
+			yield (y - height/2) * this.sizeMult + this.verticalOffset;
+		} else if (height == -1) {
+			yield y * this.sizeMult + this.verticalOffset;
+		}
+		if (width != -1) yield width * this.sizeMult;
+		if (height != -1) yield height * this.sizeMult;
 	}
 
 	/** Draws black bounding boxes on the screen edges to ensure relative 1920 by 1080 canvas */
@@ -108,6 +119,11 @@ export class Display {
 
 	static clear() {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
+	}
+
+	/** Populates the current data ImageData */
+	static updateCurrentData() {
+		this.currentData = this.imageData;
 	}
 
 	/** 
@@ -177,22 +193,6 @@ export class Display {
 		} else {
 			this.queuedShaders[shaderNum].push(new VisualObject("shader_black", x, y, width, height));
 		}
-		/*
-		//Draw the shader
-		let shaderString = (Math.round(shaderNum * 100)).toString();
-		console.log("drawing " + shaderString);
-		while (shaderString.length < 3) {
-			shaderString = "0" + shaderString;
-		}
-		ctx.drawImage(textures["shader_" + shaderString], x, y, width, height);
-		*/
-		/*
-		//Draw the shader
-		this.setAlpha(shaderNum);
-		//console.log("alpha " + shaderNum);
-		ctx.drawImage(textures["shader_black"], x, y, width, height);
-		this.setAlpha(1);
-		*/
 	}
 
 	static drawShader(shaderNum, x, y, width, height) {
@@ -218,87 +218,124 @@ export class Display {
 
 	/**
 	 * Draws given image data onto the canvas
+	 * @param {ImageData} imageData - the image data to draw
+	 * @param {number} x - x position to draw at
+	 * @param {number} y - y position to draw at
+	 * @param {number} dx - x position to start data extraction from (default: 0)
+	 * @param {number} dy - y position to start data extraction from (default: 0)
+	 * @param {number} dw - width of extracted data (default: -1 / full width)
+	 * @param {number} dh - height of extracted data (default: -1 / full height)
 	 */
-	static drawData(imageData, x, y, drawOn = false, resize = true) {
+	static drawData(imageData, x, y, dx = 0, dy = 0, dw = -1, dh = -1, shaderData = false, resize = true) {
+		//Assign x and y
 		if (resize) {
-			let trash;
-			[x, y, trash, trash] = Display.calcElementDimensions(x, y, 0, 0);
+			[x, y] = this.calcElementDimensions(x, y, -1, -1);
+			dx = Math.round(dx * this.sizeMult);
+			dy = Math.round(dy * this.sizeMult);
 		}
-		if (drawOn) {
-			let curData = this.imageData;
+		
+		//Assign width
+		if (dw < 0) {
+			//full width
+			dw = imageData.width - dx;
+		} else if (resize) {
+			dw = Math.round(dw * this.sizeMult);
+		}
 
-			//Linked to refrence to avoid repeting unneeded operation to reference data
+		//Assign height
+		if (dh < 0) {
+			//full height
+			dh = imageData.height - dy;
+		} else if (resize) {
+			dh = Math.round(dh * this.sizeMult);
+		}
+		
+		if (shaderData) {
+			let curData = this.currentData; //[x, y] is always [0, 0]
+			
+			//Linked to refrence to avoid repeating unneeded operation to reference data
 			let curDat = curData.data;
 			let imgDat = imageData.data;
+			let finalData = new ImageData(curData.width, curData.height);
+			let finDat = finalData.data;
 
 			//Variable declarations to avoid unneeded let operation for every pixel
 			let opac;
 			let invOpac;
-			let index;
 
-			//Optimze everthing below this line heavily
-			for (let i = 0; i < Math.min(curData.data.length, imageData.data.length); i += 4) {
-				//Initial version
-				/*
-				let curRgba = [];
-				let addRgba = [];
-				for (let j = 0; j < 4; j++) {
-					curRgba.push(curData.data[i + j]);
-					addRgba.push(imageData.data[i + j]);
+			//let finalImageData = new ImageData(dw, dh);
+			//let finDat = finalImageData.data;
+
+			for (let y = dy; y < dy + dh; y++) {
+				for (let x = dx; x < dx + dw; x++) {
+					let offset = ((y * curData.width) + x) * 4;
+					//let finalDataOffset = (((y - dy) * dw) + (x - dx)) * 4;
+					
+					opac = imgDat[offset + 3] / 255;
+
+					//Assign to avoid many 1 - opac operations
+					invOpac = 1 - opac;
+
+					//A
+					finDat[offset + 3] = 255;
+
+					//Assign final color values
+					//1 - opacity * current pixel value + opacity * additive pixel value
+
+					//Manual definitions to avoid looping operations
+
+					//~~ is typecasting to 32 bit integer number, much faster than round or floor
+
+					//B
+					finDat[offset + 2] = ~~(invOpac * curDat[offset + 2] + opac * imgDat[offset + 2]);
+
+					//G
+					finDat[offset + 1] = ~~(invOpac * curDat[offset + 1] + opac * imgDat[offset + 1]);
+
+					//R
+					finDat[offset] = ~~(invOpac * curDat[offset] + opac * imgDat[offset]);
 				}
+			}
 
-				opac = addRgba[3] / 255;
-
-				//Assign final color values
-				let finalRgba = [];
-				for (let j = 0; j < 3; j++) {
-					finalRgba.push(Math.round((1 - opac) * curRgba[j] + opac * addRgba[j]));
-				}
-				//opacity 255
-				finalRgba.push(255);
-
-				//Take out the next rgba from curData and replace it with the calculated values
-				for (let j = 0; j < 4; j++) {
-					curData.data[i + j] = finalRgba[j];
-				}
-				*/
-
+			//Draw the final data
+			ctx.putImageData(finalData, Math.round(x), Math.round(y), dx, dy, dw, dh);
 				
-				//Optimized version
-				opac = imgDat[i + 3] / 255;
+
+			/*
+			for (let i = 3; i < minlen; i += 4) {
+				opac = imgDat[i] / 255;
 
 				//Assign to avoid many 1 - opac operations
 				invOpac = 1 - opac;
+
+				//A
+				curDat[i] = 255;
 
 				//Assign final color values
 				//1 - opacity * current pixel value + opacity * additive pixel value
 
 				//Manual definitions to avoid looping operations
 
-				//Add to index to avoid 2 add statements in next line
-				index = i;
-
 				//~~ is typecasting to 32 bit integer number, much faster than round or floor
 				
-				//R
-				curDat[index] = ~~(invOpac * curDat[index] + opac * imgDat[index]);
-				index++;
+				//B
+				curDat[i - 1] = ~~(invOpac * curDat[i - 1] + opac * imgDat[i - 1]);
 
 				//G
-				curDat[index] = ~~(invOpac * curDat[index] + opac * imgDat[index]);
-				index++;
+				curDat[i - 2] = ~~(invOpac * curDat[i - 2] + opac * imgDat[i - 2]);
 
-				//B
-				curDat[index] = ~~(invOpac * curDat[index] + opac * imgDat[index]);
-				index++;
-
-				//A
-				curDat[index] = 255;
+				//R
+				curDat[i - 3] = ~~(invOpac * curDat[i - 3] + opac * imgDat[i - 3]);
 			}
 
+			//Draw the final data
 			ctx.putImageData(curData, Math.round(x), Math.round(y));
+			*/
+
+			
+			
 		} else {
-			ctx.putImageData(imageData, Math.round(x), Math.round(y));
+			ctx.putImageData(imageData, Math.round(x), Math.round(y), dx, dy, dw, dh);
 		}
 		
 	}

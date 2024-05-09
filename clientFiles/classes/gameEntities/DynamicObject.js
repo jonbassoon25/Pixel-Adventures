@@ -2,12 +2,12 @@
 import { Scene } from "../util/Scene.js";
 import { Util } from "../util/Util.js";
 import { Vector } from "../util/Vector.js";
-import { VisualObject } from "../util/VisualObject.js";
+import { ShadedObject } from "../util/ShadedObject.js";
 import { Enemy } from "./Enemy.js";
 import { Display } from "../util/Display.js";
 
 //Class DynamicObject
-export class DynamicObject extends VisualObject {
+export class DynamicObject extends ShadedObject {
 	//Static Variables
 	
 	//All currently spawned dynamic objects
@@ -50,8 +50,8 @@ export class DynamicObject extends VisualObject {
 	 * @param {number} x - initial x value 
 	 * @param {number} y - initial y value
 	 */
-	constructor(image, x, y, width, height, hasCollision = true) {
-		super(image, x, y, width, height)
+	constructor(image, orderNum, x, y, width, height, hasCollision = true) {
+		super(image, orderNum, x, y, width, height)
 		this.image = image;
 		this.velocity = new Vector(0, 0);
 		this.accelerations = [];
@@ -150,6 +150,7 @@ export class DynamicObject extends VisualObject {
 
 	/** Deletes this object from the dynamicObjects list */
 	delete() {
+		super.delete();
 		DynamicObject.dynamicObjects = Util.delValue(DynamicObject.dynamicObjects, this);
 	}
 

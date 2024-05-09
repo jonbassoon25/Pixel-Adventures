@@ -44,8 +44,7 @@ export class Cutscene extends Gamestate {
 	static update() {
 		//Update SceneTiles and shaders
 		Scene.drawBackground();
-		Scene.updateDoor();
-		Scene.shade();
+		Scene.drawShaderBackground();
 
 		//If animations are done playing, draw static images
 		if (AnimationPlayer.currentAnimations.length == 0) {

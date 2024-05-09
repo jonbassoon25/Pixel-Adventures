@@ -1,13 +1,11 @@
-//Game Entity Imports
-import { Enemy } from "./Enemy.js";
-
 //Util Imports
+import { AudioPlayer } from "../util/AudioPlayer.js";
+import { Scene } from "../util/Scene.js";
 import { Util } from "../util/Util.js";
 import { Vector } from "../util/Vector.js";
-import { Scene } from "../util/Scene.js";
-import { AudioPlayer } from "../util/AudioPlayer.js";
 
-
+//Game Entity Imports
+import { Enemy } from "./Enemy.js";
 
 export class Slime extends Enemy {
 	/*
@@ -83,7 +81,6 @@ export class Slime extends Enemy {
 			return;
 		}
 	}
-	
 
 	//*********************************************************************//
 	//Public Methods - Must have JSDocs
