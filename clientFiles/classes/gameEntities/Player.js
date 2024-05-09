@@ -148,6 +148,12 @@ export class Player extends DynamicObject {
 		if (Scene.structure[row][col] instanceof Door) {
 			AudioPlayer.play("door");
 			Level.level++;
+			if (Level.level != 4) {
+				document.dispatchEvent(new CustomEvent("sceneChange", {"detail": "initCutscene"}));
+			} else {
+				document.dispatchEvent(new CustomEvent("sceneChange", {"detail": "initWin"}));
+			}
+			
 		}
 
 		if (Scene.structure[row][col] instanceof Grave) {

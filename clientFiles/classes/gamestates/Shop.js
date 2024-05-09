@@ -39,6 +39,7 @@ export class Shop extends Gamestate {
 	
 	//*********************************************************************//
 	//Private Static Methods
+	
 	static #getCostOf(upgrade) {
 		return Math.round((6 + Player.upgradesBought[upgrade] * 4) * Difficulty.priceMult);
 	}

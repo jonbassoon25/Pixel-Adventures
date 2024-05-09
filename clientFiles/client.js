@@ -54,6 +54,7 @@ import { SceneTile } from "./classes/gameObjects/SceneTile.js";
 import { DynamicObject } from "./classes/gameEntities/DynamicObject.js";
 import { Player } from "./classes/gameEntities/Player.js";
 import { Settings } from "./classes/gamestates/Settings.js";
+import { ShadedObject } from "./classes/util/ShadedObject.js";
 
 
 //------------------------------------------------------------------------------------//
@@ -68,8 +69,6 @@ const socket = io();
 //Variables
 
 let lastFrameTime = new Date().getTime();
-
-let lastLevel = 1;
 
 //------------------------------------------------------------------------------------//
 //Util Functions
@@ -97,15 +96,6 @@ function updateGame() {
 		lastLevel = 1;
 		DynamicObject.clear();
 		scene = "initMenu";
-	}
-
-	if (Level.level != lastLevel && !(Level.level == 4)) {
-		scene = "initCutscene";
-		lastLevel = Level.level;
-	} else if (Level.level == 4) {
-		Level.level = 1;
-		lastLevel = 1;
-		scene = "initWin";
 	}
 	
 	switch (scene) {
@@ -220,7 +210,8 @@ function updateGame() {
 		case "sceneCreator":
 			if (Keyboard.shiftPressed) {
 				Scene.flash();
-				
+
+				ShadedObject.clear();
 				Game.player1 = new Player(100, 100, "red", "wadfs");
 				Game.player2 = new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
 				Level.spawnEntities();

@@ -19,6 +19,7 @@ import { ChestTile } from "../gameObjects/ChestTile.js";
 import { DynamicObject } from "../gameEntities/DynamicObject.js";
 import { Item } from "../gameEntities/Item.js";
 import { Player } from "../gameEntities/Player.js";
+import { ShadedObject } from "../util/ShadedObject.js";
 
 //Game Class
 export class Game extends Gamestate {
@@ -46,6 +47,10 @@ export class Game extends Gamestate {
 			Player.upgradesBought = {"playerOneWeapon": 0, "playerOneHealth": 0, "playerOneRegen": 0, "playerOneSpeed": 0, "playerOneJump": 0, "playerTwoWeapon": 0, "playerTwoHealth": 0, "playerTwoRegen": 0, "playerTwoSpeed": 0, "playerTwoJump": 0};
 		}
 		ChestTile.clear();
+		ShadedObject.clear();
+		DynamicObject.clear();
+		Game.player1 = new Player(100, 100, "red", "wadfs");
+		Game.player2 = new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
 		Item.clear();
 		Level.init();
 		this.substate = "requestingLevel";
@@ -80,6 +85,14 @@ export class Game extends Gamestate {
 					this.player2 = null;
 					this.setScene("initLose");
 					break;
+				}
+
+				if (Keyboard.isKeyDown("`") && Keyboard.isKeyPressed("r")) {
+					Display.clear();
+					DynamicObject.clear();
+					Level.level = 1;
+
+					this.setScene("initGame");
 				}
 
 				Scene.drawBackground();

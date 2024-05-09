@@ -8,6 +8,7 @@ import { ObscuredRegion } from "../gameObjects/ObscuredRegion.js";
 
 export class Level {
 	static level = 1;
+	
 	static init(level = Level.level) {
 		DynamicObject.clearEnemies();
 		TriggerRegion.clear();
@@ -15,6 +16,7 @@ export class Level {
 		Scene.shaderStructure = null;
 		document.dispatchEvent(new CustomEvent("emit", {"detail": {"name": "loadScene", "data": "level" + level.toString()}}));
 	}
+	
 	static spawnEntities(level = Level.level) {
 		switch (level) {
 			case 1:

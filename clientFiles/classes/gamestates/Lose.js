@@ -2,6 +2,7 @@
 import { AnimationPlayer } from "../util/AnimationPlayer.js";
 import { AudioPlayer } from "../util/AudioPlayer.js";
 import { Display } from "../util/Display.js";
+import { ShadedObject } from "../util/ShadedObject.js";
 import { Level } from "../util/Level.js";
 
 //UI Object Imports
@@ -38,6 +39,8 @@ export class Lose extends Gamestate {
 		AudioPlayer.play("lose");
 		Display.clear();
 		DynamicObject.clear();
+		ShadedObject.clear();
+		
 		Level.level = 1;
 		this.setScene("lose");
 	}
