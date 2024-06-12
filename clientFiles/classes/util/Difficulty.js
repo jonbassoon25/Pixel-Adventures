@@ -13,8 +13,8 @@ export class Difficulty {
 	//Public Static Methods
 
 	static setEasy() {
-		this.enemyHealthMult = 0.5;
-		this.enemyDamageMult = 0.5;
+		this.enemyHealthMult = 0.75;
+		this.enemyDamageMult = 0.75;
 		this.enemySpeedMult = 0.9;
 		this.priceMult = 0.75;
 		this.pointMultiplier = 0.25;
@@ -31,10 +31,10 @@ export class Difficulty {
 	}
 
 	static setHard() {
-		this.enemyHealthMult = 2;
+		this.enemyHealthMult = 1.5;
 		this.enemyDamageMult = 1.5;
-		this.enemySpeedMult = 1.25;
-		this.priceMult = 1.5;
+		this.enemySpeedMult = 1.1;
+		this.priceMult = 1;
 		this.pointMultiplier = 2;
 		this.currentDifficulty = "hard";
 	}
@@ -44,7 +44,7 @@ export class Difficulty {
 		this.enemyDamageMult = customValues["enemyDamageMult"];
 		this.enemySpeedMult = customValues["enemySpeedMult"];
 		this.priceMult = customValues["priceMult"];
-		this.pointMultiplier = 1;
+		this.pointMultiplier = 0;
 		this.currentDifficulty = "custom";
 	}
 }

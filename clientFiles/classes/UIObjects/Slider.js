@@ -2,10 +2,12 @@
 import { Display } from "../util/Display.js";
 import { Mouse } from "../util/Mouse.js";
 import { Util } from "../util/Util.js"
-import { VisualObject } from "../util/VisualObject.js";
 
-//UIObject Imports
+//UI Object Imports
 import { Button } from "./Button.js";
+
+//Basic Object Imports
+import { VisualObject } from "../basicObjects/VisualObject.js";
 
 //Slider Class
 export class Slider extends VisualObject {

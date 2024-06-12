@@ -6,20 +6,25 @@ import { Difficulty } from "../util/Difficulty.js";
 import { Level } from "../util/Level.js";
 import { Scene } from "../util/Scene.js";
 import { SceneBuilder } from "../util/SceneBuilder.js";
+import { Vector } from "../util/Vector.js";
 
 //UI Object Imports
 
 //Gamestate Imports
 import { Gamestate } from "./Gamestate.js";
 
-//Game Object Imports
-import { ChestTile } from "../gameObjects/ChestTile.js";
-
 //Game Entity Imports
-import { DynamicObject } from "../gameEntities/DynamicObject.js";
 import { Item } from "../gameEntities/Item.js";
 import { Player } from "../gameEntities/Player.js";
-import { ShadedObject } from "../util/ShadedObject.js";
+import { Particle } from "../gameEntities/Particle.js";
+
+//Basic Object Imports
+import { DynamicObject } from "../basicObjects/DynamicObject.js";
+import { InteractableObject } from "../basicObjects/InteractableObject.js";
+import { ShadedObject } from "../basicObjects/ShadedObject.js";
+import { Util } from "../util/Util.js";
+import { Shop } from "./Shop.js";
+
 
 //Game Class
 export class Game extends Gamestate {
@@ -44,10 +49,12 @@ export class Game extends Gamestate {
 		
 		Display.clear(); 
 		if (Level.level == 1) {
+			Shop.maceBought = false;
+			Shop.glassBroken = false;
 			Player.upgradesBought = {"playerOneWeapon": 0, "playerOneHealth": 0, "playerOneRegen": 0, "playerOneSpeed": 0, "playerOneJump": 0, "playerTwoWeapon": 0, "playerTwoHealth": 0, "playerTwoRegen": 0, "playerTwoSpeed": 0, "playerTwoJump": 0};
 		}
-		ChestTile.clear();
 		ShadedObject.clear();
+		InteractableObject.clear();
 		DynamicObject.clear();
 		Game.player1 = new Player(100, 100, "red", "wadfs");
 		Game.player2 = new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
@@ -74,6 +81,7 @@ export class Game extends Gamestate {
 					this.player1.facingLeft = false;
 					this.player2.facingLeft = false;
 					Level.spawnEntities();
+					Level.loadDecorations();
 					this.substate = "game";
 				}
 				break;
@@ -93,6 +101,10 @@ export class Game extends Gamestate {
 					Level.level = 1;
 
 					this.setScene("initGame");
+				}
+
+				if (Keyboard.isKeyPressed("r")) {
+					new Particle("testParticle", ...Scene.snapCoordinates(698, 97), 35, 35, new Vector([1, -3]), 3);
 				}
 
 				Scene.drawBackground();
@@ -124,15 +136,25 @@ export class Game extends Gamestate {
 
 				Scene.drawShadedObjects();
 
-
-				
 				Display.drawText("Player 1 Coins: " + this.player1.coins.toString(), 50, 50, 40, true, "white");
 				Display.drawText("Player 2 Coins: " + this.player2.coins.toString(), 1920 - ("Player 2 Coins: " + this.player2.coins.toString()).length * 30, 50, 40, true, "white");
 
 				if (Difficulty.pointMultiplier != 0) {
 					Display.drawText("Score: " + Math.round((this.player1.points + this.player2.points) * Difficulty.pointMultiplier).toString(), 1920/2 - ("Combined Points: " + Math.round((this.player1.points + this.player2.points) * Difficulty.pointMultiplier).toString()).length * 40 * 0.55 / 2, 50, 40, true, "white");
 				}
-				
+
+				//Spawn random light source particles
+				if (Util.randInt(2) == 0 && Display.frames % 20 == 0) {
+					for (let i = 0; i < Scene.lightSources.length; i++) {
+						if (Util.randInt(3) == 0) {
+							let angle = Util.randInt(119);
+							let vel = 0.5;
+							new Particle("spark", Scene.lightSources[i][0], Scene.lightSources[i][1], 4, 4, new Vector([vel * Math.cos(angle * Math.PI/180), vel * Math.sin(angle * Math.PI/180)]), 0.5, 0.7, false, false, false);
+							new Particle("spark", Scene.lightSources[i][0], Scene.lightSources[i][1], 4, 4, new Vector([vel * Math.cos(angle * Math.PI/180 - (2 * Math.PI/3)), vel * Math.sin(angle * Math.PI/180 - (2 * Math.PI/3))]), 0.5, 0.7, false, false, false);
+							new Particle("spark", Scene.lightSources[i][0], Scene.lightSources[i][1], 4, 4, new Vector([vel * Math.cos(angle * Math.PI/180 - (4 * Math.PI/3)), vel * Math.sin(angle * Math.PI/180 - (4 * Math.PI/3))]), 0.5, 0.7, false, false, false);
+						}
+					}
+				}
 				//Update trigger regions
 				//TriggerRegion.update();
 				//(For Testing) Display player visual dimensions

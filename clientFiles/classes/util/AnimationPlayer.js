@@ -68,4 +68,12 @@ export class AnimationPlayer {
 		}
 		return false;
 	}
+
+    /** Fetches the first instance of a currently playing animation */
+    static getAnimation(animationName) {
+        for (let i = 0; i < this.currentAnimations.length; i++) {
+            if (this.currentAnimations[i]["name"] == animationName) return this.currentAnimations[i];
+        }
+        return null;
+    }
 }

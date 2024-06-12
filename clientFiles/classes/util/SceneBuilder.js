@@ -7,8 +7,6 @@ import { SceneCreator } from "./SceneCreator.js";
 import { Util } from "./Util.js";
 
 //Game Object Imports
-import { ChestTile } from "../gameObjects/ChestTile.js";
-import { Door } from "../gameObjects/Door.js";
 import { LightTile } from "../gameObjects/LightTile.js";
 import { SceneTile } from "../gameObjects/SceneTile.js";
 
@@ -26,19 +24,17 @@ export class SceneBuilder {
 	"	Use arrow keys to edit block specific properties\n" +
 	"	Press 'b' to bake scene lighting\n" +
 	"	Press 'c' to clear current scene\n" + 
-	"	Press 'k' to save current scene\n" + 
-	"	Press 'l' to load last saved scene\n" +
+	"	Press '~ + 1-0' to save current scene\n" + 
+	"	Press '~ + idk' to load last saved scene\n" +
 	"	Press 'm' to enable mouse controls\n" + 
 	"	Press 'n' to toggle collision for placed blocks\n" +
 	"	Press 'o' to toggle collision editor\n" +
 	"	Press 'z' to log the currently selected tile\n" +
 	"	Press '1' to replace tile with air\n" + 
 	"	Press '2' to replace tile with stone bricks\n" + 
-	"	Press '4' to replace tile with rotten wood\n" + 
+	"	Press '4' to replace tile with wood\n" + 
 	"	Press '6' to place light\n" + 
 	"	Press '7' to place vines\n" +
-	"	Press '8' to place chest\n" +
-	"	Press '9' to place door\n" +
 	"	Press '=' to replace tile with placeholder\n" + 
   "\n	Press 'h' to relog instructions";
 
@@ -90,19 +86,9 @@ export class SceneBuilder {
 		this.structure[this.cursorY][this.cursorX] = new SceneTile("wood", this.cursorX, this.cursorY, true);
 	}
 
-	static #setChest() {
-		let replacedTile = this.structure[this.cursorY][this.cursorX];
-		this.structure[this.cursorY][this.cursorX] = new ChestTile(replacedTile.image, this.cursorX, this.cursorY, replacedTile.hasVines);
-	}
-
-	static #setDoor() {
-		let replacedTile = this.structure[this.cursorY][this.cursorX];
-		this.structure[this.cursorY][this.cursorX] = new Door(replacedTile.image, this.cursorX, this.cursorY, replacedTile.hasVines);
-	}
-
-	static #save() {
-		document.dispatchEvent(new CustomEvent("emit", {"detail": {"name": "lastSaved", "data": this.structure}}));
-		console.log("saving scene");
+	static #save(fileName = "lastSaved") {
+		document.dispatchEvent(new CustomEvent("emit", {"detail": {"name": "saveScene", "data": [fileName, this.structure]}}));
+		console.log("Saving scene to " + fileName);
 	}
 
 	static #load(name = "lastSaved") {
@@ -136,11 +122,75 @@ export class SceneBuilder {
 		//Save
 		if (Keyboard.isKeyDown("`") && Keyboard.isKeyPressed("k")) {
 			this.#save();
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.altDown && Keyboard.isKeyPressed("1")) {
+			this.#save("Save_1");
+			Keyboard.keyUp("1");
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.altDown && Keyboard.isKeyPressed("2")) {
+			this.#save("Save_2");
+			Keyboard.keyUp("2");
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.altDown && Keyboard.isKeyPressed("3")) {
+			this.#save("Save_3");
+			Keyboard.keyUp("3");
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.altDown && Keyboard.isKeyPressed("4")) {
+			this.#save("Save_4");
+			Keyboard.keyUp("4");
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.altDown && Keyboard.isKeyPressed("5")) {
+			this.#save("Save_5");
+			Keyboard.keyUp("5");
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.altDown && Keyboard.isKeyPressed("6")) {
+			this.#save("Save_6");
+			Keyboard.keyUp("6");
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.altDown && Keyboard.isKeyPressed("7")) {
+			this.#save("Save_7");
+			Keyboard.keyUp("7");
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.altDown && Keyboard.isKeyPressed("8")) {
+			this.#save("Save_8");
+			Keyboard.keyUp("8");
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.altDown && Keyboard.isKeyPressed("9")) {
+			this.#save("Save_9");
+			Keyboard.keyUp("9");
+			return;
 		}
 
 		//Load
 		if (Keyboard.isKeyDown("`") && Keyboard.isKeyPressed("l")) {
 			this.#load();
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.isKeyPressed("1")) {
+			this.#load("Save_1");
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.isKeyPressed("2")) {
+			this.#load("Save_2");
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.isKeyPressed("3")) {
+			this.#load("Save_3");
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.isKeyPressed("4")) {
+			this.#load("Save_4");
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.isKeyPressed("5")) {
+			this.#load("Save_5");
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.isKeyPressed("6")) {
+			this.#load("Save_6");
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.isKeyPressed("7")) {
+			this.#load("Save_7");
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.isKeyPressed("8")) {
+			this.#load("Save_8");
+			return;
+		} else if (Keyboard.isKeyDown("`") && Keyboard.isKeyPressed("9")) {
+			this.#load("Save_9");
 			return;
 		}
 
@@ -201,28 +251,12 @@ export class SceneBuilder {
 				currentTile.strength += 1;
 				console.log("New Light Strength: " + currentTile.strength);
 			}
-			if (currentTile instanceof ChestTile) {
-				currentTile.coinRange[1]++;
-				console.log("New Coin Range: " + currentTile.coinRange);
-			}
 		}
 		
 		if (Keyboard.isKeyPressed("down")) {
 			if (currentTile instanceof LightTile) {
 				currentTile.strength -= 1;
 				console.log("New Light Strength: " + currentTile.strength);
-			}
-			if (currentTile instanceof ChestTile) {
-				if (currentTile.coinRange[1] > currentTile.coinRange[0]) {
-					currentTile.coinRange[1]--;
-					console.log("New Coin Range: " + currentTile.coinRange);
-				} else if (currentTile.coinRange[0] > 1) {
-					currentTile.coinRange[0]--;
-					currentTile.coinRange[1]--;
-					console.log("New Coin Range: " + currentTile.coinRange);
-				} else {
-					console.log("coinRange cannot go lower");
-				}
 			}
 		}
 		
@@ -231,30 +265,12 @@ export class SceneBuilder {
 				currentTile.radius -= 1;
 				console.log("New Light Radius: " + currentTile.radius);
 			}
-			if (currentTile instanceof ChestTile) {
-				if (currentTile.coinRange[0] > 1) {
-					currentTile.coinRange[0]--;
-					console.log("New Coin Range: " + currentTile.coinRange);
-				} else {
-					console.log("Min coins cannot go lower")
-				}
-			}
 		}
 		
 		if (Keyboard.isKeyPressed("right")) {
 			if (currentTile instanceof LightTile) {
 				currentTile.radius += 1;
 				console.log("New Light Radius: " + currentTile.radius);
-			}
-			if (currentTile instanceof ChestTile) {
-				if (currentTile.coinRange[0] < currentTile.coinRange[1]) {
-					currentTile.coinRange[0]++;
-					console.log("New Coin Range: " + currentTile.coinRange);
-				} else {
-					currentTile.coinRange[0]++;
-					currentTile.coinRange[1]++;
-					console.log("New Coin Range: " + currentTile.coinRange);
-				}
 			}
 		}
 
@@ -281,12 +297,6 @@ export class SceneBuilder {
 		if (Keyboard.isKeyPressed("7")) {
 			currentTile.hasVines = !currentTile.hasVines;
 			console.log("Vines " + ((currentTile.hasVines)? "enabled" : "disabled"));
-		}
-		if (Keyboard.isKeyPressed("8")) {
-			this.#setChest();
-		}
-		if (Keyboard.isKeyPressed("9")) {
-			this.#setDoor();
 		}
 		if (Keyboard.isKeyDown("=")) {
 			this.#setPlaceholder();
@@ -319,7 +329,7 @@ export class SceneBuilder {
 			for (let j = Math.max(Scene.lightQuality * (light.row - light.radius + 1), 0); j < this.shaderStructure.length && j < Scene.lightQuality * (light.row + light.radius); j++) {
 				for (let i = Math.max(Scene.lightQuality * (light.col - light.radius + 1), 0); i < this.shaderStructure[j].length && i < Scene.lightQuality * (light.col + light.radius); i++) {
 					let shaderTile = this.shaderStructure[j][i];
-					let shaderLevel = (Util.pythagorean(((1/Scene.lightQuality) * (shaderTile.col - Scene.lightQuality/2 + 1/2)) - light.col, ((1/Scene.lightQuality) * (shaderTile.row - Scene.lightQuality/2 + 1/2)) - light.row)/light.radius) * 20/light.strength;
+					let shaderLevel = Math.pow(Util.pythagorean(((1/Scene.lightQuality) * (shaderTile.col - Scene.lightQuality/2 + 1/2)) - light.col, ((1/Scene.lightQuality) * (shaderTile.row - Scene.lightQuality/2 + 1/2)) - light.row)/light.radius, 1) * 20/light.strength;
 					shaderLevel = Math.min(shaderLevel, shaderTile.shaderLevel);
 					shaderTile.shaderLevel = shaderLevel;
 				}

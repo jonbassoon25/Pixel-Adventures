@@ -1,13 +1,12 @@
 //Util Imports
 import { Display } from "./Display.js";
-import { ShadedObject } from "./ShadedObject.js";
-
-//Gamestate imports
-import { Game } from "../gamestates/Game.js";
+import { Util } from "./Util.js";
 
 //Game Object Imports
 import { SceneTile } from "../gameObjects/SceneTile.js";
 
+//Basic Object Imports
+import { ShadedObject } from "../basicObjects/ShadedObject.js";
 
 //Scene Class
 export class Scene {
@@ -20,8 +19,10 @@ export class Scene {
 	static tileBackground = null;
 	static shaderBackground = null;
 	static shadersToUpdate = [];
-	//Must be in function 2^x power. x >= 1. x is an element of all integers. Recommended 16 or less
-	static lightQuality = Math.pow(2, 1);
+	static decorations = [];
+	static lightSources = [];
+	//Must be in function 2^x power. x >= 1. x is an element of all integers
+	static lightQuality = Math.pow(2, 3);
 
 	//*********************************************************************//
 	//Public Static Methods
@@ -35,7 +36,23 @@ export class Scene {
 		this.structure = structure;
 		this.shaderStructure = shaderStructure;
 		this.tileSize = tileSize;
-		
+		this.lightSources = [];
+		//Identify light sources for particle generation
+		for (let i = 0; i < structure.length; i++) {
+			for (let j = 0; j < structure[i].length; j++) {
+				if (structure[i][j].type == "LightTile") {
+					//Don't spawn particles at a light source if it is obscured by a decoration
+					let allowed = true;
+					for (let k = 0; k < this.decorations.length; k++) {
+						if (this.decorations[k].isEnclosing([structure[i][j].x, structure[i][j].y])) {
+							allowed = false;
+							break;
+						}
+					}
+					if (allowed) this.lightSources.push([structure[i][j].x, structure[i][j].y]);
+				}
+			}
+		}
 		this.flash();
 	}
 
@@ -52,6 +69,14 @@ export class Scene {
 		}
 	}
 
+	/** Draws all background decorations */
+	static drawDecorations() {
+		for (let i = 0; i < this.decorations.length; i++) {
+			this.decorations[i].update();
+		}
+		return;
+	}
+	
 	/** Draws the shaders for all shadedObjects */
 	static drawShadedObjects() {
 		let curObj;
@@ -61,7 +86,7 @@ export class Scene {
 			for (let j = 0; j < Object.values(ShadedObject.shadedObjects)[i].length; j++) {
 				//Assign current object
 				curObj = Object.values(ShadedObject.shadedObjects)[i][j];
-
+				if (!curObj.shaded) continue;
 				Display.drawData(this.tileBackground, 0, 0, ...curObj.vUpperLeft, curObj.visualWidth, curObj.visualHeight);
 			}
 			
@@ -70,7 +95,7 @@ export class Scene {
 		//Draw Shaded Objects
 		for (let i = Object.keys(ShadedObject.shadedObjects).length - 1; i >= 0; i--) {
 			for (let j = 0; j < Object.values(ShadedObject.shadedObjects)[i].length; j++) {
-				//Assign current object
+				//Draw current object
 				Object.values(ShadedObject.shadedObjects)[i][j].draw();
 			}
 
@@ -82,7 +107,7 @@ export class Scene {
 		for (let i = Object.keys(ShadedObject.shadedObjects).length - 1; i >= 0; i--) {
 			for (let j = 0; j < Object.values(ShadedObject.shadedObjects)[i].length; j++) {
 				curObj = Object.values(ShadedObject.shadedObjects)[i][j];
-
+				if (!curObj.shaded) continue;
 				Display.drawData(this.shaderBackground, 0, 0, ...curObj.vUpperLeft, curObj.visualWidth, curObj.visualHeight, true);
 			}
 
@@ -97,7 +122,24 @@ export class Scene {
 	static calcBlockCoordinates(x, y) {
 		return [Math.floor(x / this.tileSize), Math.floor(y / this.tileSize)];
 	}
+	
+	/**
+	 * @param {number} x - x block coordinate to calculate
+	 * @param {number} y - y block coordinate to calculate
+	 * @returns {number[]} Coordinates of the passed in point. Formatted as [x, y]
+	 */
+	static inverseCalcBlockCoordinates(col, row) {
+		return [Math.floor(col * this.tileSize + this.tileSize / 2), Math.floor(row * this.tileSize + this.tileSize / 2)];
+	}
 
+	/**
+	 * @param {number} x - x block coordinate to calculate
+	 * @param {number} y - y block coordinate to calculate
+	 * @returns {number[]} Coordinates of the passed in point, snaped to the nearest tile. Formatted as [x, y]
+	 */
+	static snapCoordinates(x, y) {
+		return [...Scene.inverseCalcBlockCoordinates(...Scene.calcBlockCoordinates(x, y))];
+	}
 	/**
 	 * @param {number} x - x coordinate of request
 	 * @param {number} y - y coordinate of request
@@ -160,6 +202,8 @@ export class Scene {
 		Display.clear();
 
 		this.displayAllTiles();
+		this.drawDecorations();
+		
 		this.tileBackground = Display.imageData;
 
 		this.displayAllShaders();

@@ -10,10 +10,8 @@ import { Difficulty } from "../util/Difficulty.js";
 import { Game } from "./Game.js";
 import { Gamestate } from "./Gamestate.js";
 
-//Game Object Imports
-
-//Game Entity Imports
-import { DynamicObject } from "../gameEntities/DynamicObject.js";
+//Basic Object Imports
+import { DynamicObject } from "../basicObjects/DynamicObject.js";
 
 //SaveScore Class
 export class SaveScore extends Gamestate {

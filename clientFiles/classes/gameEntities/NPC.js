@@ -3,14 +3,14 @@ import { Scene } from "../util/Scene.js";
 import { Util } from "../util/Util.js";
 import { Vector } from "../util/Vector.js";
 
-//Game Entity Imports
-import { DynamicObject } from "./DynamicObject.js";
+//Basic Object Imports
+import { DynamicObject } from "../basicObjects/DynamicObject.js";
 
 //NPC Class
 export class NPC extends DynamicObject {
 	//Constructor
-	constructor(x, y, width = 30, height = 30, wanderDistance = 0, image = "placeholder", speed = 2) {
-		super(image, 1, x, y, width, height);
+	constructor(type, x, y, width = 30, height = 30, wanderDistance = 0, speed = 2) {
+		super(type, 1, x, y, width, height);
 		//Maximum speed of the enemy in px/frame
 		this.speed = speed;
 		//Inital speed at bottom of jump

@@ -7,7 +7,7 @@ export class Animation {
 
 	static compiled = false;
 
-    //Templates formatted as {"name": keyframe properties dictionary}
+    //Templates formatted as {"name": keyframes[ keyframe properties ] }
     static templates = {
 		"pano": [ //initial keyframe requires "image", "initialPosition", "initialDimensions", "frames"
 			{
@@ -21,37 +21,41 @@ export class Animation {
 				"finalPosition": [1920/2, 30],
 				"frames": 1050,
 				"transitionType": "sinusoidal"
+			}
+		],
+		"flasher": [ //initial keyframe requires "image", "initialPosition", "initialDimensions", "frames"
+			{
+				"image": "flasher1",
+				"initialPosition": [1920/2, 1080/2 + 240 + 60],
+				"initialDimensions": [408, 144],
+				"initialRotation": -1,
+				"finalRotation": 1,
+				"frames": 25,
+				"transitionType": "sinusoidal"
 			},
+			{
+				"image": "flasher2",
+				"finalRotation": -1
+			}
 		],
 		"menuFadeIn": [
 			{
-				"image": "shader_20", "initialPosition": [1920/2, 1080/2], "initialDimensions": [1920, 1080], "frames": 90
+				"image": "blackTile", "initialPosition": [1920/2, 1080/2], "initialDimensions": [1920, 1080], "frames": 90
 			},
-			{"image": "shader_19", "frames": 4}, {"image": "shader_18"}, {"image": "shader_17"}, {"image": "shader_16"},
-			{"image": "shader_15"}, {"image": "shader_14"}, {"image": "shader_13"}, {"image": "shader_12"},
-			{"image": "shader_11"}, {"image": "shader_10"}, {"image": "shader_09"}, {"image": "shader_08"},
-			{"image": "shader_07"}, {"image": "shader_06"}, {"image": "shader_05"}, {"image": "shader_04"},
-			{"image": "shader_03"}, {"image": "shader_02"}, {"image": "shader_01"}, {"image": "shader_00"}
+			{
+				"finalOpacity": 0,
+				"frames": 60
+			}
 		],
 		"fadeIn": [
 			{
-				"image": "shader_20", "initialPosition": [1920/2, 1080/2], "initialDimensions": [1920, 1080], "frames": 4
-			},
-			{"image": "shader_19"}, {"image": "shader_18"}, {"image": "shader_17"}, {"image": "shader_16"},
-			{"image": "shader_15"}, {"image": "shader_14"}, {"image": "shader_13"}, {"image": "shader_12"},
-			{"image": "shader_11"}, {"image": "shader_10"}, {"image": "shader_09"}, {"image": "shader_08"},
-			{"image": "shader_07"}, {"image": "shader_06"}, {"image": "shader_05"}, {"image": "shader_04"},
-			{"image": "shader_03"}, {"image": "shader_02"}, {"image": "shader_01"}, {"image": "shader_00"}
+				"image": "blackTile", "initialPosition": [1920/2, 1080/2], "initialDimensions": [1920, 1080], "finalOpacity": 0, "frames": 60
+			}
 		],
 		"fadeOut": [
 			{
-				"image": "shader_00", "initialPosition": [1920/2, 1080/2], "initialDimensions": [1920, 1080], "frames": 4
-			},
-			{"image": "shader_01"}, {"image": "shader_02"}, {"image": "shader_03"}, {"image": "shader_04"},
-			{"image": "shader_05"}, {"image": "shader_06"}, {"image": "shader_07"}, {"image": "shader_08"},
-			{"image": "shader_09"}, {"image": "shader_10"}, {"image": "shader_11"}, {"image": "shader_12"},
-			{"image": "shader_13"}, {"image": "shader_14"}, {"image": "shader_15"}, {"image": "shader_16"},
-			{"image": "shader_17"}, {"image": "shader_18"}, {"image": "shader_19"}, {"image": "shader_20"}
+				"image": "blackTile", "initialPosition": [1920/2, 1080/2], "initialDimensions": [1920, 1080], "initialOpacity": 0, "finalOpacity": 100, "frames": 60
+			}
 		],
 		"level1Shard": [
 			{
@@ -137,6 +141,103 @@ export class Animation {
 				"frames": 60,
 				"transitionType": "sinusoidal"
 			}
+		],
+		"doorOpen": [
+			{
+				"image": "door", 
+				"initialPosition": [1920/2, 1080 - 288/2],
+				"finalPosition": [1920/2 - 192/2, 1080 - 288/2],
+				"initialDimensions": [192, 288],
+				"finalDimensions": [0, 288],
+				"frames": 60,
+				"transitionType": "sinusoidal 1/2"
+			}
+		],
+		"coinTossFromRed": [
+			{
+				"image": "coin",
+				"initialPosition": [200, 1080/2],
+				"finalPosition": [1920 - 200, 1080/2 - 250],
+				"initialDimensions": [0, 0],
+				"finalDimensions": [81, 81],
+				"frames": 50,
+				"transitionType": "linear",
+				"yTransitionType": "projectileArc",
+				"widthTransitionType": "coinToss",
+				"heightTransitionType": "coinToss"
+			}
+		],
+		"coinTossFromBlue": [
+			{
+				"image": "coin",
+				"initialPosition": [1920 - 200, 1080/2],
+				"finalPosition": [200, 1080/2 - 250],
+				"initialDimensions": [0, 0],
+				"finalDimensions": [81, 81],
+				"frames": 50,
+				"transitionType": "linear",
+				"yTransitionType": "projectileArc",
+				"widthTransitionType": "coinToss",
+				"heightTransitionType": "coinToss"
+			}
+		],
+		"priceTagFalls": [
+			{
+				"image": "priceTag",
+				"initialPosition": [1920/2 + 90, 220 + 190],
+				"finalPosition": [1920/2  + 180, 1400],
+				"initialDimensions": [100, 44],
+				"initialRotation": 45,
+				"finalRotation": 120,
+				"frames": 80,
+				"transitionType": "linear",
+				"yTransitionType": "sinusoidal 1/2",
+				"xTransitionType": "bounce",
+				"rotationTransitionType": "bounce"
+			}
+		],
+		"redJump": [
+			{
+				"image": "redPlayerJump",
+				"initialPosition": [1920/2 - 800, 1080/2],
+				"initialDimensions": [240, 240],
+				"finalPosition": [1920/2 - 800, 1080/2 - 130],
+				"transitionType": "projectileArc",
+				"frames": 30,
+			},
+			{
+				"image": "redPlayer",
+				"initialPosition": [1920/2 - 800, 1080/2],
+				"frames": 30,
+			}
+		],
+		"blueJump": [
+			{
+				"image": "bluePlayerFlipped",
+				"initialPosition": [1920/2 + 800, 1080/2],
+				"initialDimensions": [240, 240],
+				"frames": 30,
+			},
+			{
+				"image": "bluePlayerJumpFlipped",
+				"initialPosition": [1920/2 + 800, 1080/2],
+				"finalPosition": [1920/2 + 800, 1080/2 - 130],
+				"transitionType": "projectileArc",
+				"frames": 30,
+			}
+		],
+		"maceWarning": [
+			{
+				"image": "maceWarning",
+				"initialPosition": [1920/2, 1000],
+				"finalPosition": [1920/2, 1080/2 + 110],
+				"initialDimensions": [0, 0],
+				"finalDimensions": [1185, 40],
+				"finalOpacity": 0,
+				"frames": 80,
+				"transitionType": "log",
+				"opacityTransitionType": "growth",
+			}
 		]
     };
 
@@ -165,12 +266,46 @@ export class Animation {
 					if (currentKeyframe["finalDimensions"] == undefined) {
 						currentKeyframe["finalDimensions"] = currentKeyframe["initialDimensions"];
 					}
-					if (currentKeyframe["transitionType"] == undefined) {
-						currentKeyframe["transitionType"] = "linear";	
-					}
 					if (currentKeyframe["startFrame"] == undefined) {
 						currentKeyframe["startFrame"] = 0;
 					}
+					if (currentKeyframe["initialRotation"] == undefined) {
+						currentKeyframe["initialRotation"] = 0;
+					}
+					if (currentKeyframe["finalRotation"] == undefined) {
+						currentKeyframe["finalRotation"] = currentKeyframe["initialRotation"];
+					}
+					if (currentKeyframe["initialOpacity"] == undefined) {
+						currentKeyframe["initialOpacity"] = 100;
+					}
+					if (currentKeyframe["finalOpacity"] == undefined) {
+						currentKeyframe["finalOpacity"] = currentKeyframe["initialOpacity"];
+					}
+					//Transition type
+					if (currentKeyframe["transitionType"] == undefined) {
+						currentKeyframe["transitionType"] = "linear";
+					}
+
+					//Substitue in Transition type for any undefined elements
+					if (currentKeyframe["xTransitionType"] == undefined) {
+						currentKeyframe["xTransitionType"] = currentKeyframe["transitionType"];
+					}
+					if (currentKeyframe["yTransitionType"] == undefined) {
+						currentKeyframe["yTransitionType"] = currentKeyframe["transitionType"];
+					}
+					if (currentKeyframe["widthTransitionType"] == undefined) {
+						currentKeyframe["widthTransitionType"] = currentKeyframe["transitionType"];
+					}
+					if (currentKeyframe["heightTransitionType"] == undefined) {
+						currentKeyframe["heightTransitionType"] = currentKeyframe["transitionType"];
+					}
+					if (currentKeyframe["rotationTransitionType"] == undefined) {
+						currentKeyframe["rotationTransitionType"] = currentKeyframe["transitionType"];
+					}
+					if (currentKeyframe["opacityTransitionType"] == undefined) {
+						currentKeyframe["opacityTransitionType"] = currentKeyframe["transitionType"];
+					}
+			
 				} else {
 					previousKeyframe = currentTemplate[j - 1];
 					if (currentKeyframe["image"] == undefined) {
@@ -180,22 +315,60 @@ export class Animation {
 						currentKeyframe["initialPosition"] = previousKeyframe.finalPosition;
 					}
 					if (currentKeyframe["finalPosition"] == undefined) {
-						currentKeyframe["finalPosition"] = currentKeyframe.initialPosition;
+						currentKeyframe["finalPosition"] = currentKeyframe["initialPosition"];
 					}
 					if (currentKeyframe["initialDimensions"] == undefined) {
 						currentKeyframe["initialDimensions"] = previousKeyframe.finalDimensions;
 					}
 					if (currentKeyframe["finalDimensions"] == undefined) {
-						currentKeyframe["finalDimensions"] = currentKeyframe.initialDimensions;
-					}
-					if (currentKeyframe["transitionType"] == undefined) {
-						currentKeyframe["transitionType"] = previousKeyframe.transitionType;	
+						currentKeyframe["finalDimensions"] = currentKeyframe["initialDimensions"];
 					}
 					if (currentKeyframe["frames"] == undefined) {
 						currentKeyframe["frames"] = previousKeyframe.endFrame - previousKeyframe.startFrame;
 					}
 					if (currentKeyframe["startFrame"] == undefined) {
 						currentKeyframe["startFrame"] = previousKeyframe.endFrame;
+					}
+					if (currentKeyframe["initialRotation"] == undefined) {
+						currentKeyframe["initialRotation"] = previousKeyframe.finalRotation;
+					}
+					if (currentKeyframe["finalRotation"] == undefined) {
+						currentKeyframe["finalRotation"] = currentKeyframe["initialRotation"];
+					}
+					if (currentKeyframe["initialOpacity"] == undefined) {
+						currentKeyframe["initialOpacity"] = previousKeyframe.finalOpacity;
+					}
+					if (currentKeyframe["finalOpacity"] == undefined) {
+						currentKeyframe["finalOpacity"] = currentKeyframe["initialOpacity"];
+					}
+					
+					//Transition types
+					if (currentKeyframe["xTransitionType"] == undefined) {
+						currentKeyframe["xTransitionType"] = previousKeyframe.xTransitionType;
+					}
+					if (currentKeyframe["yTransitionType"] == undefined) {
+						currentKeyframe["yTransitionType"] = previousKeyframe.yTransitionType;
+					}
+					if (currentKeyframe["widthTransitionType"] == undefined) {
+						currentKeyframe["widthTransitionType"] = previousKeyframe.widthTransitionType;
+					}
+					if (currentKeyframe["heightTransitionType"] == undefined) {
+						currentKeyframe["heightTransitionType"] = previousKeyframe.heightTransitionType;
+					}
+					if (currentKeyframe["rotationTransitionType"] == undefined) {
+						currentKeyframe["rotationTransitionType"] = previousKeyframe.rotationTransitionType;
+					}
+					if (currentKeyframe["opacityTransitionType"] == undefined) {
+						currentKeyframe["opacityTransitionType"] = previousKeyframe.opacityTransitionType;
+					}
+					//Override all if a given transition type exists
+					if (currentKeyframe["transitionType"] != undefined) {
+						currentKeyframe["xTransitionType"] = currentKeyframe["transitionType"];
+						currentKeyframe["yTransitionType"] = currentKeyframe["transitionType"];
+						currentKeyframe["widthTransitionType"] = currentKeyframe["transitionType"];
+						currentKeyframe["heightTransitionType"] = currentKeyframe["transitionType"];
+						currentKeyframe["rotationTransitionType"] = currentKeyframe["transitionType"];
+						currentKeyframe["opacityTransitionType"] = currentKeyframe["transitionType"];
 					}
 				}
 
@@ -205,7 +378,7 @@ export class Animation {
 					currentKeyframe["endFrame"] = currentKeyframe["startFrame"] + currentKeyframe["frames"];
 				}
 				
-				this.templates[Object.keys(this.templates)[i]][j] = new Keyframe(currentKeyframe["image"], currentKeyframe["initialPosition"], currentKeyframe["finalPosition"], currentKeyframe["initialDimensions"], currentKeyframe["finalDimensions"], currentKeyframe["startFrame"], currentKeyframe["endFrame"], currentKeyframe["transitionType"]);
+				this.templates[Object.keys(this.templates)[i]][j] = new Keyframe(currentKeyframe["image"], currentKeyframe["initialPosition"], currentKeyframe["finalPosition"], currentKeyframe["initialDimensions"], currentKeyframe["finalDimensions"], currentKeyframe["initialRotation"], currentKeyframe["finalRotation"], currentKeyframe["initialOpacity"], currentKeyframe["finalOpacity"], currentKeyframe["startFrame"], currentKeyframe["endFrame"], currentKeyframe["xTransitionType"], currentKeyframe["yTransitionType"], currentKeyframe["widthTransitionType"], currentKeyframe["heightTransitionType"], currentKeyframe["rotationTransitionType"], currentKeyframe["opacityTransitionType"]);
 			}
 		}
 		//Templates have compiled successfully

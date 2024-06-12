@@ -1,7 +1,8 @@
 //Util Imports
 import { Display } from "../util/Display.js";
-import { VisualObject } from "../util/VisualObject.js";
 import { textures } from "../util/Textures.js";
+
+import { VisualObject } from "../basicObjects/VisualObject.js";
 
 //Leaderboard Class
 export class Leaderboard extends VisualObject {

@@ -2,10 +2,12 @@
 import { Display } from "../util/Display.js";
 import { Keyboard } from "../util/Keyboard.js";
 import { Mouse } from "../util/Mouse.js";
-import { VisualObject } from "../util/VisualObject.js";
 
 //UI Object Imports
 import { Button } from "./Button.js";
+
+//Basic Object Imports
+import { VisualObject } from "../basicObjects/VisualObject.js";
 
 //Textbox Class
 export class Textbox extends VisualObject {

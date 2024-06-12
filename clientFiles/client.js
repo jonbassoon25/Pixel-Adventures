@@ -45,16 +45,17 @@ import { Shop } from "./classes/gamestates/Shop.js";
 import { Win } from "./classes/gamestates/Win.js";
 
 //Game Object Imports
-import { ChestTile } from "./classes/gameObjects/ChestTile.js";
-import { Door } from "./classes/gameObjects/Door.js";
 import { LightTile } from "./classes/gameObjects/LightTile.js";
 import { SceneTile } from "./classes/gameObjects/SceneTile.js";
 
 //Game Entity Imports
-import { DynamicObject } from "./classes/gameEntities/DynamicObject.js";
 import { Player } from "./classes/gameEntities/Player.js";
 import { Settings } from "./classes/gamestates/Settings.js";
-import { ShadedObject } from "./classes/util/ShadedObject.js";
+
+//Basic Object Imports
+import { AnimatedObject } from "./classes/basicObjects/AnimatedObject.js";
+import { DynamicObject } from "./classes/basicObjects/DynamicObject.js";
+import { ShadedObject } from "./classes/basicObjects/ShadedObject.js";
 
 
 //------------------------------------------------------------------------------------//
@@ -93,7 +94,6 @@ function updateGame() {
 
 	if (Level.level == 0) {
 		Level.level = 1;
-		lastLevel = 1;
 		DynamicObject.clear();
 		scene = "initMenu";
 	}
@@ -105,7 +105,6 @@ function updateGame() {
 			Game.player1 = null;
 			Game.player2 = null;
 			Player.resetData();
-
 			AnimationPlayer.remove("fadeIn");
 			AnimationPlayer.load("menuFadeIn");
 			scene = "menu";
@@ -163,7 +162,6 @@ function updateGame() {
 			
 			if (!Dialogue.update()) {
 				Level.level++;
-				lastLevel = Level.level;
 				scene = "initDialogue";
 				//scene = "initGame";
 			}
@@ -200,7 +198,6 @@ function updateGame() {
 
 		//Lose Gamestate
 		case "initLose":
-			lastLevel = 1;
 			Lose.init();
 		case "lose":
 			Lose.update();
@@ -210,7 +207,6 @@ function updateGame() {
 		case "sceneCreator":
 			if (Keyboard.shiftPressed) {
 				Scene.flash();
-
 				ShadedObject.clear();
 				Game.player1 = new Player(100, 100, "red", "wadfs");
 				Game.player2 = new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
@@ -280,12 +276,12 @@ setInterval(() => {
 	let thisTime = new Date().getTime();
 	//Display the game if the page is completely loaded
 	if (document.readyState === "complete" && Animation.compiled) {
-		if (thisTime - lastFrameTime > 1000/30) {
-			//console.warn("LOW FPS: " + Math.round(1000 / (thisTime - lastFrameTime)));
+		if (Display.frames % 120 == 0 && Display.fps <= 30) {
+			console.log("LOW FPS: " + Display.fps);
 		}
-		if (Display.frames % 120 == 0) {
-			console.log("FPS: " + Display.fps);
-		}
+		//if (Display.frames % 10 == 0) {
+			//console.log("FPS: " + Display.fps);
+		//}
 		Display.clear();
 		//console.log("start frame");
 		updateGame();
@@ -373,6 +369,14 @@ document.addEventListener("keydown", (event) => {
 		case "ArrowRight":
 			Keyboard.keyDown("right");
 			break;
+		case "Alt":
+			Keyboard.altDown = true;
+			Keyboard.altPressed = true;
+			break;
+		case "Control":
+			Keyboard.controlDown = true;
+			Keyboard.controlPressed = true;
+			break;
 		default:
 			if (event.key.length !== 1) {
 				console.log("Unsupported Key Pressed: " + event.key);
@@ -409,6 +413,12 @@ document.addEventListener("keyup", (event) => {
 		case "ArrowRight":
 			Keyboard.keyUp("right");
 			break;
+		case "Alt":
+			Keyboard.altDown = false;
+			break;
+		case "Control":
+			Keyboard.controlDown = false;
+			break;
 		default:
 			if (event.key.length !== 1) {
 				console.log("Unsupported Key Released: " + event.key);
@@ -417,6 +427,7 @@ document.addEventListener("keyup", (event) => {
 });
 
 document.addEventListener("readystatechange", () => {
+	AnimatedObject.compileAnimations();
 	Animation.compileTemplates();
 });
 
@@ -442,15 +453,10 @@ socket.on("scene", (data) => {
 				structure[i].push(new SceneTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["hasCollision"], data[i][j]["hasVines"]));
 			} else if (data[i][j]["type"] == "LightTile") {
 				structure[i].push(new LightTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["str"], data[i][j]["rad"], data[i][j]["hasCollision"], data[i][j]["hasVines"]));
-			} else if (data[i][j]["type"] == "ChestTile") {
-				structure[i].push(new ChestTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["hasVines"], data[i][j]["coinRange"]));
-			} else if (data[i][j]["type"] == "door") {
-				structure[i].push(new Door(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["hasVines"]));
 			} else {
 				console.warn("Undetermined SceneTile type. Creating with default values")
 				structure[i].push(new SceneTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["hasCollision"], data[i][j]["hasVines"]));
 			}
-			
 		}
 	}
 	console.log("initializing scene");

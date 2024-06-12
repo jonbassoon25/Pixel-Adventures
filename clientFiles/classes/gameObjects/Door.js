@@ -1,37 +1,47 @@
 //Util Imports
-import { Display } from "../util/Display.js";
+import { AudioPlayer } from "../util/AudioPlayer.js";
+import { Level } from "../util/Level.js";
+import { Game } from "../gamestates/Game.js";
+import { Player } from "../gameEntities/Player.js";
 
-//Game Object Imports
-import { SceneTile } from "./SceneTile.js";
-import { Scene } from "../util/Scene.js";
-import { Util } from "../util/Util.js";
+//Basic Object Imports
+import { InteractableObject } from "../basicObjects/InteractableObject.js";
 
 //Door Class
-export class Door extends SceneTile {
-	static doors = [];
-	
-	
+export class Door extends InteractableObject {
     //Constructor
     
     /**
-     * @param {string} background 
-     * @param {number} col 
-     * @param {number} row
-     * @param {lambda} action
-     * @param {boolean} hasVines 
+     * @param {number} x - x position of the bottom of the door
+     * @param {number} y - y position of the middle of the bottom of the door
      */
-    constructor(background, col, row, hasVines = false) {
-        super(background, col, row, false, hasVines);
-		this.visualHeight = 80;
+    constructor(x, y) {
+        super("door", 4, x, y, 40, 60);
+		this.yOffset = -10;
 		this.type = "door";
     }
 
     //*********************************************************************//
 	//Public Methods
 
-    /** Draws and Updates this Door */
-    update() {
-        super.update();
-        Display.draw("door", this.x, this.y - (this.width * 3/2 - this.height)/2, this.width, this.width * 3/2);
-    }
+	/**
+	 * @param {Player} - The player that is interacting with this InteractableObject
+	 */
+	interactWith(player) {
+		AudioPlayer.play("door");
+		Level.level++;
+		if (Level.level != 4) {
+			Player.retainedValues["p1Coins"] = Game.player1.coins;
+			Player.retainedValues["p2Coins"] = Game.player2.coins;
+			Player.retainedValues["p1Score"] = Game.player1.points;
+			Player.retainedValues["p2Score"] = Game.player2.points;
+			document.dispatchEvent(new CustomEvent("sceneChange", {"detail": "initCutscene"}));
+		} else {
+			Player.retainedValues["p1Coins"] = Game.player1.coins;
+			Player.retainedValues["p2Coins"] = Game.player2.coins;
+			Player.retainedValues["p1Score"] = Game.player1.points;
+			Player.retainedValues["p2Score"] = Game.player2.points;
+			document.dispatchEvent(new CustomEvent("sceneChange", {"detail": "initWin"}));
+		}
+	}
 }

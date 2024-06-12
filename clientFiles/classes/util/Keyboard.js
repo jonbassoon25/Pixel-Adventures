@@ -7,12 +7,17 @@ export class Keyboard {
 	static shiftDown = false;
 	static backspaceDown = false;
 	static escapeDown = false;
+	static altDown = false;
+	static controlDown = false;
+	
 	//Single frame vars
 	static keysPressed = [];
 	static keysReleased = [];
 	static shiftPressed = false;
 	static backspacePressed = false;
+	static altPressed = false;
 	static escapePressed = false;
+	static controlPressed = false;
 
 	//*********************************************************************//
 	//Public Static Methods 
@@ -74,5 +79,7 @@ export class Keyboard {
 		this.shiftPressed = false;
 		this.backspacePressed = false;
 		this.escapePressed = false;
+		this.altPressed = false;
+		this.controlPressed = false;
 	}
 }

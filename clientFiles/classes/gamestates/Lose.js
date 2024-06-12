@@ -2,7 +2,6 @@
 import { AnimationPlayer } from "../util/AnimationPlayer.js";
 import { AudioPlayer } from "../util/AudioPlayer.js";
 import { Display } from "../util/Display.js";
-import { ShadedObject } from "../util/ShadedObject.js";
 import { Level } from "../util/Level.js";
 
 //UI Object Imports
@@ -11,10 +10,10 @@ import { Button } from "../UIObjects/Button.js";
 //Gamestate Imports
 import { Gamestate } from "./Gamestate.js";
 
-//Game Object Imports
+//Basic Object Imports
+import { DynamicObject } from "../basicObjects/DynamicObject.js";
+import { ShadedObject } from "../basicObjects/ShadedObject.js";
 
-//Game Entity Imports
-import { DynamicObject } from "../gameEntities/DynamicObject.js";
 
 //Template Class
 export class Lose extends Gamestate {

@@ -1,15 +1,16 @@
 //Util Imports
-import { Util } from "./Util.js";
-import { Keyboard } from "./Keyboard.js";
-import { VisualObject } from "./VisualObject.js";
 import { textures } from "./Textures.js";
-import { Scene } from "./Scene.js";
 
-//Game entity imports
+//Basic Object Imports
+import { VisualObject } from "../basicObjects/VisualObject.js";
 
 //Define the canvas
 const canvas = document.getElementById("gameScreen");
 const ctx = canvas.getContext("2d", {willReadFrequently: true});
+
+//ctx.scale(0.5, 0.5);
+console.log(window.devicePixelRatio);
+window.devicePixelRatio = 0;
 
 export class Display {
 	//Static Variables
@@ -135,7 +136,7 @@ export class Display {
 	 * @param {number} height - The height of the object
 	 * @param {boolean} resize - Are the passed in values absolute (true) or relative (false) (optional)
 	 */
-	static draw(image, x, y, width, height, resize = true, flipped = false) {
+	static draw(image, x, y, width, height, resize = true, flipped = false, degreesRotated = 0, opacity = 100) {
 		//If there is no image to draw, return
 		if (image == "none") {
 			return;
@@ -157,23 +158,44 @@ export class Display {
 					//console.log(Number(image.substring(image.length - 2)) / 100);
 					this.drawShader(Number(image.substring(image.length - 3)) / 100, x, y, width, height, false);
 				}
-				
 				return;
 			}
-			if (flipped) {
-				image += "Flipped";
+			if (image.includes("Flipped")) {
+				image = image.substring(0, image.indexOf("Flipped"));
+				flipped = true;
+			}
+			if (image.includes("+") || image.includes("-")) {
+				//Image needs to be rotated
+				degreesRotated += parseInt(image.substring(image.indexOf(image.includes("+")? "+" : "-")));
+				image = image.substring(0, image.indexOf(image.includes("+")? "+" : "-"));
 			}
 			if (textures[image] == undefined) {
 				console.error("Image " + image + " Not Found.");
 				return;
 			}
-			ctx.drawImage(textures[image], x, y, width, height);
-
+			if (opacity != 100) ctx.globalAlpha = opacity/100;
+			if (degreesRotated != 0) {
+				x += width/2;
+				y += height/2;
+				ctx.setTransform(flipped? -1 : 1, 0, 0, 1, x, y);
+				ctx.rotate(degreesRotated * Math.PI/180);
+				ctx.drawImage(textures[image], -width/2, -height/2, width, height);
+				ctx.resetTransform();
+			} else {
+				if (flipped) {
+					ctx.setTransform(-1, 0, 0, 1, x, y);
+					ctx.drawImage(textures[image], -width, 0, width, height);
+					ctx.resetTransform();
+				} else {
+					ctx.drawImage(textures[image], x, y, width, height);
+				}
+			}
+			if (opacity != 100) ctx.globalAlpha = 1;
 		//The image is a plain image
 		} else if (image instanceof Image) {
 			ctx.drawImage(image, x, y, width, height);
 		} else {
-			console.error("Data not recognized as string or Image. " + image);
+			console.error("Data not recognized as string or Image: " + image);
 		}
 	}
 

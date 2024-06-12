@@ -1,25 +1,31 @@
 //Util Imports
-import { Util } from "../util/Util.js";
 import { Difficulty } from "../util/Difficulty.js";
 
 //Game Entity Imports
 import { NPC } from "./NPC.js";
 import { Player } from "./Player.js";
-import { DynamicObject } from "./DynamicObject.js";
-import { Vector } from "../util/Vector.js";
 import { Scene } from "../util/Scene.js";
+
+//Basic Object Imports
+import { DynamicObject } from "../basicObjects/DynamicObject.js";
 
 //Enemy Class
 export class Enemy extends NPC {
+	static clear() {
+		for (let i = this.dynamicObjects.length - 1; i >= 0; i--) {
+			if (DynamicObject.dynamicObjects[i] instanceof Enemy) DynamicObject.dynamicObjects[i].delete();
+		}
+		
+	}
+	
 	//Constructor
 
-	constructor(image, x, y, width, height, speed, damage, health, visibility = -1, knockbackMultiplier = 1) {
-		super(x, y, width, height, 0, image, speed);
+	constructor(type, x, y, width, height, speed, damage, health, visibility = -1, knockbackMultiplier = 1) {
+		super(type, x, y, width, height, 0, speed);
 		this.speed *= Difficulty.enemySpeedMult;
 		this.damage = damage * Difficulty.enemyDamageMult;
 		this.health = health * Difficulty.enemyHealthMult;
 		this.visibility = visibility;
-		this.idleTime = 0;
 		this.target = [x, y];
 		this.returnPoint = [x, y];
 		this.knockbackMultiplier = knockbackMultiplier;
@@ -49,14 +55,15 @@ export class Enemy extends NPC {
 	
 
 	update() {
-		if (this.health < 0) {
+		if (this.health <= 0) {
 			this.delete();
 		}
 		this.findTarget();
-		if (this.isGrounded) {
-			this.idleTime++;
-		} else {
-			this.idleTime = Util.randInt(-15, 0);
+		//Flip if change in position between this and target < 0
+		if (this.target[0] - this.x < 0) {
+			this.flipped = true;
+		} else if (this.target[0] - this.x > 0) {
+			this.flipped = false;
 		}
 		super.update();
 	}

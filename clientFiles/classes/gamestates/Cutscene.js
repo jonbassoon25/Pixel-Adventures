@@ -45,6 +45,8 @@ export class Cutscene extends Gamestate {
 		//Update SceneTiles and shaders
 		Scene.drawBackground();
 
+		Scene.drawShadedObjects();
+
 		//If animations are done playing, draw static images
 		if (AnimationPlayer.currentAnimations.length == 0) {
 			Display.draw((Level.level == 2)? "shard1" : "shard2", 1920/2, 1080/2, 540, 480);

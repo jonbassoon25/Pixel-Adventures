@@ -8,6 +8,8 @@
 
 //Game Entity Imports
 
+//Basic Object Imports
+
 //Template Class
 export class Template {
 	/*

@@ -4,16 +4,19 @@ function loadAssets() {
 	let textures = {};
 	//Assign folders to load
 	foldersToLoad["shaders"] = ["shader_black"];
-	
+	foldersToLoad["decorations"] = ["bannerWhite", "bannerWhiteFBLA", "chairLeft", "chairRight", "plant1", "plant2", "woodenTable", "bookshelf", "sunset", "skull"];
 	foldersToLoad["tiles"] = ["stoneBrick", "rottedWoodPlanks", "vines", "blueTile", "redTile", "blackTile", "insetLantern", "chest", "chestOpened", "wood", "door"];
-	foldersToLoad["menu"] = ["mainMenuPanoTinted", "plaque", "banner", "stoneBrickBackground", "woodenPlaque", "leaderboardPlaque", "upgradePlaque", "selectionBox", "settings"];
-	foldersToLoad["buttons"] = ["buttonHovered", "buttonPressed", "playButton", "back", "cog", "leaderboard", "upgradeJump", "upgradeMaxHealth", "upgradeRegen", "upgradeSpeed", "upgradeWeapon", "continue", "easy", "medium", "hard", "custom", "sliderFrame", "sliderHandle", "saveScore", "textBox", "escape", "musicEnabled", "musicDisabled", "plus", "minus", "help"];
-	foldersToLoad["util"] = ["placeholder", "crosshair", "visualDimensions"];
+	foldersToLoad["menu"] = ["mainMenuPanoTinted", "plaque", "banner", "stoneBrickBackground", "woodenPlaque", "leaderboardPlaque", "upgradePlaque", "selectionBox", "settings", "flasher1", "flasher2", "buttonPlaque", "transferCoins", "glassPane", "priceTag", "maceWarning"];
+	foldersToLoad["buttons"] = ["buttonHovered", "buttonPressed", "playButton", "back", "cog", "leaderboard", "upgradeJump", "upgradeMaxHealth", "upgradeRegen", "upgradeSpeed", "upgradeWeapon", "continue", "easy", "medium", "hard", "custom", "sliderFrame", "sliderHandle", "saveScore", "textBox", "escape", "musicEnabled", "musicDisabled", "plus", "minus", "help", "redToBlue", "blueToRed"];
+	foldersToLoad["util"] = ["placeholder", "crosshair", "visualDimensions", "painting"];
 	foldersToLoad["player"] = ["bluePlayer", "bluePlayerJump", "bluePlayerWalk", "blueGhost", "blueGhostAlt", "redPlayer", "redPlayerJump", "redPlayerWalk", "redGhost", "redGhostAlt", "redGrave", "blueGrave"];
-	foldersToLoad["player/flipped"] = ["blueGhostAltFlipped", "blueGhostFlipped", "bluePlayerFlipped", "bluePlayerJumpFlipped", "bluePlayerWalkFlipped", "redGhostAltFlipped", "redGhostFlipped", "redPlayerFlipped", "redPlayerJumpFlipped", "redPlayerWalkFlipped"];
+	foldersToLoad["player/maceAttack"] = ["bluePlayerAttack1", "bluePlayerAttack2", "bluePlayerAttack3", "bluePlayerAttack4", "redPlayerAttack1", "redPlayerAttack2", "redPlayerAttack3", "redPlayerAttack4"];
+	foldersToLoad["player/maceCharge"] = ["bluePlayerCharge1", "bluePlayerCharge2", "bluePlayerCharge3", "redPlayerCharge1", "redPlayerCharge2", "redPlayerCharge3"];
+	foldersToLoad["player/maceReturn"] = ["bluePlayerReturn1", "bluePlayerReturn2", "bluePlayerReturn3", "redPlayerReturn1", "redPlayerReturn2", "redPlayerReturn3"];
 	foldersToLoad["items"] = ["coin", "educationShard", "progressShard", "serviceShard", "fbla", "shard1", "shard2", "shard3"];
-	foldersToLoad["weapons/sword"] = ["sword+0", "sword+15", "sword+30", "sword+45", "sword+60", "sword+75", "sword+90", "sword-90", "sword+0Flipped", "sword+15Flipped", "sword+30Flipped", "sword+45Flipped", "sword+60Flipped", "sword+75Flipped", "sword+90Flipped", "sword-90Flipped"];
-	foldersToLoad["monsters"] = ["slime", "skeleton", "skeletonFlipped", "skeletonWalk", "skeletonWalkFlipped", "skeletonJump", "skeletonJumpFlipped"];
+	foldersToLoad["weapons/melee"] = ["sword", "mace"];
+	foldersToLoad["monsters"] = ["slime", "skeleton", "skeletonWalk", "skeletonJump"];
+	foldersToLoad["particles"] = ["sparkYellow", "sparkOrange", "sparkRed", "death", "glass"];
 	console.log("Loading Textures...");
 	//For every folder to load
 	for (let currentFolderIndex = 0; currentFolderIndex < Object.keys(foldersToLoad).length; currentFolderIndex++) {

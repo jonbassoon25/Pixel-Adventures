@@ -6,6 +6,7 @@ import { Vector } from "../util/Vector.js";
 
 //Game Entity Imports
 import { Enemy } from "./Enemy.js";
+import { Particle } from "./Particle.js";
 
 export class Slime extends Enemy {
 	/*
@@ -18,28 +19,37 @@ export class Slime extends Enemy {
 	
 	/**Creates a new slime */
 	constructor(x, y) {
-		super("slime", x, y, 30, 30, 100, 30, 100, 1000);
-		this.stretch = 0; //Not used
+		super("slime", x, y, 30, 30, 100, 25, 100, 1000);
+		this.type = "slime";
+		this.visualWidth = this.width * 1.3;
+		this.visualHeight = this.height * 1.3;
+		this.idleTime = 0;
 	}
 
 	//*********************************************************************//
-	//Private Methods - No required JSDocs
-	//Moves along the determined path to the target
+	//Public Methods
 	
+	//Moves along the determined path to the target
 	move() {
+		//console.log("moving");
 		if (this.isGrounded) {
 			this.velocity.x = 0;
+			if (this.currentAnimation == "jump") {
+				this.setAnimation("land");
+			}
 		}
 		if (this.idleTime <= 30) {
 			return;
 		}
 		if (this.x%Scene.tileSize == 15 && this.isGrounded) {
 			AudioPlayer.play("slime");
+			if (this.currentAnimation == "idle") this.setAnimation("jump");
 			this.accelerations.push(new Vector([2.4, -3]));
 			return;
 		}
 		if (this.x%Scene.tileSize == (Scene.tileSize - 15) && this.isGrounded) {
 			AudioPlayer.play("slime");
+			if (this.currentAnimation == "idle") this.setAnimation("jump");
 			this.accelerations.push(new Vector([-2.4, -3]));
 			return;
 		}
@@ -56,15 +66,18 @@ export class Slime extends Enemy {
 	
 	//Simple pathfinding, can't navigate around obstacles. Uses jumping instead of smooth movement
 	simplePathfinding() {
+		//console.log("pathing");
 		if (this.target == null) return;
 		if (this.idleTime <= 15) return;
 		if (this.x < this.target[0]) {
 			if (!(this.velocity.x > this.speed)) {
+				if (this.currentAnimation == "idle") this.setAnimation("jump");
 				this.accelerations.push(new Vector([this.speed/90 * Util.randInt(1, 3), -7]));
 				AudioPlayer.play("slime");
 			}
 		} else if (this.x > this.target[0]) {
 			if (!(this.velocity.x < -this.speed)) {
+				if (this.currentAnimation == "idle") this.setAnimation("jump");
 				this.accelerations.push(new Vector([-this.speed/90 * Util.randInt(1, 3), -7]));
 				AudioPlayer.play("slime");
 			}
@@ -81,10 +94,19 @@ export class Slime extends Enemy {
 			return;
 		}
 	}
-
-	//*********************************************************************//
-	//Public Methods - Must have JSDocs
-
-	
-	
+	delete() {
+		let v = 3;
+		for (let i = 0; i < 9; i++) {
+			new Particle("slimeDeath", this.x + (10 * (Math.floor(i/3) - 1)), this.y + (10 * (Math.floor(i%3) - 1)), 12, 12, new Vector([v/9 * i - v/2, ((i % 3 == 2)? -2 * v/3 : -2 * Math.random() * v)]), 1.6, 0.95, true, true);
+		}
+		super.delete();
+	}
+	update() {
+		if (this.isGrounded) {
+			this.idleTime++;
+		} else {
+			this.idleTime = Util.randInt(-15, 0);
+		}
+		super.update();
+	}
 }

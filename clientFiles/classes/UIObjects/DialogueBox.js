@@ -1,10 +1,12 @@
 //Util Imports
 import { Display } from "../util/Display.js";
-import { VisualObject } from "../util/VisualObject.js";
 import { Keyboard } from "../util/Keyboard.js";
 
 //UI Object Imports
 import { Button } from "../UIObjects/Button.js";
+
+//Basic Object Imports
+import { VisualObject } from "../basicObjects/VisualObject.js";
 
 //DialogueBox Class
 export class DialogueBox extends VisualObject {

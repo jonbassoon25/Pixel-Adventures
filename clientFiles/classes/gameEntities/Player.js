@@ -5,23 +5,48 @@ import { Keyboard } from "../util/Keyboard.js";
 import { Scene } from "../util/Scene.js";
 
 //Game Entity Imports
-import { DynamicObject } from "./DynamicObject.js";
 import { Slime } from "./Slime.js";
 import { Item } from "./Item.js";
 
 //Game Object Imports
-import { ChestTile } from "../gameObjects/ChestTile.js";
-import { Door } from "../gameObjects/Door.js";
 import { Sword } from "../gameObjects/Sword.js";
+import { Mace } from "../gameObjects/Mace.js";
 import { Vector } from "../util/Vector.js";
 import { Grave } from "../gameObjects/Grave.js";
-import { Level } from "../util/Level.js";
+
+//Basic Object Imports
+import { DynamicObject } from "../basicObjects/DynamicObject.js";
+import { InteractableObject } from "../basicObjects/InteractableObject.js";
 
 //Player Class
 export class Player extends DynamicObject {
-	static upgradesBought = {"playerOneWeapon": 0, "playerOneHealth": 0, "playerOneRegen": 0, "playerOneSpeed": 0, "playerOneJump": 0, "playerTwoWeapon": 0, "playerTwoHealth": 0, "playerTwoRegen": 0, "playerTwoSpeed": 0, "playerTwoJump": 0};
-	static retainedValues = {"p1Score": 0, "p2Score": 0, "p1Coins": 0, "p2Coins": 0};
+	//Static Variables
+	
+	static upgradesBought = {
+		"playerOneWeapon": 0, 
+		"playerOneHealth": 0, 
+		"playerOneRegen": 0, 
+		"playerOneSpeed": 0, 
+		"playerOneJump": 0, 
+		"playerTwoWeapon": 0, 
+		"playerTwoHealth": 0, 
+		"playerTwoRegen": 0, 
+		"playerTwoSpeed": 0, 
+		"playerTwoJump": 0
+	};
+	
+	static retainedValues = {
+		"p1Score": 0, 
+		"p2Score": 0, 
+		"p1Coins": 0, 
+		"p2Coins": 0,
+		"p1Weapon": Sword,
+		"p2Weapon": Sword
+	};
+
+	//*********************************************************************//
 	//Constructor
+	
 	/**
 	 * @param {string} image - image to display
 	 * @param {number} x - initial x position of player
@@ -30,7 +55,7 @@ export class Player extends DynamicObject {
 	 * @param {string} controlType - keys that control the player, default is wadfs (up, left, right, attack, interact)
 	 */
 	constructor(x, y, color, controlType = "wadfs") {
-		super("none", 0, x, y, 20, 52);
+		super(color + "Player", 0, x, y, 20, 52);
 		if (controlType.length < 5) {
 			controlType = "wadfs";
 		}
@@ -43,7 +68,8 @@ export class Player extends DynamicObject {
 		}
 		this.color = color;
 		this.coins = Player.retainedValues["p" + ((color == "red")? "1": "2") + "Coins"];
-		this.speed = 3 + Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Speed"] * 0.25;
+		this.maxSpeed = 3 + Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Speed"] * 0.25;
+		this.speed = this.maxSpeed;
 		this.stunned = 0;
 		this.deaths = 0;
 		this.maxHealth = 100 + Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Health"] * 25;
@@ -51,8 +77,9 @@ export class Player extends DynamicObject {
 		this.regen = 0.1 + Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Regen"] * 0.02;
 		this.isDead = false;
 		this.visualWidth = 65;
-		this.visualHeight = 80;
-		this.weapon = new Sword(this, 20);
+		this.visualHeight = 65;
+		console.log("new players spawned");
+		if (color == "red") this.weapon = new Player.retainedValues["p1Weapon"](this); else this.weapon = new Player.retainedValues["p2Weapon"](this);
 		this.weapon.damage += Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Weapon"] * 5;
 		this.grave = null;
 		this.points = Player.retainedValues["p" + ((color == "red")? "1": "2") + "Score"];
@@ -66,7 +93,8 @@ export class Player extends DynamicObject {
 		if (!this.isGrounded) {
 			return;
 		}
-		this.weapon.jumpAnim();
+		this.setAnimation("jump");
+		this.weapon.setAnimation("jump");
 		this.velocity.y = -this.jumpSpeed;
 	}
 	#haltX() {
@@ -76,12 +104,12 @@ export class Player extends DynamicObject {
 		this.velocity.y = 0;
 	}
 	#moveLeft() {
-		this.facingLeft = true;
+		this.flipped = true;
 		this.velocity.x = -this.speed;
-		//this.health-=5;
+		//if (this.weapon.type == "playerMace")
 	}
 	#moveRight() {
-		this.facingLeft = false;
+		this.flipped = false;
 		this.velocity.x = this.speed;
 	}
 	#moveUp() {
@@ -96,7 +124,16 @@ export class Player extends DynamicObject {
 			this.#jump();
 		}
 		if (Keyboard.isKeyDown(this.keybinds["attack"])) {
-			this.weapon.attack();
+			if (this.weapon instanceof Mace) {
+				this.weapon.charge();
+			} else {
+				this.weapon.attack();
+			}
+		}
+		if (Keyboard.isKeyReleased(this.keybinds["attack"])) {
+			if (this.weapon instanceof Mace) {
+				this.weapon.attack();
+			}
 		}
 		if (Keyboard.isKeyDown(this.keybinds["left"])) {
 			this.#moveLeft();
@@ -128,38 +165,12 @@ export class Player extends DynamicObject {
 		if (!Keyboard.isKeyPressed(this.keybinds["interact"])) {
 			return;
 		}
-		let col = Math.floor(this.x / Scene.tileSize);
-		let row = Math.floor(this.y / Scene.tileSize);
 
-		if (row < 0 || row > Scene.structure.length || col < 0 || col > Scene.structure[0].length) {
-			return;
-		}
-		
-		if (Scene.structure[row][col] instanceof ChestTile) {
-			let startCoins = this.coins;
-			let chest = Scene.structure[row][col];
-			this.points += chest.coins * 10;
-			this.coins += chest.coins;
-			chest.coins = 0;
-			Scene.flash();
-			console.log("Got " + (this.coins - startCoins) + " Coins");
-		}
-
-		if (Scene.structure[row][col] instanceof Door) {
-			AudioPlayer.play("door");
-			Level.level++;
-			if (Level.level != 4) {
-				document.dispatchEvent(new CustomEvent("sceneChange", {"detail": "initCutscene"}));
-			} else {
-				document.dispatchEvent(new CustomEvent("sceneChange", {"detail": "initWin"}));
+		let objList = InteractableObject.interactableObjects;
+		for (let i = 0; i < objList.length; i++) {
+			if (this.isColliding(objList[i])) {
+				objList[i].interactWith(this);
 			}
-			
-		}
-
-		if (Scene.structure[row][col] instanceof Grave) {
-			this.coins += Scene.structure[row][col].coins;
-			Scene.structure[row][col].revive();
-			Scene.flash();
 		}
 	}
 
@@ -200,8 +211,7 @@ export class Player extends DynamicObject {
 			}
 			potentialTile = Scene.structure[nextRow][nextCol];
 		}
-		Scene.structure[potentialTile.row][potentialTile.col] = new Grave(this, potentialTile.col, potentialTile.row, potentialTile.image, potentialTile.hasVines);
-		Scene.flash();
+		new Grave(this, ...Scene.inverseCalcBlockCoordinates(potentialTile.col, potentialTile.row));
 	}
 
 	#takeDamage() {
@@ -242,6 +252,7 @@ export class Player extends DynamicObject {
 		this.isDead = true;
 		this.hasCollision = false;
 		this.health = this.maxHealth;
+		this.setAnimation("ghost");
 		AudioPlayer.play("die");
 		//Create grave that other players can use coins to respawn this player from
 		this.#spawnGrave();
@@ -252,34 +263,29 @@ export class Player extends DynamicObject {
 		}
 	}
 
-	/** Draws the player with animations */
+	/** Draws the player */
 	draw() {
+		super.draw();
+		//Draw player healthbar
 		if (!this.isDead) {
-			this.weapon.update(this.facingLeft, this.isGrounded);
-			if (!this.isGrounded) {
-				Display.draw(this.color + "PlayerJump", this.visualX, this.visualY, 60, 60, true, this.facingLeft);
-			} else if (this.velocity.x == 0 || (Display.frames % 20) < 10) {
-				Display.draw(this.color + "Player", this.visualX, this.visualY, 60, 60, true, this.facingLeft);
-			} else {
-				Display.draw(this.color + "PlayerWalk", this.visualX, this.visualY, 60, 60, true, this.facingLeft);
-				AudioPlayer.play("step");
-			}
-			//Draw player healthbar
 			let totalWidth = this.width * 2;
 			Display.draw("shader_05", this.x, this.y - this.height/2 - 7, totalWidth, 10);
 			let redWidth = this.width * 2 * (this.health / this.maxHealth);
 			Display.draw("redTile", this.x - (totalWidth - redWidth)/2, this.y - this.height/2 - 7, redWidth, 10);
-		} else {
-			if ((Display.frames % 20) < 10) {
-				Display.draw(this.color + "Ghost", this.visualX, this.visualY, 60, 60, true, this.facingLeft);
-			} else {
-				Display.draw(this.color + "GhostAlt", this.visualX, this.visualY, 60, 60, true, this.facingLeft);
-			}
 		}
 	}
+	
+
+	
 	/** Updates the Player */
-	update() {
+	update(onlyUpdateSuper = false) {
+		console.log(this.weapon);
+		if (onlyUpdateSuper) {
+			super.update(true);
+			return;
+		}
 		super.update();
+		
 		//Keep the player in bounds
 		if (this.x > 1920) {
 			this.x = 1920;
@@ -296,21 +302,54 @@ export class Player extends DynamicObject {
 			this.#takeGhostInput();
 			//Counter the force of gravity on this player
 			this.velocity.add(Vector.GRAVITY, -1);
+
+			if (this.currentAnimation != "ghost") {
+				this.currentAnimation = "ghost";
+			}
 			return;
 		}
+		
+		//Update the player's weapon 
+		this.weapon.update(this.flipped, this.isGrounded && this.stunned == 0);
+		
+		//Set the player's animation to jump if the player isn't grounded
+		if (!this.isGrounded) {
+			if (this.weapon instanceof Mace && this.weapon.currentAnimation == "attack" && this.weapon.currentFrame < 16) {
+				//Allow the mace to finish its attack
+			} else {
+				this.setAnimation("jump");
+				this.weapon.setAnimation("jump");
+			}
+		}
+		
 		this.#takeDamage();
 		if (this.health <= 0 && !this.isDead) {
 			this.die();
 		}
 		if (this.health < this.maxHealth) this.health += this.regen;
 		if (this.stunned > 0) {
+			if (this.weapon instanceof Mace && this.weapon.currentAnimation == "attack" && this.weapon.currentFrame < 16) {
+				//Allow the mace to finish its attack
+			} else {
+				this.setAnimation("jump");
+				this.weapon.setAnimation("jump");
+			}
 			this.stunned--;
 			return;
+		}
+		if (this.isGrounded && this.currentAnimation == "jump") {
+			this.setAnimation("idle");
+		}
+		//Make the player walk if the x velocity isn't 0 and the player isn't jumping. Always makes the player finish their step when they aren't supposed to be moving unless they player jumps
+		if (this.velocity.x != 0 && this.currentAnimation == "idle") {
+			this.setAnimation("walk");
 		}
 		this.#takeInput();
 		this.#interact();
 		this.#collectItems();
 	}
+
+	
 	upgradeHealth() {
 		if (this.maxHealth < 300) this.maxHealth += 25;
 		console.log("Max health increased to " + this.maxHealth);
@@ -333,7 +372,8 @@ export class Player extends DynamicObject {
 	}
 
 	static resetData() {
+		console.log("data reset");
 		Player.upgradesBought = {"playerOneWeapon": 0, "playerOneHealth": 0, "playerOneRegen": 0, "playerOneSpeed": 0, "playerOneJump": 0, "playerTwoWeapon": 0, "playerTwoHealth": 0, "playerTwoRegen": 0, "playerTwoSpeed": 0, "playerTwoJump": 0};
-		Player.retainedValues = {"p1Score": 0, "p2Score": 0, "p1Coins": 0, "p2Coins": 0};
+		Player.retainedValues = {"p1Score": 0, "p2Score": 0, "p1Coins": 0, "p2Coins": 0, "p1Weapon": Sword, "p2Weapon": Sword};
 	}
 }

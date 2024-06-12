@@ -1,6 +1,9 @@
+//Util Imports
 import { Display } from "../util/Display.js";
 import { Scene } from "../util/Scene.js";
-import { VisualObject } from "../util/VisualObject.js";
+
+//Basic Object Imports
+import { VisualObject } from "../basicObjects/VisualObject.js";
 
 export class ObscuredRegion extends VisualObject {
 	//x and y values measured in tile coordinates

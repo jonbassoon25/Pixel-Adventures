@@ -1,8 +1,10 @@
 //Util Imports
 import { Display } from "../util/Display.js";
 import { Mouse } from "../util/Mouse.js";
-import { VisualObject } from "../util/VisualObject.js";
 import { PauseMenu } from "./PauseMenu.js";
+
+//Basic Object Imports
+import { VisualObject } from "../basicObjects/VisualObject.js";
 
 
 //Button Class

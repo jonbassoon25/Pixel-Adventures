@@ -30,6 +30,15 @@ let leaderboard = require("./serverFiles/leaderboard.json");
 
 let scenes = {
 	"lastSaved": require("./serverFiles/lastSaved.json"),
+	"Save_1": require("./serverFiles/Save_1.json"),
+	"Save_2": require("./serverFiles/Save_2.json"),
+	"Save_3": require("./serverFiles/Save_3.json"),
+	"Save_4": require("./serverFiles/Save_4.json"),
+	"Save_5": require("./serverFiles/Save_5.json"),
+	"Save_6": require("./serverFiles/Save_6.json"),
+	"Save_7": require("./serverFiles/Save_7.json"),
+	"Save_8": require("./serverFiles/Save_8.json"),
+	"Save_9": require("./serverFiles/Save_9.json"),
 	"level1": require("./serverFiles/level1.json"),
 	"level2": require("./serverFiles/level2.json"),
 	"level3": require("./serverFiles/level3.json")
@@ -122,6 +131,7 @@ io.on('connection', (socket) => {
 	socket.on("saveScene", (data) => {
 		scenes[data[0]] = data[1];
 		save(data[0], data[1]);
+		save("lastSaved", data[1]);
 		socket.emit("log", "Scene saved");
 	});
 	

@@ -1,6 +1,8 @@
 //Util Imports
 import { Util } from "../util/Util.js";
-import { VisualObject } from "../util/VisualObject.js";
+
+//Basic Object Imports
+import { VisualObject } from "../basicObjects/VisualObject.js";
 
 //Class Item
 export class Item extends VisualObject {

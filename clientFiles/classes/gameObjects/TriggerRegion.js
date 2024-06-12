@@ -1,7 +1,13 @@
-import { DynamicObject } from "../gameEntities/DynamicObject.js";
+//Game Entity Imports
 import { Player } from "../gameEntities/Player.js";
-import { VisualObject } from "../util/VisualObject.js";
+
+//Game Object Imports
 import { ObscuredRegion } from "./ObscuredRegion.js";
+
+//Basic Object Imports
+import { DynamicObject } from "../basicObjects/DynamicObject.js";
+import { VisualObject } from "../basicObjects/VisualObject.js";
+
 
 export class TriggerRegion extends VisualObject {
 	static triggerRegions = [];
