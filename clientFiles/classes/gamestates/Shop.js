@@ -15,6 +15,7 @@ import { Gamestate } from "./Gamestate.js";
 import { Game } from "./Game.js";
 
 //Game Object Imports
+import { Sword } from "../gameObjects/Sword.js";
 import { Mace } from "../gameObjects/Mace.js";
 
 //Game Entity Imports
@@ -29,14 +30,16 @@ export class Shop extends Gamestate {
 	//Static Variables
 
 	//Player 1 Upgrades
-	static player1UpgradeWeapon = new Button("upgradeWeapon", 1920/4 - 30, 1080/2 - 300 + 40, 408, 96);
+	static player1UpgradeSword = new Button("upgradeSword", 1920/4 - 30, 1080/2 - 300 + 40, 408, 96);
+	static player1UpgradeMace = new Button("upgradeMace", 1920/4 - 30, 1080/2 - 300 + 40, 408, 128);
 	static player1UpgradeHealth = new Button("upgradeMaxHealth", 1920/4 - 30, 1080/2 - 150 + 40, 408, 96);
 	static player1UpgradeRegen = new Button("upgradeRegen", 1920/4 - 30, 1080/2 + 0 + 40, 408, 96);
 	static player1UpgradeSpeed = new Button("upgradeSpeed", 1920/4 - 30, 1080/2 + 150 + 40, 408, 96);
 	static player1UpgradeJump = new Button("upgradeJump", 1920/4 - 30, 1080/2 + 300 + 40, 408, 96);
 
 	//Player 2 Upgrades
-	static player2UpgradeWeapon = new Button("upgradeWeapon", 1920/4 * 3 + 30, 1080/2 - 300 + 40, 408, 96);
+	static player2UpgradeSword = new Button("upgradeSword", 1920/4 * 3 + 30, 1080/2 - 300 + 40, 408, 96);
+	static player2UpgradeMace = new Button("upgradeMace", 1920/4 * 3 + 30, 1080/2 - 300 + 40, 408, 128);
 	static player2UpgradeHealth = new Button("upgradeMaxHealth", 1920/4 * 3 + 30, 1080/2 - 150 + 40, 408, 96);
 	static player2UpgradeRegen = new Button("upgradeRegen", 1920/4 * 3 + 30, 1080/2 + 0 + 40, 408, 96);
 	static player2UpgradeSpeed = new Button("upgradeSpeed", 1920/4 * 3 + 30, 1080/2 + 150 + 40, 408, 96);
@@ -86,6 +89,50 @@ export class Shop extends Gamestate {
 		Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
 		Display.draw("upgradePlaque", 420, 1080/2, 702, 1026);
 		Display.draw("upgradePlaque", 1920-420, 1080/2, 702, 1026);
+		
+		//Mace display
+		if (!this.maceBought) {
+			Display.draw("mace-45", 1920/2, 300, 560, 560);
+			if (!this.glassBroken) {
+				Display.draw("glassPane", 1920/2, 220, 200, 400);
+				Display.draw("priceTag", 1920/2 + 90, 220 + 190, 100, 44, true, false, 45);
+				if (Button.simpleButton(1920/2, 220, 200, 400)) {
+					if (Game.player1.coins >= 30 || Game.player2.coins >= 30) {
+						console.log("shatter");
+						for (let j = 0; j < 2; j++) {
+							for (let i = 0; i < 171; i++) {
+								let x = 1920/2 + ((i%9 - 4) * 20);
+								let y = 220 + ((Math.floor(i/9) - 9) * 20);
+								let xVel = Math.random() * 15 - 15/2;
+								let yVel = Math.random() * 6 - 2;
+								new Particle("glass", x, y, 20, 20, new Vector([xVel, yVel]), 2, 0.95, true, false, false);
+							}
+						}
+						AnimationPlayer.load("priceTagFalls");
+						AnimationPlayer.load("redJump", true);
+						AnimationPlayer.load("blueJump", true);
+						this.glassBroken = true;
+					}
+				}
+			} else {
+				if (Button.simpleButton(1920/2 - 800, 1080/2, 180, 240) && Game.player1.coins >= 30) {
+					//console.log("Given to red");
+					Game.player1.coins -= 30;
+					Player.upgradesBought["playerOneWeapon"] = 0; 
+					Player.retainedValues["p1Weapon"] = Mace;
+					this.maceBought = true;
+					AnimationPlayer.clear();
+				}
+				if (Button.simpleButton(1920/2 + 800, 1080/2, 180, 240) && Game.player2.coins >= 30) {
+					//console.log("Given to blue");
+					Game.player2.coins -= 30;
+					Player.upgradesBought["playerTwoWeapon"] = 0;
+					Player.retainedValues["p2Weapon"] = Mace;
+					this.maceBought = true;
+					AnimationPlayer.clear();
+				}
+			}
+		}
 		if (!this.glassBroken || this.maceBought) {
 			Display.draw("redPlayer", 1920/2 - 800, 1080/2, 240, 240);
 			Display.draw("bluePlayerFlipped", 1920/2 + 800, 1080/2, 240, 240);
@@ -129,14 +176,32 @@ export class Shop extends Gamestate {
 		
 		//Detect upgrade button presses and upgrade selected
 		//Player 1
-		if (this.player1UpgradeWeapon.subsistAsButton() && Game.player1.coins >= p1WCost) { Game.player1.upgradeWeapon(); Game.player1.coins -= p1WCost; Player.upgradesBought["playerOneWeapon"]++; AudioPlayer.play("upgrade");}
+		switch (Player.retainedValues["p1Weapon"]) {
+			case Sword:
+				if (this.player1UpgradeSword.subsistAsButton() && Game.player1.coins >= p1WCost) { Game.player1.upgradeWeapon(); Game.player1.coins -= p1WCost; Player.upgradesBought["playerOneWeapon"]++; AudioPlayer.play("upgrade");}
+				break;
+			case Mace:
+				if (this.player1UpgradeMace.subsistAsButton() && Game.player1.coins >= p1WCost) { Game.player1.upgradeWeapon(); Game.player1.coins -= p1WCost; Player.upgradesBought["playerOneWeapon"]++; AudioPlayer.play("upgrade");}
+				break;
+			default:
+				console.log("Weapon not recognized.");
+		}
 		if (this.player1UpgradeHealth.subsistAsButton() && Game.player1.coins >= p1HCost) { Game.player1.upgradeHealth(); Game.player1.coins -= p1HCost; Player.upgradesBought["playerOneHealth"]++; AudioPlayer.play("upgrade");}
 		if (this.player1UpgradeRegen.subsistAsButton() && Game.player1.coins >= p1RCost) { Game.player1.upgradeRegen(); Game.player1.coins -= p1RCost; Player.upgradesBought["playerOneRegen"]++; AudioPlayer.play("upgrade");}
 		if (this.player1UpgradeSpeed.subsistAsButton() && Game.player1.coins >= p1SCost) { Game.player1.upgradeSpeed(); Game.player1.coins -= p1SCost; Player.upgradesBought["playerOneSpeed"]++; AudioPlayer.play("upgrade");}
 		if (this.player1UpgradeJump.subsistAsButton() && Game.player1.coins >= p1JCost) { Game.player1.upgradeJump(); Game.player1.coins -= p1JCost;Player.upgradesBought["playerOneJump"]++; AudioPlayer.play("upgrade");}
 
 		//Player 2
-		if (this.player2UpgradeWeapon.subsistAsButton() && Game.player2.coins >= p2WCost) { Game.player2.upgradeWeapon();  Game.player2.coins -= p2WCost; Player.upgradesBought["playerTwoWeapon"]++; AudioPlayer.play("upgrade");}
+		switch (Player.retainedValues["p2Weapon"]) {
+			case Sword:
+				if (this.player2UpgradeSword.subsistAsButton() && Game.player2.coins >= p2WCost) { Game.player2.upgradeWeapon();  Game.player2.coins -= p2WCost; Player.upgradesBought["playerTwoWeapon"]++; AudioPlayer.play("upgrade");}
+				break;
+			case Mace:
+				if (this.player2UpgradeMace.subsistAsButton() && Game.player2.coins >= p2WCost) { Game.player2.upgradeWeapon();  Game.player2.coins -= p2WCost; Player.upgradesBought["playerTwoWeapon"]++; AudioPlayer.play("upgrade");}
+				break;
+			default:
+				console.log("Weapon not recognized.");
+		}
 		if (this.player2UpgradeHealth.subsistAsButton() && Game.player2.coins >= p2HCost) { Game.player2.upgradeHealth();  Game.player2.coins -= p2HCost; Player.upgradesBought["playerTwoHealth"]++; AudioPlayer.play("upgrade");}
 		if (this.player2UpgradeRegen.subsistAsButton() && Game.player2.coins >= p2RCost) { Game.player2.upgradeRegen();  Game.player2.coins -= p2RCost; Player.upgradesBought["playerTwoRegen"]++; AudioPlayer.play("upgrade");}
 		if (this.player2UpgradeSpeed.subsistAsButton() && Game.player2.coins >= p2SCost) { Game.player2.upgradeSpeed();  Game.player2.coins -= p2SCost; Player.upgradesBought["playerTwoSpeed"]++; AudioPlayer.play("upgrade");}
@@ -178,49 +243,6 @@ export class Shop extends Gamestate {
 				AnimationPlayer.load("coinTossFromBlue");
 				Game.player2.coins--;
 				Game.player1.coins++;
-			}
-		}
-		//Mace display
-		if (!this.maceBought) {
-			Display.draw("mace-45", 1920/2, 300, 560, 560);
-			if (!this.glassBroken) {
-				Display.draw("glassPane", 1920/2, 220, 200, 400);
-				Display.draw("priceTag", 1920/2 + 90, 220 + 190, 100, 44, true, false, 45);
-				if (Button.simpleButton(1920/2, 220, 200, 400)) {
-					if (Game.player1.coins >= 30 || Game.player2.coins >= 30) {
-						console.log("shatter");
-						for (let j = 0; j < 2; j++) {
-							for (let i = 0; i < 171; i++) {
-								let x = 1920/2 + ((i%9 - 4) * 20);
-								let y = 220 + ((Math.floor(i/9) - 9) * 20);
-								let xVel = Math.random() * 15 - 15/2;
-								let yVel = Math.random() * 6 - 2;
-								new Particle("glass", x, y, 20, 20, new Vector([xVel, yVel]), 2, 0.95, true, false, false);
-							}
-						}
-						AnimationPlayer.load("priceTagFalls");
-						AnimationPlayer.load("redJump", true);
-						AnimationPlayer.load("blueJump", true);
-						this.glassBroken = true;
-					}
-				}
-			} else {
-				if (Button.simpleButton(1920/2 - 800, 1080/2, 180, 240) && Game.player1.coins >= 30) {
-					//console.log("Given to red");
-					Game.player1.coins -= 30;
-					Player.upgradesBought["playerOneWeapon"] = 0; 
-					Player.retainedValues["p1Weapon"] = Mace;
-					this.maceBought = true;
-					AnimationPlayer.clear();
-				}
-				if (Button.simpleButton(1920/2 + 800, 1080/2, 180, 240) && Game.player2.coins >= 30) {
-					//console.log("Given to blue");
-					Game.player2.coins -= 30;
-					Player.upgradesBought["playerTwoWeapon"] = 0;
-					Player.retainedValues["p2Weapon"] = Mace;
-					this.maceBought = true;
-					AnimationPlayer.clear();
-				}
 			}
 		}
 		Shop.#updateParticles();

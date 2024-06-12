@@ -279,7 +279,6 @@ export class Player extends DynamicObject {
 	
 	/** Updates the Player */
 	update(onlyUpdateSuper = false) {
-		console.log(this.weapon);
 		if (onlyUpdateSuper) {
 			super.update(true);
 			return;
