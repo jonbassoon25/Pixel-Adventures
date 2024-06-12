@@ -16,6 +16,7 @@ import { Game } from "./Game.js";
 
 //Game Entity Imports
 import { Player } from "../gameEntities/Player.js";
+import { Level } from "../util/Level.js";
 
 //Template Class
 export class DifficultySelect extends Gamestate {
@@ -93,9 +94,10 @@ export class DifficultySelect extends Gamestate {
 				Difficulty.enemySpeedMult = this.enemySpeed.snappedOutput;
 				Difficulty.priceMult = this.price.snappedOutput;
 				Difficulty.pointMultiplier = 0;
+				Level.level = 1;
 				Game.player1 = new Player(100, 100, "red", "wadfs");
 				Game.player2 = new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
-				Player.upgradesBought = {"playerOneWeapon": 0, "playerOneHealth": 0, "playerOneRegen": 0, "playerOneSpeed": 0, "playerOneJump": 0, "playerTwoWeapon": 0, "playerTwoHealth": 0, "playerTwoRegen": 0, "playerTwoSpeed": 0, "playerTwoJump": 0};
+				Player.resetData();
 				AudioPlayer.play("ambience", true);
 				this.setScene("initGame");
 			}
@@ -108,18 +110,21 @@ export class DifficultySelect extends Gamestate {
 		//Easy button
 		if (this.easy.subsistAsButton()) {
 			Difficulty.setEasy();
+			Level.level = 1;
 			AudioPlayer.play("ambience", true);
 			this.setScene("initGame");
 		}
 		//Medium button
 		if (this.medium.subsistAsButton()) {
 			Difficulty.setMedium();
+			Level.level = 1;
 			AudioPlayer.play("ambience", true);
 			this.setScene("initGame");
 		}
 		//Hard button
 		if (this.hard.subsistAsButton()) {
 			Difficulty.setHard();
+			Level.level = 1;
 			AudioPlayer.play("ambience", true);
 			this.setScene("initGame");
 		}
@@ -130,8 +135,9 @@ export class DifficultySelect extends Gamestate {
 		
 		if (this.easy.isReleased() || this.medium.isReleased() || this.hard.isReleased()) {
 			//console.log("players initialized");
-			Game.player1 = new Player(100, 100, "red", "wadfs");
+			/*Game.player1 = new Player(100, 100, "red", "wadfs");
 			Game.player2 = new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
+			*/
 			Player.upgradesBought = {"playerOneWeapon": 0, "playerOneHealth": 0, "playerOneRegen": 0, "playerOneSpeed": 0, "playerOneJump": 0, "playerTwoWeapon": 0, "playerTwoHealth": 0, "playerTwoRegen": 0, "playerTwoSpeed": 0, "playerTwoJump": 0};
 		}
 	}

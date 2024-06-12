@@ -78,7 +78,6 @@ export class Player extends DynamicObject {
 		this.isDead = false;
 		this.visualWidth = 65;
 		this.visualHeight = 65;
-		console.log("new players spawned");
 		if (color == "red") this.weapon = new Player.retainedValues["p1Weapon"](this); else this.weapon = new Player.retainedValues["p2Weapon"](this);
 		this.weapon.damage += Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Weapon"] * 5;
 		this.grave = null;
