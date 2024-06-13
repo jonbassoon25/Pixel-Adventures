@@ -71,7 +71,6 @@ export class VisualObject {
 
 	/** Draws this VisualObject */
 	draw() {
-		if (this.image == "sparkRed") console.log("drawn");
 		Display.draw(this.image, this.visualX, this.visualY, this.visualWidth, this.visualHeight);
 	}
 	

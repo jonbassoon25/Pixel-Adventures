@@ -3,10 +3,12 @@ import { AudioPlayer } from "../util/AudioPlayer.js";
 import { Display } from "../util/Display.js";
 import { Keyboard } from "../util/Keyboard.js";
 import { Scene } from "../util/Scene.js";
+import { Mouse } from "../util/Mouse.js";
 
 //Game Entity Imports
 import { Slime } from "./Slime.js";
 import { Item } from "./Item.js";
+import { Healthbar } from "./Healthbar.js";
 
 //Game Object Imports
 import { Sword } from "../gameObjects/Sword.js";
@@ -17,6 +19,9 @@ import { Grave } from "../gameObjects/Grave.js";
 //Basic Object Imports
 import { DynamicObject } from "../basicObjects/DynamicObject.js";
 import { InteractableObject } from "../basicObjects/InteractableObject.js";
+
+//Gamestate Imports
+import { Settings } from "../gamestates/Settings.js";
 
 //Player Class
 export class Player extends DynamicObject {
@@ -55,7 +60,7 @@ export class Player extends DynamicObject {
 	 * @param {string} controlType - keys that control the player, default is wadfs (up, left, right, attack, interact)
 	 */
 	constructor(x, y, color, controlType = "wadfs") {
-		super(color + "Player", 0, x, y, 20, 52);
+		super(color + "Player", 1, x, y, 20, 52);
 		if (controlType.length < 5) {
 			controlType = "wadfs";
 		}
@@ -83,6 +88,7 @@ export class Player extends DynamicObject {
 		this.grave = null;
 		this.points = Player.retainedValues["p" + ((color == "red")? "1": "2") + "Score"];
 		this.jumpSpeed = 7.5 + Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Jump"] * 0.25;
+		this.healthbar = new Healthbar(this);
 	}
 
 	//*********************************************************************//
@@ -140,6 +146,10 @@ export class Player extends DynamicObject {
 			this.#moveRight();
 		} else {
 			this.#haltX();
+		}
+		if (Mouse.button1Released && Settings.debug) {
+			[this.x, this.y] = [...Display.inverseCalcElementDimensions(Mouse.x, Mouse.y, -1, -1)];
+			this.y -= this.height/2;
 		}
 	}
 
@@ -266,12 +276,12 @@ export class Player extends DynamicObject {
 	draw() {
 		super.draw();
 		//Draw player healthbar
-		if (!this.isDead) {
+		/*if (!this.isDead) {
 			let totalWidth = this.width * 2;
 			Display.draw("shader_05", this.x, this.y - this.height/2 - 7, totalWidth, 10);
 			let redWidth = this.width * 2 * (this.health / this.maxHealth);
 			Display.draw("redTile", this.x - (totalWidth - redWidth)/2, this.y - this.height/2 - 7, redWidth, 10);
-		}
+		}*/
 	}
 	
 

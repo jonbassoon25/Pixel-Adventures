@@ -11,7 +11,7 @@ import { Vector } from "../util/Vector.js";
 
 //Basic Object Imports
 import { DynamicObject } from "../basicObjects/DynamicObject.js";
-import { ShadedObject } from "../basicObjects/ShadedObject.js";
+
 //Particle Class
 export class Particle extends DynamicObject {
 	//Constructor
@@ -23,7 +23,7 @@ export class Particle extends DynamicObject {
 	* @param {number} lifeSpan - the lifeSpan of the particle in seconds
 	*/
 	constructor(type, x, y, width, height, velocity, lifeSpan, dragMultiplier = 0.9775, hasGravity = true, hasCollision = true, shade = true) {
-		super(type, 3, x, y, width, height, hasCollision, shade);
+		super(type, 4, x, y, width, height, hasCollision, shade);
 		this.velocity = velocity;
 		//Correct for expected fps
 		this.lifeSpan = lifeSpan * 60;

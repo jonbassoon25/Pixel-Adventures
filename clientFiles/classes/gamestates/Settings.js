@@ -18,11 +18,14 @@ import { Gamestate } from "./Gamestate.js";
 //Settings Class
 export class Settings extends Gamestate {
 	//Static Variables
-
+	static debug = true;
+	
+	//Buttons and Sliders
 	static backButton = new BackButton(150, 100);
+	static lightQualitySlider = new Slider(1920/2, 1080/2, 500, 90, 0, 4, 1, Math.log2(Scene.lightQuality));
+	static debugMode = new Button("blackTile", 1920 - 100, 1080 - 100, 80, 80);
 
-	static lightQualitySlider = new Slider(1920/2, 1080/2, 600, 90, 0, 3, 1, Math.log2(Scene.lightQuality));
-
+	
 
 	//*********************************************************************//
 	//Private Static Methods
@@ -50,7 +53,8 @@ export class Settings extends Gamestate {
 		}
 
 		this.lightQualitySlider.update();
-		
+
+		if (this.debugMode.subsistAsButton()) this.debug = !this.debug;
 		Scene.lightQuality = Math.pow(2, this.lightQualitySlider.snappedOutput);
 	}
 

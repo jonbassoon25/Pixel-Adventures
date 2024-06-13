@@ -13,8 +13,12 @@ import { Sword } from "../gameObjects/Sword.js";
 //Game Entity Imports
 import { Enemy } from "./Enemy.js";
 import { Particle } from "../gameEntities/Particle.js";
+import { Healthbar } from "../gameEntities/Healthbar.js";
 
-//Template Class
+//Gamestate Imports
+import { Settings } from "../gamestates/Settings.js";
+
+//Skeleton Class
 export class Skeleton extends Enemy {
 	//Constructor
 
@@ -24,6 +28,7 @@ export class Skeleton extends Enemy {
 		this.visualWidth = 80;
 		this.visualHeight = 75;
 		this.weapon = new Sword(this, this.damage);
+		if (Settings.debug) this.healthbar = new Healthbar(this);
 	}
 
 	//*********************************************************************//
@@ -41,8 +46,9 @@ export class Skeleton extends Enemy {
 		for (let i = 0; i < 12; i++) {
 			new Particle("death", this.x, this.y, 12, 12, new Vector([((i < 6)? 1 : -1) * (Math.random() * 2 + 2), ((i < 6)? 1 : -1) * Math.random() * 3 - 2]), 0.75, 0.95, true, true, false);
 		}
-		super.delete();
 		this.weapon.delete();
+		if (Settings.debug) this.healthbar.delete();
+		super.delete();
 	}
 
 	update() {

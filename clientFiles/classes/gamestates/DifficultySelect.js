@@ -95,10 +95,6 @@ export class DifficultySelect extends Gamestate {
 				Difficulty.priceMult = this.price.snappedOutput;
 				Difficulty.pointMultiplier = 0;
 				Level.level = 1;
-				Game.player1 = new Player(100, 100, "red", "wadfs");
-				Game.player2 = new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
-				Player.resetData();
-				AudioPlayer.play("ambience", true);
 				this.setScene("initGame");
 			}
 			return;
@@ -111,34 +107,23 @@ export class DifficultySelect extends Gamestate {
 		if (this.easy.subsistAsButton()) {
 			Difficulty.setEasy();
 			Level.level = 1;
-			AudioPlayer.play("ambience", true);
 			this.setScene("initGame");
 		}
 		//Medium button
 		if (this.medium.subsistAsButton()) {
 			Difficulty.setMedium();
 			Level.level = 1;
-			AudioPlayer.play("ambience", true);
 			this.setScene("initGame");
 		}
 		//Hard button
 		if (this.hard.subsistAsButton()) {
 			Difficulty.setHard();
 			Level.level = 1;
-			AudioPlayer.play("ambience", true);
 			this.setScene("initGame");
 		}
 		//Custom button
 		if (this.custom.subsistAsButton()) {
 			this.substate = "custom";
-		}
-		
-		if (this.easy.isReleased() || this.medium.isReleased() || this.hard.isReleased()) {
-			//console.log("players initialized");
-			/*Game.player1 = new Player(100, 100, "red", "wadfs");
-			Game.player2 = new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
-			*/
-			Player.upgradesBought = {"playerOneWeapon": 0, "playerOneHealth": 0, "playerOneRegen": 0, "playerOneSpeed": 0, "playerOneJump": 0, "playerTwoWeapon": 0, "playerTwoHealth": 0, "playerTwoRegen": 0, "playerTwoSpeed": 0, "playerTwoJump": 0};
 		}
 	}
 }

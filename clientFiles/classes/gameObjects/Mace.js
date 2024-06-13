@@ -26,7 +26,7 @@ export class Mace extends MeleeWeapon {
 		} else {
 			type = parentObject.type + "Mace";
 		}
-        super(parentObject, 80, 80, damage, 100, type, 0);
+        super(parentObject, 80, 80, damage, 100, type, 1);
 		this.knockback = new Vector([8, -4.5]);
     }
 	

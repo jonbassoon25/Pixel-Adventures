@@ -7,6 +7,10 @@ import { Vector } from "../util/Vector.js";
 //Game Entity Imports
 import { Enemy } from "./Enemy.js";
 import { Particle } from "./Particle.js";
+import { Healthbar } from "../gameEntities/Healthbar.js";
+
+//Gamestate Imports
+import { Settings } from "../gamestates/Settings.js";
 
 export class Slime extends Enemy {
 	/*
@@ -24,6 +28,7 @@ export class Slime extends Enemy {
 		this.visualWidth = this.width * 1.3;
 		this.visualHeight = this.height * 1.3;
 		this.idleTime = 0;
+		if (Settings.debug) this.healthbar = new Healthbar(this);
 	}
 
 	//*********************************************************************//
@@ -99,6 +104,7 @@ export class Slime extends Enemy {
 		for (let i = 0; i < 9; i++) {
 			new Particle("slimeDeath", this.x + (10 * (Math.floor(i/3) - 1)), this.y + (10 * (Math.floor(i%3) - 1)), 12, 12, new Vector([v/9 * i - v/2, ((i % 3 == 2)? -2 * v/3 : -2 * Math.random() * v)]), 1.6, 0.95, true, true);
 		}
+		if (Settings.debug) this.healthbar.delete();
 		super.delete();
 	}
 	update() {

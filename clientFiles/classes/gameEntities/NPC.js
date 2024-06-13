@@ -10,7 +10,7 @@ import { DynamicObject } from "../basicObjects/DynamicObject.js";
 export class NPC extends DynamicObject {
 	//Constructor
 	constructor(type, x, y, width = 30, height = 30, wanderDistance = 0, speed = 2) {
-		super(type, 1, x, y, width, height);
+		super(type, 2, x, y, width, height);
 		//Maximum speed of the enemy in px/frame
 		this.speed = speed;
 		//Inital speed at bottom of jump

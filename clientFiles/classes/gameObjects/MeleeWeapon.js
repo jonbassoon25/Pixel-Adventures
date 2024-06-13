@@ -20,7 +20,7 @@ export class MeleeWeapon extends AnimatedObject {
 	 * @param {number} reach - Reach of this MeleeWeapon in px
 	 * @param {Object} animations - Animations that this weapon has. Formatted as {"name": {"length": imageName}}. Must have idle animation
 	 */
-	constructor(parentObject, width, height, damage, reach, type, orderNum = 2) {
+	constructor(parentObject, width, height, damage, reach, type, orderNum = 3) {
 		super(type, orderNum, 0, 0, width, height);
 		this.parent = parentObject;
 		this.damage = damage;
@@ -51,7 +51,10 @@ export class MeleeWeapon extends AnimatedObject {
 		this.currentKeyframe.draw(this.currentFrame, this.parent.x, this.y, this.flipped, true);
 	}
 	awardPoints(curObj) {
+		console.log(curObj);
 		if (curObj.type == "slime") {
+			console.log(this.parent);
+			console.log("awarded");
 			this.parent.points += 500;
 		} else if (curObj.type == "skeleton") {
 			this.parent.points += 1500;

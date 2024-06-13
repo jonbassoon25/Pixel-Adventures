@@ -22,8 +22,8 @@ export class ShadedObject extends VisualObject {
 
 	constructor(image, orderNum, x, y, width, height, shade = true) {
 		super(image, x, y, width, height);
-		//Current order: 0: players, 1: NPCs, 2: Weapons, 3: Particles, 4: Background elements
-
+		//Current order: 0: UI and debug info, 1: players, 2: NPCs, 3: Weapons, 4: Particles, 5: Background elements
+		orderNum *= 2;
 		if (orderNum < 0) {
 			console.warn("Order num < 0. Setting to 0");
 			orderNum = 0;

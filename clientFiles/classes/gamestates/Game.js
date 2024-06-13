@@ -7,6 +7,7 @@ import { Level } from "../util/Level.js";
 import { Scene } from "../util/Scene.js";
 import { SceneBuilder } from "../util/SceneBuilder.js";
 import { Vector } from "../util/Vector.js";
+import { AudioPlayer } from "../util/AudioPlayer.js";
 
 //UI Object Imports
 
@@ -51,7 +52,8 @@ export class Game extends Gamestate {
 		if (Level.level == 1) {
 			Shop.maceBought = false;
 			Shop.glassBroken = false;
-			Player.upgradesBought = {"playerOneWeapon": 0, "playerOneHealth": 0, "playerOneRegen": 0, "playerOneSpeed": 0, "playerOneJump": 0, "playerTwoWeapon": 0, "playerTwoHealth": 0, "playerTwoRegen": 0, "playerTwoSpeed": 0, "playerTwoJump": 0};
+			Player.resetData();
+			AudioPlayer.play("ambience", true);
 		}
 		ShadedObject.clear();
 		InteractableObject.clear();

@@ -51,7 +51,7 @@ export class Sword extends MeleeWeapon {
 				if (attackBox.isColliding(curObj)) {
 					curObj.health -= this.damage;
 					curObj.takeKnockback(this);
-					if (curObj.health < 0 && this.parent instanceof Player) {
+					if (curObj.health <= 0 && this.parent instanceof Player) {
 						this.awardPoints(curObj);
 					}
 				}

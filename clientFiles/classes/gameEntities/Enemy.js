@@ -1,5 +1,6 @@
 //Util Imports
 import { Difficulty } from "../util/Difficulty.js";
+import { Display } from "../util/Display.js";
 
 //Game Entity Imports
 import { NPC } from "./NPC.js";
@@ -8,6 +9,9 @@ import { Scene } from "../util/Scene.js";
 
 //Basic Object Imports
 import { DynamicObject } from "../basicObjects/DynamicObject.js";
+
+//Gamestate Imports
+import { Settings } from "../gamestates/Settings.js";
 
 //Enemy Class
 export class Enemy extends NPC {
@@ -25,6 +29,7 @@ export class Enemy extends NPC {
 		this.speed *= Difficulty.enemySpeedMult;
 		this.damage = damage * Difficulty.enemyDamageMult;
 		this.health = health * Difficulty.enemyHealthMult;
+		this.maxHealth = this.health;
 		this.visibility = visibility;
 		this.target = [x, y];
 		this.returnPoint = [x, y];
@@ -65,6 +70,12 @@ export class Enemy extends NPC {
 		} else if (this.target[0] - this.x > 0) {
 			this.flipped = false;
 		}
+		let totalWidth = this.width * 2;
 		super.update();
+		if (Settings.debug) {
+			Display.draw("shader_05", this.x, this.y - this.height/2 - 7, totalWidth, 10);
+			let redWidth = this.width * 2 * (this.health / this.maxHealth);
+			Display.draw("redTile", this.x - (totalWidth - redWidth)/2, this.y - this.height/2 - 7, redWidth, 10);
+		}
 	}
 }

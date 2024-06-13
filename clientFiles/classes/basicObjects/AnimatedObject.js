@@ -763,6 +763,19 @@ export class AnimatedObject extends ShadedObject {
 					"transitionType": "sinusoidal"
 				}
 			]
+		},
+		"healthbar": {
+			"idle": [
+				{
+					"image": "glass",
+					"initialPosition": [0, 0],
+					"initialDimensions": [20, 20],
+					"finalOpacity": 0,
+					"finalRotation": 360,
+					"frames": 100,
+					"transitionType": "sinusoidal"
+				}
+			]
 		}
 	}
 

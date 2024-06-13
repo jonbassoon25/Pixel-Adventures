@@ -16,7 +16,7 @@ export class Door extends InteractableObject {
      * @param {number} y - y position of the middle of the bottom of the door
      */
     constructor(x, y) {
-        super("door", 4, x, y, 40, 60);
+        super("door", 5, x, y, 40, 60);
 		this.yOffset = -10;
 		this.type = "door";
     }

@@ -16,7 +16,7 @@ export class Chest extends InteractableObject {
 
 	constructor(x, y, coinRange = [6, 12]) {
 		//Image, orderNum, x, y, width, height
-		super("chest", 4, x, y, 40, 40);
+		super("chest", 5, x, y, 40, 40);
 		this.coinRange = coinRange;
 		this.coinRange = coinRange;
 		this.coins = Util.randInt(coinRange[0], coinRange[1]);
