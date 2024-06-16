@@ -723,6 +723,29 @@ export class AnimatedObject extends ShadedObject {
 				}
 			]
 		},
+		"sparkSlow": {
+			"idle": [
+				{
+					"image": "sparkYellow",
+					"initialPosition": [0, 0],
+					"initialDimensions": [6, 6],
+					"finalOpacity": 70,
+					"finalRotation": 120,
+					"frames": 15,
+					"transitionType": "sinusoidal"
+				}, 
+				{
+					"image": "sparkOrange",
+					"finalRotation": 240,
+					"finalOpacity": 40
+				}, 
+				{
+					"image": "sparkRed",
+					"finalRotation": 360,
+					"finalOpacity": 0
+				}
+			]
+		},
 		"death": {
 			"idle": [
 				{
@@ -767,13 +790,11 @@ export class AnimatedObject extends ShadedObject {
 		"healthbar": {
 			"idle": [
 				{
-					"image": "glass",
+					"image": "none",
 					"initialPosition": [0, 0],
-					"initialDimensions": [20, 20],
-					"finalOpacity": 0,
-					"finalRotation": 360,
-					"frames": 100,
-					"transitionType": "sinusoidal"
+					"initialDimensions": [0, 0],
+					"initialOpacity": 0,
+					"frames": 1
 				}
 			]
 		}

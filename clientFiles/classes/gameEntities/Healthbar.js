@@ -37,6 +37,8 @@ export class Healthbar extends DynamicObject {
         this.parent = parent;
         this.x = this.parent.x;
         this.y = this.parent.y - this.parent.height/2 - 7;
+        this.visualHeight *= 1.2;
+        this.visualWidth *= 1.1;
         this.clearance = clearance;
         this.max = (parent.maxHealth == null)? parent.health: parent.maxHealth;
     }

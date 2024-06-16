@@ -8,6 +8,7 @@ import { Keyframe } from "../util/Keyframe.js";
 import { Enemy } from "../gameEntities/Enemy.js";
 import { Particle } from "../gameEntities/Particle.js";
 import { Player } from "../gameEntities/Player.js";
+import { Healthbar } from "../gameEntities/Healthbar.js";
 
 //Game Object Imports
 import { MeleeWeapon } from "./MeleeWeapon.js";
@@ -15,6 +16,7 @@ import { MeleeWeapon } from "./MeleeWeapon.js";
 //Basic Object Imports
 import { DynamicObject } from "../basicObjects/DynamicObject.js"
 import { VisualObject } from "../basicObjects/VisualObject.js";
+
 
 //Mace Class
 export class Mace extends MeleeWeapon {
@@ -109,6 +111,7 @@ export class Mace extends MeleeWeapon {
 					continue;
 				}
 				if (attackBox.isColliding(curObj)) {
+					if (curObj instanceof Healthbar) continue;
 					let radius = 100; //attackEfficacy is currently inversely linearly proportional to curObj's distance from the strike point. At (radius) pixels away, the attackEfficacy will be 0, at 0 pixels away, it will be 1 (max).
 					let strikePoint = new Vector([this.x + (this.parent.flipped? -22 : 22), this.y + 19]);
 					let attackEfficacy = Keyframe.getRawValue((radius - Util.pythagorean(strikePoint.x - curObj.x, 1/3 * (strikePoint.y - curObj.y)))/radius, "linear");

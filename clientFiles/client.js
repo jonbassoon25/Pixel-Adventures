@@ -26,6 +26,7 @@ import { Mouse } from "./classes/util/Mouse.js";
 import { Scene } from "./classes/util/Scene.js";
 import { SceneBuilder } from "./classes/util/SceneBuilder.js";
 import { Util } from "./classes/util/Util.js";
+import { Vector } from "./classes/util/Vector.js";
 
 //UI Object Imports
 import { Leaderboard } from "./classes/UIObjects/Leaderboard.js";
@@ -51,6 +52,7 @@ import { SceneTile } from "./classes/gameObjects/SceneTile.js";
 //Game Entity Imports
 import { Player } from "./classes/gameEntities/Player.js";
 import { Settings } from "./classes/gamestates/Settings.js";
+import { Particle } from "./classes/gameEntities/Particle.js";
 
 //Basic Object Imports
 import { AnimatedObject } from "./classes/basicObjects/AnimatedObject.js";
@@ -78,7 +80,7 @@ let lastFrameTime = new Date().getTime();
 //Main Function
 
 //State variable
-let scene = "initClient";
+let scene = "initClient";//"initClient";
 
 function updateGame() {
 	//Update Display values
@@ -240,6 +242,46 @@ function updateGame() {
 			
 		//Other Gamestates
 		case "animationTest":
+			Display.draw("shard3", 1920/2, 1080/2, 540, 480);
+			if (AnimationPlayer.currentAnimations.length == 0) {
+				AnimationPlayer.load("educationShardWin", true);
+				AnimationPlayer.load("progressShardWin", true);
+				AnimationPlayer.load("serviceShardWin", true);
+			}
+			if (AnimationPlayer.isPlaying("serviceShardWin")) if (AnimationPlayer.getAnimation("serviceShardWin").frames == 150) {
+				//First Shard
+				for (let i = 0; i < 50; i++) {
+					new Particle("sparkSlow", 1000, 570, 6, 6, new Vector([-6 + (12 * Math.random()), Math.random() * 8]), 0.75, 0.975, true, false, false);
+				}
+				for (let i = 0; i < 50; i++) {
+					new Particle("sparkSlow", 840, 570, 6, 6, new Vector([-6 + (12 * Math.random()), Math.random() * 8]), 0.75, 0.975, true, false, false);
+				}
+				for (let i = 0; i < 50; i++) {
+					new Particle("sparkSlow", 750, 690, 6, 6, new Vector([-6 + (12 * Math.random()), Math.random() * 8]), 0.75, 0.975, true, false, false);
+				}
+				//Second Shard
+				for (let i = 0; i < 50; i++) {
+					new Particle("sparkSlow", 900, 560, 6, 6, new Vector([-6 + (12 * Math.random()), Math.random() * -12]), 0.75, 0.975, true, false, false);
+				}
+				for (let i = 0; i < 50; i++) {
+					new Particle("sparkSlow", 970, 690, 6, 6, new Vector([-6 + (12 * Math.random()), Math.random() * -12]), 0.75, 0.975, true, false, false);
+				}
+				for (let i = 0; i < 50; i++) {
+					new Particle("sparkSlow", 1140, 720, 6, 6, new Vector([-6 + (12 * Math.random()), Math.random() * -12]), 0.75, 0.975, true, false, false);
+				}
+				//Third shard
+				for (let i = 0; i < 50; i++) {
+					new Particle("sparkSlow", 958, 640, 6, 6, new Vector([-12 * Math.random(), Math.random() * -8]), 0.75, 0.975, true, false, false);
+				}
+				for (let i = 0; i < 50; i++) {
+					new Particle("sparkSlow", 1050, 500, 6, 6, new Vector([-12 * Math.random(), Math.random() * -8]), 0.75, 0.975, true, false, false);
+				}
+				for (let i = 0; i < 50; i++) {
+					new Particle("sparkSlow", 990, 360, 6, 6, new Vector([-12 * Math.random(), Math.random() * -8]), 0.75, 0.975, true, false, false);
+				}
+			}
+			DynamicObject.updateObjects();
+			Scene.drawShadedObjects();
 			break;
 		default:
 			Display.drawText(scene, 1920/2 - scene.length*60/2, 1080/2, 100, true, "white");

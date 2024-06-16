@@ -236,7 +236,71 @@ export class Animation {
 				"finalOpacity": 0,
 				"frames": 80,
 				"transitionType": "log",
-				"opacityTransitionType": "growth",
+				"opacityTransitionType": "growth"
+			}
+		],
+		"educationShardWin": [
+			{
+				"image": "educationShard",
+				"initialPosition": [-250, 1080/2 - 30],
+				"finalPosition": [1920/2 - 120 + 15, 1080/2 - 30], 
+				"initialDimensions": [330, 420],
+				"initialRotation": -40,
+				"finalRotation": 0,
+				"frames": 150, 
+				"transitionType": "linear",
+				"xTransitionType": "log",
+				"rotationTransitionType": "growth"
+			}
+		],
+		"progressShardWin": [
+			{
+				"image": "progressShard",
+				"initialPosition": [1920/2, 1080 + 250],
+				"initialDimensions": [480, 210],
+				"initialRotation": -40,
+				"frames": 50,
+				"transitionType": "linear",
+			},
+			{
+				"finalPosition": [1920/2, 1080/2 + 180 - 45], 
+				"finalRotation": 0,
+				"frames": 100,
+				"xTransitionType": "log",
+				"rotationTransitionType": "growth"
+			}
+		],
+		"serviceShardWin": [
+			{
+				"image": "serviceShard", 
+				"initialPosition": [1920 + 250, 1080/2 - 30],
+				"initialDimensions": [270, 420],
+				"initialRotation": -40,
+				"frames": 100,
+				"transitionType": "linear"
+			},
+			{
+				"finalPosition": [1920/2 + 120 + 15, 1080/2 - 30], 
+				"finalRotation": 0,
+				"frames": 50,
+				"xTransitionType": "log",
+				"rotationTransitionType": "growth"
+			}
+		],
+		"congratulations": [
+			{
+				"image": "congratulations", 
+				"initialPosition": [1920/2, 1080 + 150],
+				"finalPosition": [1920/2, 1080 - 200],
+				"initialDimensions": [1150, 80],
+				"initialOpacity": 0,
+				"finalOpacity": 100,
+				"frames": 100,
+				"transitionType": "sinusoidal"
+			},
+			{
+				"finalOpacity": 0,
+				"frames": 50
 			}
 		]
     };

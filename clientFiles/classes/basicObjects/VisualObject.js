@@ -61,6 +61,10 @@ export class VisualObject {
 		}
 	}
 
+	isFullyEnclosing(obj, inclusive = true) {
+		return this.isEnclosing(obj.upperLeft, inclusive) && this.isEnclosing(obj.upperRight, inclusive) && this.isEnclosing(obj.bottomLeft, inclusive) && this.isEnclosing(obj.bottomRight, inclusive);
+	}
+	
 	isVisualEnclosing(point, inclusive = true) {
 		if (inclusive) {
 			return point[0] >= this.visualX - this.visualWidth/2 && point[0] <= this.visualX + this.visualWidth/2 && point[1] >= this.visualY - this.visualHeight/2 && point[1] <= this.visualY + this.visualHeight/2;

@@ -1,5 +1,6 @@
 //Util Imports
 import { Vector } from "../util/Vector.js";
+import { Scene } from "../util/Scene.js";
 
 //UI Object Imports
 
@@ -24,6 +25,19 @@ export class Particle extends DynamicObject {
 	*/
 	constructor(type, x, y, width, height, velocity, lifeSpan, dragMultiplier = 0.9775, hasGravity = true, hasCollision = true, shade = true) {
 		super(type, 4, x, y, width, height, hasCollision, shade);
+		//Attempted to delete particles upon attempted generation inside walls. Didn't work
+		/*if (this.hasCollision) {
+			for (let i = 0; i < Scene.structure.length; i++) {
+				for (let j = 0; j < Scene.structure[i].length; j++) {
+					let sceneTile = Scene.structure[i][j];
+					if (sceneTile.hasCollision && sceneTile.isFullyEnclosing(this)) {
+						console.log("found");
+						delete this;
+						return;
+					}
+				}
+			}
+		}*/
 		this.velocity = velocity;
 		//Correct for expected fps
 		this.lifeSpan = lifeSpan * 60;
@@ -46,7 +60,9 @@ export class Particle extends DynamicObject {
 	update() {
 		if (!this.hasGravity) {
 			this.velocity.add(Vector.GRAVITY, -1);
-		} else this.velocity.x *= this.dragMultiplier;
+		} 
+		this.velocity.x *= this.dragMultiplier;
+		this.velocity.y *= this.dragMultiplier;
 		super.update();
 		this.lifeSpan--;
 		if (this.lifeSpan <= 0) {

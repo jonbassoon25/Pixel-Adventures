@@ -27,7 +27,7 @@ export class Textbox extends VisualObject {
 		//The textbox is not selected by the user
 		this.isSelected = false;
 		//Calculate and set the character limit of the textbox
-		this.charLimit = Math.floor((this.width - 10) / ((this.height - 5) * 0.576));
+		this.charLimit = Math.floor((this.width - 10) / ((this.height - 5) * 0.552));
 	}
 
 	//*********************************************************************//
@@ -71,6 +71,9 @@ export class Textbox extends VisualObject {
  	*/
 	update() {
 		super.update();
+		//Draw the sides of the textbox
+		Display.draw("blackTile", this.x - (this.width/2 - this.height/20), this.y, this.height/10, this.height);
+		Display.draw("blackTile", this.x + (this.width/2 - this.height/20), this.y, this.height/10, this.height);
 		//Check to see if the textbox has been selected or deselected this frame
 		this.#checkIsSelected();
 		//If the textbox is selected
@@ -79,7 +82,7 @@ export class Textbox extends VisualObject {
 			this.#logInput();
 			//Display flashing position indicator
 			if (Display.frames % 60 < 30) {
-				Display.draw("shader_20", this.x - this.width/2 + 20 + this.text.length * (this.height - 5) * 0.576, this.y, 15, this.height * 3/4);
+				Display.draw("blackTile", this.x - this.width/2 + 20 + this.text.length * (this.height - 5) * 0.552, this.y, 15, this.height * 3/4);
 			}
 		}
 		//Draw the textbox text

@@ -1,5 +1,6 @@
 //Util Imports
 import { Display } from "../util/Display.js";
+import { AnimationPlayer } from "../util/AnimationPlayer.js";
 
 //UI Object Imports
 import { Button } from "../UIObjects/Button.js";
@@ -17,7 +18,7 @@ import { DynamicObject } from "../basicObjects/DynamicObject.js";
 export class SaveScore extends Gamestate {
 	//Static Variables
 	
-	static textbox = new Textbox(1920/2, 1080/2, 580, 100);
+	static textbox = new Textbox(1920/2, 1080/2, 1260, 100);
 	static submit = new Button("saveScore", 1920/2, 1080/2 + 200, 385, 40);
 
 	//*********************************************************************//
@@ -25,6 +26,7 @@ export class SaveScore extends Gamestate {
 
 	static init() {
 		super.init();
+		AnimationPlayer.load("fadeIn");
 		this.textbox.isSelected = true;
 		if (Difficulty.pointMultiplier != 0) {
 			this.setScene("saveScore");

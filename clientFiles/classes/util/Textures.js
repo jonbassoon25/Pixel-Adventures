@@ -5,8 +5,8 @@ function loadAssets() {
 	//Assign folders to load
 	foldersToLoad["shaders"] = ["shader_black"];
 	foldersToLoad["decorations"] = ["bannerWhite", "bannerWhiteFBLA", "chairLeft", "chairRight", "plant1", "plant2", "woodenTable", "bookshelf", "sunset", "skull"];
-	foldersToLoad["tiles"] = ["stoneBrick", "rottedWoodPlanks", "vines", "blueTile", "redTile", "blackTile", "insetLantern", "chest", "chestOpened", "wood", "door"];
-	foldersToLoad["menu"] = ["mainMenuPanoTinted", "plaque", "banner", "stoneBrickBackground", "woodenPlaque", "leaderboardPlaque", "upgradePlaque", "selectionBox", "settings", "flasher1", "flasher2", "buttonPlaque", "transferCoins", "glassPane", "priceTag", "maceWarning"];
+	foldersToLoad["tiles"] = ["stoneBrick", "rottedWoodPlanks", "vines", "blueTile", "redTile", "blackTile", "insetLantern", "chest", "chestOpened", "wood", "door", "chestAlt", "chestOpenedAlt", "doorAlt"];
+	foldersToLoad["menu"] = ["mainMenuPanoTinted", "plaque", "banner", "stoneBrickBackground", "woodenPlaque", "leaderboardPlaque", "upgradePlaque", "selectionBox", "settings", "flasher1", "flasher2", "buttonPlaque", "transferCoins", "glassPane", "priceTag", "maceWarning", "congratulations"];
 	foldersToLoad["buttons"] = ["buttonHovered", "buttonPressed", "playButton", "back", "cog", "leaderboard", "upgradeJump", "upgradeMaxHealth", "upgradeRegen", "upgradeSpeed", "upgradeWeapon", "upgradeSword", "upgradeMace", "continue", "easy", "medium", "hard", "custom", "sliderFrame", "sliderHandle", "saveScore", "textBox", "escape", "musicEnabled", "musicDisabled", "plus", "minus", "help", "redToBlue", "blueToRed"];
 	foldersToLoad["util"] = ["placeholder", "crosshair", "visualDimensions", "painting"];
 	foldersToLoad["player"] = ["bluePlayer", "bluePlayerJump", "bluePlayerWalk", "blueGhost", "blueGhostAlt", "redPlayer", "redPlayerJump", "redPlayerWalk", "redGhost", "redGhostAlt", "redGrave", "blueGrave"];

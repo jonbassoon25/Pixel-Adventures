@@ -27,6 +27,7 @@ export class Keyboard {
  	 * @returns {boolean} - True if the specified key is down (held)
   	 */
 	static isKeyDown(key) {
+		//if (key == "`") console.log(Keyboard.keysDown.includes(key));
 		return Keyboard.keysDown.includes(key);
 	}
 

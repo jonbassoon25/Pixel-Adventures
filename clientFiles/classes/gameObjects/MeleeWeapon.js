@@ -51,10 +51,7 @@ export class MeleeWeapon extends AnimatedObject {
 		this.currentKeyframe.draw(this.currentFrame, this.parent.x, this.y, this.flipped, true);
 	}
 	awardPoints(curObj) {
-		console.log(curObj);
 		if (curObj.type == "slime") {
-			console.log(this.parent);
-			console.log("awarded");
 			this.parent.points += 500;
 		} else if (curObj.type == "skeleton") {
 			this.parent.points += 1500;
