@@ -105,10 +105,6 @@ export class Game extends Gamestate {
 					this.setScene("initGame");
 				}
 
-				if (Keyboard.isKeyPressed("r")) {
-					new Particle("testParticle", ...Scene.snapCoordinates(698, 97), 35, 35, new Vector([1, -3]), 3);
-				}
-
 				Scene.drawBackground();
 
 				//Update/move items and dynamic objects
@@ -139,10 +135,10 @@ export class Game extends Gamestate {
 				Scene.drawShadedObjects();
 
 				Display.drawText("Player 1 Coins: " + this.player1.coins.toString(), 50, 50, 40, true, "white");
-				Display.drawText("Player 2 Coins: " + this.player2.coins.toString(), 1920 - ("Player 2 Coins: " + this.player2.coins.toString()).length * 30, 50, 40, true, "white");
+				Display.drawText("Player 2 Coins: " + this.player2.coins.toString(), 1920 - Display.getTextWidth("Player 2 Coins: " + this.player2.coins.toString(), 40) - 50, 50, 40, true, "white");
 
 				if (Difficulty.pointMultiplier != 0) {
-					Display.drawText("Score: " + Math.round((this.player1.points + this.player2.points) * Difficulty.pointMultiplier).toString(), 1920/2 - ("Combined Points: " + Math.round((this.player1.points + this.player2.points) * Difficulty.pointMultiplier).toString()).length * 40 * 0.55 / 2, 50, 40, true, "white");
+					Display.drawText("Score: " + Math.round((this.player1.points + this.player2.points) * Difficulty.pointMultiplier).toString(), 1920/2 - Display.getTextWidth("Score: " + Math.round((this.player1.points + this.player2.points) * Difficulty.pointMultiplier).toString(), 40) / 2, 50, 40, true, "white");
 				}
 
 				//Spawn random light source particles

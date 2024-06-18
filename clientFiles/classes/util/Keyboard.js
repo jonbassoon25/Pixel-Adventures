@@ -9,6 +9,7 @@ export class Keyboard {
 	static escapeDown = false;
 	static altDown = false;
 	static controlDown = false;
+	static tildeDown = false;
 	
 	//Single frame vars
 	static keysPressed = [];
@@ -18,6 +19,7 @@ export class Keyboard {
 	static altPressed = false;
 	static escapePressed = false;
 	static controlPressed = false;
+	static tildePressed = false;
 
 	//*********************************************************************//
 	//Public Static Methods 
@@ -75,6 +77,7 @@ export class Keyboard {
 	 * Resets all single frame Keyboard variables
   	 */
 	static resetVars() {
+		//console.log(this.keysDown);
 		this.keysPressed = [];
 		this.keysReleased = [];
 		this.shiftPressed = false;
@@ -82,5 +85,6 @@ export class Keyboard {
 		this.escapePressed = false;
 		this.altPressed = false;
 		this.controlPressed = false;
+		this.tildePressed = false;
 	}
 }

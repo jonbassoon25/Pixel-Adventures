@@ -26,8 +26,8 @@ export class Textbox extends VisualObject {
 		this.text = "";
 		//The textbox is not selected by the user
 		this.isSelected = false;
-		//Calculate and set the character limit of the textbox
-		this.charLimit = Math.floor((this.width - 10) / ((this.height - 5) * 0.552));
+		//Calculate and set the character limit of the textbox (0.5 is approximitely the maximum width of any given character)
+		this.charLimit = Math.floor((this.width - 10) / ((this.height - 5) * 0.5));
 	}
 
 	//*********************************************************************//
@@ -46,7 +46,11 @@ export class Textbox extends VisualObject {
 		}
 		//For every key pressed this frame, add it to the textbox text
 		for (let i = 0; i < Keyboard.keysPressed.length; i++) {
-			this.text += Keyboard.keysPressed[i];
+			if (!Keyboard.shiftDown) {
+				this.text += Keyboard.keysPressed[i];
+			} else {
+				this.text += Keyboard.keysPressed[i].toUpperCase();
+			}
 		}
 	}
 
@@ -82,7 +86,7 @@ export class Textbox extends VisualObject {
 			this.#logInput();
 			//Display flashing position indicator
 			if (Display.frames % 60 < 30) {
-				Display.draw("blackTile", this.x - this.width/2 + 20 + this.text.length * (this.height - 5) * 0.552, this.y, 15, this.height * 3/4);
+				Display.draw("blackTile", this.x - this.width/2 + 20 + this.text.length * (this.height - 5) * Display.getTextWidth(this.text, this.height - 5), this.y, 15, this.height * 3/4);
 			}
 		}
 		//Draw the textbox text

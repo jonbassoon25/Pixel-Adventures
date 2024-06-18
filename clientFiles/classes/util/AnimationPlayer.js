@@ -6,6 +6,11 @@ import { Util } from "./Util.js";
 export class AnimationPlayer {
     //Static Variables
 
+    //Animation packs, played together
+    static animationPacks = {
+        "death": ["skull", "youDied", "grave1", "grave2", "clickToReturn"]
+    };
+    
     //Currently playing animations
     static currentAnimations = [];
 
@@ -24,6 +29,17 @@ export class AnimationPlayer {
      */
     static load(animationName, loops = false, underlay = false) {
         this.currentAnimations.push(new Animation(animationName, loops, underlay));
+    }
+
+    /**
+     * Loads a new animation pack into the AnimationPlayer
+     * @param {string} packName - The name of the animation template to use
+     * @param {boolean} loops - Should the animation loop? Default: false
+     */
+    static loadPack(packName, loops = false, underlay = false) {
+        for (let i = 0; i < this.animationPacks[packName].length; i++) {
+            this.currentAnimations.push(new Animation(this.animationPacks[packName][i], loops, underlay));
+        }
     }
 
     /** Removes all instances of an animation type in the AnimationPlayer */

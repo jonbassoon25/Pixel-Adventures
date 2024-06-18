@@ -302,6 +302,79 @@ export class Animation {
 				"finalOpacity": 0,
 				"frames": 50
 			}
+		],
+		"skull": [
+			{
+				"image": "skull", 
+				"initialPosition": [1920/2, -200],
+				"finalPosition": [1920/2, 1080/2 - 200],
+				"initialDimensions": [420, 420],
+				"frames": 100,
+				"transitionType": "sinusoidal"
+			},
+			{
+				"frames": 125
+			}
+		],
+		"youDied": [
+			{
+				"image": "youDied", 
+				"initialPosition": [1920/2, 1080/2 + 50],
+				"initialOpacity": 0,
+				"initialDimensions": [570, 80],
+				"frames": 75
+			},
+			{
+				"finalOpacity": 100,
+				"frames": 150,
+				"transitionType": "sinusoidal"
+			}
+		],
+		"grave1": [
+			{
+				"image": "redGrave", 
+				"initialPosition": [1920/2 - 400, 1080 + 120],
+				"initialDimensions": [240, 240],
+				"frames": 50
+			},
+			{
+				"finalPosition": [1920/2 - 400, 1080 - 120],
+				"frames": 100,
+				"transitionType": "sinusoidal"
+			},
+			{
+				"frames": 75
+			}
+		],
+		"grave2": [
+			{
+				"image": "blueGrave", 
+				"initialPosition": [1920/2 + 400, 1080 + 120],
+				"initialDimensions": [240, 240],
+				"frames": 75
+			},
+			{
+				"finalPosition": [1920/2 + 400, 1080 - 120],
+				"frames": 100,
+				"transitionType": "sinusoidal"
+			},
+			{
+				"frames": 50
+			}
+		],
+		"clickToReturn": [
+			{
+				"image": "clickToReturn", 
+				"initialPosition": [1920/2, 1080/2 + 180],
+				"initialDimensions": [742, 56],
+				"initialOpacity": 0,
+				"frames": 150
+			},
+			{
+				"finalOpacity": 100,
+				"frames": 75,
+				"transitionType": "sinusoidal"
+			}
 		]
     };
 

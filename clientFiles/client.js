@@ -242,43 +242,8 @@ function updateGame() {
 			
 		//Other Gamestates
 		case "animationTest":
-			Display.draw("shard3", 1920/2, 1080/2, 540, 480);
 			if (AnimationPlayer.currentAnimations.length == 0) {
-				AnimationPlayer.load("educationShardWin", true);
-				AnimationPlayer.load("progressShardWin", true);
-				AnimationPlayer.load("serviceShardWin", true);
-			}
-			if (AnimationPlayer.isPlaying("serviceShardWin")) if (AnimationPlayer.getAnimation("serviceShardWin").frames == 150) {
-				//First Shard
-				for (let i = 0; i < 50; i++) {
-					new Particle("sparkSlow", 1000, 570, 6, 6, new Vector([-6 + (12 * Math.random()), Math.random() * 8]), 0.75, 0.975, true, false, false);
-				}
-				for (let i = 0; i < 50; i++) {
-					new Particle("sparkSlow", 840, 570, 6, 6, new Vector([-6 + (12 * Math.random()), Math.random() * 8]), 0.75, 0.975, true, false, false);
-				}
-				for (let i = 0; i < 50; i++) {
-					new Particle("sparkSlow", 750, 690, 6, 6, new Vector([-6 + (12 * Math.random()), Math.random() * 8]), 0.75, 0.975, true, false, false);
-				}
-				//Second Shard
-				for (let i = 0; i < 50; i++) {
-					new Particle("sparkSlow", 900, 560, 6, 6, new Vector([-6 + (12 * Math.random()), Math.random() * -12]), 0.75, 0.975, true, false, false);
-				}
-				for (let i = 0; i < 50; i++) {
-					new Particle("sparkSlow", 970, 690, 6, 6, new Vector([-6 + (12 * Math.random()), Math.random() * -12]), 0.75, 0.975, true, false, false);
-				}
-				for (let i = 0; i < 50; i++) {
-					new Particle("sparkSlow", 1140, 720, 6, 6, new Vector([-6 + (12 * Math.random()), Math.random() * -12]), 0.75, 0.975, true, false, false);
-				}
-				//Third shard
-				for (let i = 0; i < 50; i++) {
-					new Particle("sparkSlow", 958, 640, 6, 6, new Vector([-12 * Math.random(), Math.random() * -8]), 0.75, 0.975, true, false, false);
-				}
-				for (let i = 0; i < 50; i++) {
-					new Particle("sparkSlow", 1050, 500, 6, 6, new Vector([-12 * Math.random(), Math.random() * -8]), 0.75, 0.975, true, false, false);
-				}
-				for (let i = 0; i < 50; i++) {
-					new Particle("sparkSlow", 990, 360, 6, 6, new Vector([-12 * Math.random(), Math.random() * -8]), 0.75, 0.975, true, false, false);
-				}
+				AnimationPlayer.loadPack("death", true);
 			}
 			DynamicObject.updateObjects();
 			Scene.drawShadedObjects();
@@ -419,6 +384,10 @@ document.addEventListener("keydown", (event) => {
 			Keyboard.controlDown = true;
 			Keyboard.controlPressed = true;
 			break;
+		case "`":
+			Keyboard.tildeDown = true;
+			Keyboard.tildePressed = true;
+			break;
 		default:
 			if (event.key.length !== 1) {
 				console.log("Unsupported Key Pressed: " + event.key);
@@ -460,6 +429,9 @@ document.addEventListener("keyup", (event) => {
 			break;
 		case "Control":
 			Keyboard.controlDown = false;
+			break;
+		case "`":
+			Keyboard.tildeDown = false;
 			break;
 		default:
 			if (event.key.length !== 1) {

@@ -1,5 +1,6 @@
 //Util Imports
 import { textures } from "./Textures.js";
+import { Util } from "./Util.js";
 
 //Basic Object Imports
 import { VisualObject } from "../basicObjects/VisualObject.js";
@@ -8,13 +9,8 @@ import { VisualObject } from "../basicObjects/VisualObject.js";
 const canvas = document.getElementById("gameScreen");
 const ctx = canvas.getContext("2d", {willReadFrequently: true});
 
-//ctx.scale(0.5, 0.5);
-console.log(window.devicePixelRatio);
-window.devicePixelRatio = 0;
-
 export class Display {
 	//Static Variables
-
 	static sizeMult = 1;
 	static horizontalOffset = 0;
 	static verticalOffset = 0;
@@ -22,12 +18,20 @@ export class Display {
 	static frames = 0;
 	static fps = 0;
 	static currentData = null;
+	static specialCharacters = {
+		"￠": "coinCharacter"
+	}
 
 	static queuedShaders = {}
 	
 	//*********************************************************************//
 	//Public Static Methods
 
+	static getTextWidth(text, size) {
+		ctx.font = size + "px ThaleahFat"
+		return ctx.measureText(text).width;
+	}
+	
 	static setAlpha(num) {
 		ctx.globalAlpha = num;
 	}
@@ -373,6 +377,20 @@ export class Display {
 	 * @param {string} color - The color of the text (optional)
 	 */
 	static drawText(text, x, y, size, resize = true, color = "#ffffff") {
+		//Recursion for handling special characters
+		let keys = Object.keys(this.specialCharacters);
+		for (let i = 0; i < keys.length; i++) {
+			if (text.includes(keys[i])) {
+				//Draw the text portion preceding the special character
+				this.drawText(text.substring(0, text.indexOf(keys[i])), x, y, size, true, color);
+				//Draw the special character
+				Display.draw("blackTile", x + this.getTextWidth(text.substring(0, text.indexOf(keys[i]) + 1), size), y - (2*size/3), size * 0.5, size);
+				//Draw the text portion succeeding the special character
+				this.drawText(text.substring(text.indexOf(keys[i]) + 1), x + this.getTextWidth(text.substring(text.indexOf(keys[i] + 1)), size), y, size, true, color);
+				return;
+			}
+		}
+		//console.log("Drawing text " + text);
 		//If the coordinates passed in are absolute (they need to be resized)
 		if (resize) {
 			//Use trash variable to store the unneeded return from Display.calcElementDimensions
@@ -380,7 +398,8 @@ export class Display {
 			[x, y, trash, size] = this.calcElementDimensions(x, y, 0, size);
 		}
 		//Set the font size to fill the textbox from top to bottom
-		ctx.font = "bold " + size.toString() + "px Monospace";
+		//ctx.font = "bold " + size.toString() + "px Monospace"; (old font)
+		ctx.font = size.toString() + "px ThaleahFat"
 		//Set the text color to the given color
 		ctx.fillStyle = color;
 		//Draw the text onto the canvas

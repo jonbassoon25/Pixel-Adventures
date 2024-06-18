@@ -24,7 +24,7 @@ export class Lose extends Gamestate {
 
 	//*********************************************************************//
 	//Static Variables
-	static returnButton = new Button("none", 1920/2, 1080/2 + 150, 1000, 144);
+	static returnButton = new Button("none", 1920/2, 1080/2 + 180, 742, 56);
 
 	//*********************************************************************//
 	//Private Static Methods - No required JSDocs
@@ -35,6 +35,7 @@ export class Lose extends Gamestate {
 	static init() {
 		super.init();
 		AnimationPlayer.load("fadeIn");
+		AnimationPlayer.loadPack("death");
 		AudioPlayer.play("lose");
 		Display.clear();
 		DynamicObject.clear();
@@ -45,10 +46,21 @@ export class Lose extends Gamestate {
 	}
 
 	static update() {
-		Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
-		Display.drawText("you lost...", 1920/2 - "you lost...".length*60/2, 1080/2, 100, true, "black");
-		if (!AnimationPlayer.isPlaying("fadeIn")) {
-			Display.drawText("click to return", 1920/2 - "click to return".length*60/2, 1080/2 + 250, 100, true, "black");
+		if (AnimationPlayer.currentAnimations.length == 0) {
+			Display.draw("skull", 1920/2, 1080/2 - 200, 420, 420);
+			Display.draw("youDied", 1920/2, 1080/2 + 50, 570, 80);
+			Display.draw("redGrave", 1920/2 - 400, 1080 - 120, 240, 240);
+			Display.draw("blueGrave", 1920/2 + 400, 1080 - 120, 240, 240);
+			Display.draw("clickToReturn", 1920/2, 1080/2 + 180, 742, 56);
+		}
+		if (AnimationPlayer.isPlaying("clickToReturn")) {
+			if (AnimationPlayer.getAnimation("clickToReturn").frames > 150) {
+				if (this.returnButton.subsistAsButton()) {
+					AnimationPlayer.clear();
+					this.setScene("initMenu");
+				}
+			}
+		} else {
 			if (this.returnButton.subsistAsButton()) {
 				AnimationPlayer.clear();
 				this.setScene("initMenu");
