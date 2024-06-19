@@ -81,7 +81,7 @@ let lastFrameTime = new Date().getTime();
 //Main Function
 
 //State variable
-let scene = "animationTest";//"initClient";
+let scene = "initClient";//"initClient";
 
 function updateGame() {
 	//Update Display values
