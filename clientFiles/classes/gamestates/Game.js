@@ -53,8 +53,9 @@ export class Game extends Gamestate {
 			Shop.maceBought = false;
 			Shop.glassBroken = false;
 			Player.resetData();
-			AudioPlayer.play("ambience", true);
 		}
+		
+		AudioPlayer.play("ambience", true);
 		ShadedObject.clear();
 		InteractableObject.clear();
 		DynamicObject.clear();
@@ -85,6 +86,7 @@ export class Game extends Gamestate {
 					Level.spawnEntities();
 					Level.loadDecorations();
 					this.substate = "game";
+					AnimationPlayer.load("fadeIn");
 				}
 				break;
 			case "game":
@@ -97,7 +99,7 @@ export class Game extends Gamestate {
 					break;
 				}
 
-				if (Keyboard.isKeyDown("`") && Keyboard.isKeyPressed("r")) {
+				if (Keyboard.backquoteDown && Keyboard.isKeyPressed("r")) {
 					Display.clear();
 					DynamicObject.clear();
 					Level.level = 1;
@@ -113,7 +115,7 @@ export class Game extends Gamestate {
 
 				
 				//Scene Editor
-				if (Keyboard.shiftPressed && Keyboard.isKeyDown("`")) {
+				if (Keyboard.shiftPressed && Keyboard.backquoteDown) {
 					Player.retainedValues["p1Coins"] = this.player1.coins;
 					Player.retainedValues["p2Coins"] = this.player2.coins;
 					Player.retainedValues["p1Score"] = this.player1.points;

@@ -9,7 +9,7 @@ export class Keyboard {
 	static escapeDown = false;
 	static altDown = false;
 	static controlDown = false;
-	static tildeDown = false;
+	static backquoteDown = false;
 	
 	//Single frame vars
 	static keysPressed = [];
@@ -19,7 +19,7 @@ export class Keyboard {
 	static altPressed = false;
 	static escapePressed = false;
 	static controlPressed = false;
-	static tildePressed = false;
+	static backquotePressed = false;
 
 	//*********************************************************************//
 	//Public Static Methods 
@@ -85,6 +85,6 @@ export class Keyboard {
 		this.escapePressed = false;
 		this.altPressed = false;
 		this.controlPressed = false;
-		this.tildePressed = false;
+		this.backquotePressed = false;
 	}
 }

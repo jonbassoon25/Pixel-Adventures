@@ -86,7 +86,7 @@ export class Textbox extends VisualObject {
 			this.#logInput();
 			//Display flashing position indicator
 			if (Display.frames % 60 < 30) {
-				Display.draw("blackTile", this.x - this.width/2 + 20 + this.text.length * (this.height - 5) * Display.getTextWidth(this.text, this.height - 5), this.y, 15, this.height * 3/4);
+				Display.draw("blackTile", this.x - this.width/2 + 20 + Display.getTextWidth(this.text, this.height - 5), this.y, 15, this.height * 3/4);
 			}
 		}
 		//Draw the textbox text

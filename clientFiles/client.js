@@ -58,6 +58,7 @@ import { Particle } from "./classes/gameEntities/Particle.js";
 import { AnimatedObject } from "./classes/basicObjects/AnimatedObject.js";
 import { DynamicObject } from "./classes/basicObjects/DynamicObject.js";
 import { ShadedObject } from "./classes/basicObjects/ShadedObject.js";
+import { GameSelection } from "./classes/gamestates/GameSelection.js";
 
 
 //------------------------------------------------------------------------------------//
@@ -80,7 +81,7 @@ let lastFrameTime = new Date().getTime();
 //Main Function
 
 //State variable
-let scene = "initClient";//"initClient";
+let scene = "animationTest";//"initClient";
 
 function updateGame() {
 	//Update Display values
@@ -184,6 +185,13 @@ function updateGame() {
 			Shop.update();
 			break;
 
+		//GameSelection Gamestate
+		case "initGameSelection":
+			GameSelection.init();
+		case "gameSelection":
+			GameSelection.update();
+			break;
+
 		//DifficultySelect Gamestate
 		case "initDifficultySelect":
 			DifficultySelect.init();
@@ -239,12 +247,14 @@ function updateGame() {
 			Settings.init();
 		case "settings":
 			Settings.update();
+			break;
 			
 		//Other Gamestates
 		case "animationTest":
 			if (AnimationPlayer.currentAnimations.length == 0) {
-				AnimationPlayer.loadPack("death", true);
+				AnimationPlayer.loadPack("doorOpen", true);
 			}
+			
 			DynamicObject.updateObjects();
 			Scene.drawShadedObjects();
 			break;
@@ -347,12 +357,21 @@ canvas.addEventListener('mousemove', (event) => {
 //Triggers on all key down events and updates Keyboard to reflect the current situation
 document.addEventListener("keydown", (event) => {
 	//If the key is a standard character key
-	if (event.key.length === 1) {
+	if (event.key.length === 1 && event.code.includes("Key")) {
 		Keyboard.keyDown(event.key.toLowerCase());
 	}
+	//If the key is a standard number key
+	if (event.key.length === 1 && event.code.includes("Digit")) {
+		Keyboard.keyDown(event.code.substring(5).toLowerCase());
+	}
+	//If the key is a space
+	if (event.key == " ") {
+		Keyboard.keyDown(event.key);
+	}
 	//Special key pressed
-	switch (event.key) {
-		case "Shift":
+	switch (event.code) {
+		case "ShiftLeft":
+		case "ShiftRight":
 			Keyboard.shiftDown = true;
 			Keyboard.shiftPressed = true;
 			break;
@@ -376,17 +395,19 @@ document.addEventListener("keydown", (event) => {
 		case "ArrowRight":
 			Keyboard.keyDown("right");
 			break;
-		case "Alt":
+		case "AltLeft":
+		case "AltRight":
 			Keyboard.altDown = true;
 			Keyboard.altPressed = true;
 			break;
-		case "Control":
+		case "ControlLeft":
+		case "ControlRight":
 			Keyboard.controlDown = true;
 			Keyboard.controlPressed = true;
 			break;
-		case "`":
-			Keyboard.tildeDown = true;
-			Keyboard.tildePressed = true;
+		case "Backquote":
+			Keyboard.backquoteDown = true;
+			Keyboard.backquotePressed = true;
 			break;
 		default:
 			if (event.key.length !== 1) {
@@ -397,13 +418,22 @@ document.addEventListener("keydown", (event) => {
 
 //Triggers on all key up events and updates Keyboard to reflect the current situation
 document.addEventListener("keyup", (event) => {
-	//If the key is a standard character key
-	if (event.key.length === 1) {
+	//If the key is a standard letter key
+	if (event.key.length === 1 && event.code.includes("Key")) {
 		Keyboard.keyUp(event.key.toLowerCase());
 	}
+	//If the key is a standard number key
+	if (event.key.length === 1 && event.code.includes("Digit")) {
+		Keyboard.keyUp(event.code.substring(5).toLowerCase());
+	}
+	//If the key is a space
+	if (event.key == " ") {
+		Keyboard.keyUp(event.key);
+	}
 	//Special key pressed
-	switch (event.key) {
-		case "Shift":
+	switch (event.code) {
+		case "ShiftLeft":
+		case "ShiftRight":
 			Keyboard.shiftDown = false;
 			break;
 		case "Backspace":
@@ -424,14 +454,16 @@ document.addEventListener("keyup", (event) => {
 		case "ArrowRight":
 			Keyboard.keyUp("right");
 			break;
-		case "Alt":
+		case "AltLeft":
+		case "AltRight":
 			Keyboard.altDown = false;
 			break;
-		case "Control":
+		case "ControlLeft":
+		case "ControlRight":
 			Keyboard.controlDown = false;
 			break;
-		case "`":
-			Keyboard.tildeDown = false;
+		case "Backquote":
+			Keyboard.backquoteDown = false;
 			break;
 		default:
 			if (event.key.length !== 1) {

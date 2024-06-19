@@ -19,7 +19,7 @@ export class Display {
 	static fps = 0;
 	static currentData = null;
 	static specialCharacters = {
-		"￠": "coinCharacter"
+		"￠": "centCharacter"
 	}
 
 	static queuedShaders = {}
@@ -384,9 +384,9 @@ export class Display {
 				//Draw the text portion preceding the special character
 				this.drawText(text.substring(0, text.indexOf(keys[i])), x, y, size, true, color);
 				//Draw the special character
-				Display.draw("blackTile", x + this.getTextWidth(text.substring(0, text.indexOf(keys[i]) + 1), size), y - (2*size/3), size * 0.5, size);
+				Display.draw("blackTile", x + this.getTextWidth(text.substring(0, text.indexOf(keys[i]) - 1) + size/4, size), y - (2*size/3), size/2, size/2);
 				//Draw the text portion succeeding the special character
-				this.drawText(text.substring(text.indexOf(keys[i]) + 1), x + this.getTextWidth(text.substring(text.indexOf(keys[i] + 1)), size), y, size, true, color);
+				this.drawText(text.substring(text.indexOf(keys[i]) + 1), x + this.getTextWidth(text.substring(0, text.indexOf(keys[i])), size) + size/2, y, size, true, color);
 				return;
 			}
 		}

@@ -3,6 +3,7 @@ import { Display } from "../util/Display.js";
 import { Difficulty } from "../util/Difficulty.js";
 import { AudioPlayer } from "../util/AudioPlayer.js";
 import { AnimationPlayer } from "../util/AnimationPlayer.js";
+import { Keyboard } from "../util/Keyboard.js";
 import { Util } from "../util/Util.js";
 import { Vector } from "../util/Vector.js";
 import { Keyframe } from "../util/Keyframe.js";
@@ -30,20 +31,20 @@ export class Shop extends Gamestate {
 	//Static Variables
 
 	//Player 1 Upgrades
-	static player1UpgradeSword = new Button("upgradeSword", 1920/4 - 30, 1080/2 - 300 + 40, 408, 96);
-	static player1UpgradeMace = new Button("upgradeMace", 1920/4 - 30, 1080/2 - 300 + 40, 408, 128);
-	static player1UpgradeHealth = new Button("upgradeMaxHealth", 1920/4 - 30, 1080/2 - 150 + 40, 408, 96);
-	static player1UpgradeRegen = new Button("upgradeRegen", 1920/4 - 30, 1080/2 + 0 + 40, 408, 96);
-	static player1UpgradeSpeed = new Button("upgradeSpeed", 1920/4 - 30, 1080/2 + 150 + 40, 408, 96);
-	static player1UpgradeJump = new Button("upgradeJump", 1920/4 - 30, 1080/2 + 300 + 40, 408, 96);
+	static player1UpgradeSword = new Button("upgradeSword", 1920/4 - 70, 1080/2 - 300 + 40, 408, 96);
+	static player1UpgradeMace = new Button("upgradeMace", 1920/4 - 70, 1080/2 - 300 + 40, 408, 128);
+	static player1UpgradeHealth = new Button("upgradeMaxHealth", 1920/4 - 70, 1080/2 - 150 + 40, 408, 96);
+	static player1UpgradeRegen = new Button("upgradeRegen", 1920/4 - 70, 1080/2 + 0 + 40, 408, 96);
+	static player1UpgradeSpeed = new Button("upgradeSpeed", 1920/4 - 70, 1080/2 + 150 + 40, 408, 96);
+	static player1UpgradeJump = new Button("upgradeJump", 1920/4 - 70, 1080/2 + 300 + 40, 408, 96);
 
 	//Player 2 Upgrades
-	static player2UpgradeSword = new Button("upgradeSword", 1920/4 * 3 + 30, 1080/2 - 300 + 40, 408, 96);
-	static player2UpgradeMace = new Button("upgradeMace", 1920/4 * 3 + 30, 1080/2 - 300 + 40, 408, 128);
-	static player2UpgradeHealth = new Button("upgradeMaxHealth", 1920/4 * 3 + 30, 1080/2 - 150 + 40, 408, 96);
-	static player2UpgradeRegen = new Button("upgradeRegen", 1920/4 * 3 + 30, 1080/2 + 0 + 40, 408, 96);
-	static player2UpgradeSpeed = new Button("upgradeSpeed", 1920/4 * 3 + 30, 1080/2 + 150 + 40, 408, 96);
-	static player2UpgradeJump = new Button("upgradeJump", 1920/4 * 3 + 30, 1080/2 + 300 + 40, 408, 96);
+	static player2UpgradeSword = new Button("upgradeSword", 1920/4 * 3 + 70, 1080/2 - 300 + 40, 408, 96);
+	static player2UpgradeMace = new Button("upgradeMace", 1920/4 * 3 + 70, 1080/2 - 300 + 40, 408, 128);
+	static player2UpgradeHealth = new Button("upgradeMaxHealth", 1920/4 * 3 + 70, 1080/2 - 150 + 40, 408, 96);
+	static player2UpgradeRegen = new Button("upgradeRegen", 1920/4 * 3 + 70, 1080/2 + 0 + 40, 408, 96);
+	static player2UpgradeSpeed = new Button("upgradeSpeed", 1920/4 * 3 + 70, 1080/2 + 150 + 40, 408, 96);
+	static player2UpgradeJump = new Button("upgradeJump", 1920/4 * 3 + 70, 1080/2 + 300 + 40, 408, 96);
 
 	//Continue Button
 	static continue = new Button("door", 1920/2, 1080 - 288/2, 192, 288);
@@ -98,7 +99,6 @@ export class Shop extends Gamestate {
 				Display.draw("priceTag", 1920/2 + 90, 220 + 190, 100, 44, true, false, 45);
 				if (Button.simpleButton(1920/2, 220, 200, 400)) {
 					if (Game.player1.coins >= 30 || Game.player2.coins >= 30) {
-						console.log("shatter");
 						for (let j = 0; j < 2; j++) {
 							for (let i = 0; i < 171; i++) {
 								let x = 1920/2 + ((i%9 - 4) * 20);
@@ -116,7 +116,6 @@ export class Shop extends Gamestate {
 				}
 			} else {
 				if (Button.simpleButton(1920/2 - 800, 1080/2, 180, 240) && Game.player1.coins >= 30) {
-					//console.log("Given to red");
 					Game.player1.coins -= 30;
 					Player.upgradesBought["playerOneWeapon"] = 0; 
 					Player.retainedValues["p1Weapon"] = Mace;
@@ -124,7 +123,6 @@ export class Shop extends Gamestate {
 					AnimationPlayer.clear();
 				}
 				if (Button.simpleButton(1920/2 + 800, 1080/2, 180, 240) && Game.player2.coins >= 30) {
-					//console.log("Given to blue");
 					Game.player2.coins -= 30;
 					Player.upgradesBought["playerTwoWeapon"] = 0;
 					Player.retainedValues["p2Weapon"] = Mace;
@@ -161,18 +159,20 @@ export class Shop extends Gamestate {
 		let p2JCost = this.#getCostOf("playerTwoJump");
 
 		//Update price displays for Player 1
-		Display.drawText(p1WCost.toString() + "￠", 1920/4 - 45 + 260, 1080/2 - 300 + 70, 40, true, "white");
-		Display.drawText(p1HCost.toString() + "￠", 1920/4 - 45 + 260, 1080/2 - 150 + 70, 40, true, "white");
-		Display.drawText(p1RCost.toString() + "￠", 1920/4 - 45 + 260, 1080/2 + 0 + 70, 40, true, "white");
-		Display.drawText(p1SCost.toString() + "￠", 1920/4 - 45 + 260, 1080/2 + 150 + 70, 40, true, "white");
-		Display.drawText(p1JCost.toString() + "￠", 1920/4 - 45 + 260, 1080/2 + 300 + 70, 40, true, "white");
+		for (let i = 0; i < 5; i++) Display.draw("coin", 1920/4 - 45 + 220 + 44, 1080/2 - 300 + 85 + 150 * i - 54 * 3/4 - 3, 54, 54);
+		Display.drawText(p1WCost.toString(), 1920/4 - 45 + 200 + 30 - Display.getTextWidth(p1WCost.toString(), 60), 1080/2 - 300 + 85, 60, true, "white");
+		Display.drawText(p1HCost.toString(), 1920/4 - 45 + 200 + 30 - Display.getTextWidth(p1HCost.toString(), 60), 1080/2 - 150 + 85, 60, true, "white");
+		Display.drawText(p1RCost.toString(), 1920/4 - 45 + 200 + 30 - Display.getTextWidth(p1RCost.toString(), 60), 1080/2 + 0 + 85, 60, true, "white");
+		Display.drawText(p1SCost.toString(), 1920/4 - 45 + 200 + 30 - Display.getTextWidth(p1SCost.toString(), 60), 1080/2 + 150 + 85, 60, true, "white");
+		Display.drawText(p1JCost.toString(), 1920/4 - 45 + 200 + 30 - Display.getTextWidth(p1JCost.toString(), 60), 1080/2 + 300 + 85, 60, true, "white");
 
 		//Update price displays for Player 2
-		Display.drawText(p2WCost + "￠", 1920/4 * 3 + 30 - 260 - p2WCost.toString().length * 40 * 0.55, 1080/2 - 300 + 70, 40, true, "white");
-		Display.drawText(p2HCost + "￠", 1920/4 * 3 + 30 - 260 - p2HCost.toString().length * 40 * 0.55, 1080/2 - 150 + 70, 40, true, "white");
-		Display.drawText(p2RCost + "￠", 1920/4 * 3 + 30 - 260 - p2RCost.toString().length * 40 * 0.55, 1080/2 + 0 + 70, 40, true, "white");
-		Display.drawText(p2SCost + "￠", 1920/4 * 3 + 30 - 260 - p2SCost.toString().length * 40 * 0.55, 1080/2 + 150 + 70, 40, true, "white");
-		Display.drawText(p2JCost + "￠", 1920/4 * 3 + 30 - 260 - p2JCost.toString().length * 40 * 0.55, 1080/2 + 300 + 70, 40, true, "white");
+		for (let i = 0; i < 5; i++) Display.draw("coin", 1920/4 * 3 - 180 - 54 + 74, 1080/2 - 300 + 85 + 150 * i - 54 * 3/4 - 3, 54, 54);
+		Display.drawText(p2WCost.toString(), 1920/4 * 3 + 30 - 180 - 54 - Display.getTextWidth(p2WCost.toString(), 40), 1080/2 - 300 + 85, 60, true, "white");
+		Display.drawText(p2HCost.toString(), 1920/4 * 3 + 30 - 180 - 54 - Display.getTextWidth(p2HCost.toString(), 40), 1080/2 - 150 + 85, 60, true, "white");
+		Display.drawText(p2RCost.toString(), 1920/4 * 3 + 30 - 180 - 54 - Display.getTextWidth(p2RCost.toString(), 40), 1080/2 + 0 + 85, 60, true, "white");
+		Display.drawText(p2SCost.toString(), 1920/4 * 3 + 30 - 180 - 54 - Display.getTextWidth(p2SCost.toString(), 40), 1080/2 + 150 + 85, 60, true, "white");
+		Display.drawText(p2JCost.toString(), 1920/4 * 3 + 30 - 180 - 54 - Display.getTextWidth(p2JCost.toString(), 40), 1080/2 + 300 + 85, 60, true, "white");
 		
 		//Detect upgrade button presses and upgrade selected
 		//Player 1
@@ -213,7 +213,7 @@ export class Shop extends Gamestate {
 		
 		if (this.continue.subsistAsButton() && !AnimationPlayer.isPlaying("doorOpen")) {
 			if (!this.glassBroken || this.maceBought) {
-				AnimationPlayer.load("doorOpen");
+				AnimationPlayer.loadPack("doorOpen");
 				AnimationPlayer.load("fadeOut");
 				Player.retainedValues["p1Coins"] = Game.player1.coins;
 				Player.retainedValues["p2Coins"] = Game.player2.coins;
@@ -232,22 +232,38 @@ export class Shop extends Gamestate {
 
 		//Coin transfer buttons
 		if (this.redToBlue.subsistAsButton()) {
-			if (Game.player1.coins > 0) {
+			if (Keyboard.shiftDown && Game.player1.coins >= 5) {
+				AnimationPlayer.load("coinTossFromRed");
+				Game.player1.coins -= 5;
+				Game.player2.coins += 5;
+			} else if (!Keyboard.shiftDown && Game.player1.coins > 0) {
 				AnimationPlayer.load("coinTossFromRed");
 				Game.player1.coins--;
 				Game.player2.coins++;
 			}
 		}
 		if (this.blueToRed.subsistAsButton()) {
-			if (Game.player2.coins > 0) {
+			if (Keyboard.shiftDown && Game.player2.coins >= 5) {
+				AnimationPlayer.load("coinTossFromBlue");
+				Game.player2.coins -= 5;
+				Game.player1.coins += 5;
+			} else if (!Keyboard.shiftDown && Game.player2.coins > 0) {
 				AnimationPlayer.load("coinTossFromBlue");
 				Game.player2.coins--;
 				Game.player1.coins++;
 			}
 		}
 		Shop.#updateParticles();
+
+		//Display player identification text
+		Display.drawText("Player 1", 420 - Display.getTextWidth("Player 1", 60)/2, 200, 60, true, "white");
+		Display.drawText("Player 2", 1920 - (420 + Display.getTextWidth("Player 2", 60)/2), 200, 60, true, "white");
+		
 		//Display Player Balances
-		Display.drawText("Player 1 Coins: " + Game.player1.coins.toString(), 240, 220, 40, true, "white");
-		Display.drawText("Player 2 Coins: " + Game.player2.coins.toString(), 1920 - ("Player 2 Coins: " + Game.player2.coins.toString()).length * 40 * 0.55 - 240, 220, 40, true, "white");
+		Display.drawText(Game.player1.coins.toString(), 170 - Display.getTextWidth(Game.player1.coins.toString(), 60), 1080/2 - 105, 60);
+		Display.draw("coin", 202, 1080/2 - 105 - 54 * 3/4 - 3, 54, 54);
+		Display.drawText(Game.player2.coins.toString(), 1920 - 170 - Display.getTextWidth(Game.player2.coins.toString(), 60), 1080/2 - 105, 60);
+		Display.draw("coin", 1920 - 138, 1080/2 - 105 - 54 * 3/4 - 3, 54, 54);
+		
 	}
 }

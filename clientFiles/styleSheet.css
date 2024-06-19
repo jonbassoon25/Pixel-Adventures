@@ -6,11 +6,9 @@ html, body {
 	background: black;
 }
 
-<link rel="preload" href="thaleahfat-webfont.woff2" as="font" type="font/woff2" crossorigin>
 @font-face {
 	font-family: 'ThaleahFat';
-	font-variant-numeric: tabular-nums;
-	src: url('thaleahfat-webfont.woff2');
+	src: url('./ThaleahFat.ttf');
 }
 
 canvas {

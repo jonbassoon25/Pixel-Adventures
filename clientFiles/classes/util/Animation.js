@@ -146,9 +146,20 @@ export class Animation {
 			{
 				"image": "door", 
 				"initialPosition": [1920/2, 1080 - 288/2],
-				"finalPosition": [1920/2 - 192/2, 1080 - 288/2],
+				"finalPosition": [1920/2 - 192/2 + 24, 1080 - 288/2],
 				"initialDimensions": [192, 288],
 				"finalDimensions": [0, 288],
+				"frames": 60,
+				"transitionType": "sinusoidal 1/2"
+			}
+		],
+		"doorEdge": [
+			{
+				"image": "doorEdge", 
+				"initialPosition": [1920/2 - 192/2, 1080 - 288/2],
+				"finalPosition": [1920/2 - 192/2 + 24/2, 1080 - 288/2],
+				"initialDimensions": [0, 288],
+				"finalDimensions": [24, 288],
 				"frames": 60,
 				"transitionType": "sinusoidal 1/2"
 			}

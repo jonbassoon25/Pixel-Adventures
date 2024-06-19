@@ -60,7 +60,7 @@ export class Scene {
 	static drawBackground() {
 		//Flash the screen on canvas resize to avoid size errors
 		if (Display.resized) {
-			this.flash();
+			this.flash(true);
 
 			return;
 		}
@@ -192,8 +192,8 @@ export class Scene {
 		Display.drawShaders();
 	}
 
-	/** Flashes the new shader background and background to memory and draws tile background */
-	static flash() {
+	/** Flashes the new shader background and background to memory */
+	static flash(drawBackground = false) {		
 		//Capture new backgrounds
 		Display.clear();
 		
@@ -208,5 +208,9 @@ export class Scene {
 
 		this.displayAllShaders();
 		this.background = Display.imageData;
+
+		if (!drawBackground) {
+			Display.clear();
+		}
 	}
 }

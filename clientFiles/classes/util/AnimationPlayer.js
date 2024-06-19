@@ -8,7 +8,8 @@ export class AnimationPlayer {
 
     //Animation packs, played together
     static animationPacks = {
-        "death": ["skull", "youDied", "grave1", "grave2", "clickToReturn"]
+        "death": ["skull", "youDied", "grave1", "grave2", "clickToReturn"],
+        "doorOpen": ["doorOpen", "doorEdge"]
     };
     
     //Currently playing animations
