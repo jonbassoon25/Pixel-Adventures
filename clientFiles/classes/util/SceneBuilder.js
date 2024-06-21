@@ -16,8 +16,21 @@ export class SceneBuilder {
 	static cursorX = 0;
 	static cursorY = 0;
 	static structure = [[]];
-	static mouseControlsEnabled = false;
+	static mouseControlsEnabled = true;
 	static collisionEditor = false;
+
+	static collisionTileIndex = 0;
+	static collisionTiles = [
+		"wood"
+	]
+
+	static collisionlessTileIndex = 0;
+	static collisionlessTiles = [
+		"stoneBrick",
+		"none"
+	]
+
+	
 	static instructions = 
 	"Controls:\n" + 
 	"	WASD to move\n" + 
@@ -30,7 +43,7 @@ export class SceneBuilder {
 	"	Press 'n' to toggle collision for placed blocks\n" +
 	"	Press 'o' to toggle collision editor\n" +
 	"	Press 'z' to log the currently selected tile\n" +
-	"	Press '1' to replace tile with air\n" + 
+	"	Press '1' to replace tile with none\n" + 
 	"	Press '2' to replace tile with stone bricks\n" + 
 	"	Press '4' to replace tile with wood\n" + 
 	"	Press '6' to place light\n" + 
@@ -65,25 +78,25 @@ export class SceneBuilder {
 		}
 	}
 
-	static #setNone() {
-		this.structure[this.cursorY][this.cursorX] = new SceneTile("none", this.cursorX, this.cursorY);
-	}
-
-	static #setLight() {
-		let replacedTile = this.structure[this.cursorY][this.cursorX];
-		this.structure[this.cursorY][this.cursorX] = new LightTile(replacedTile.image, this.cursorX, this.cursorY, 15, 10, false, replacedTile.hasVines);
-	}
-
-	static #setPlaceholder() {
-		this.structure[this.cursorY][this.cursorX] = new SceneTile("placeholder", this.cursorX, this.cursorY, false);
-	}
-
-	static #setStone() {
-		this.structure[this.cursorY][this.cursorX] = new SceneTile("stoneBrick", this.cursorX, this.cursorY, false);
-	}
-
-	static #setRottenWood() {
-		this.structure[this.cursorY][this.cursorX] = new SceneTile("wood", this.cursorX, this.cursorY, true);
+	static #setTile(name) {
+		switch (name) {
+			case "none":
+				this.structure[this.cursorY][this.cursorX] = new SceneTile("none", this.cursorX, this.cursorY);
+				break;
+			case "wood":
+				this.structure[this.cursorY][this.cursorX] = new SceneTile("wood", this.cursorX, this.cursorY, true);
+				break;
+			case "stoneBrick":
+				this.structure[this.cursorY][this.cursorX] = new SceneTile("stoneBrick", this.cursorX, this.cursorY, false);
+				break;
+			case "light":
+				let replacedTile = this.structure[this.cursorY][this.cursorX];
+				this.structure[this.cursorY][this.cursorX] = new LightTile(replacedTile.image, this.cursorX, this.cursorY, 15, 10, replacedTile.hasCollision, replacedTile.hasVines);
+				break;
+			default:
+				this.structure[this.cursorY][this.cursorX] = new SceneTile("placeholder", this.cursorX, this.cursorY, false);
+				break;
+		}
 	}
 
 	static #save(fileName = "lastSaved") {
@@ -222,8 +235,12 @@ export class SceneBuilder {
 			console.log("Collision editor " + ((this.collisionEditor)? "enabled" : "disabled"));
 		}
 
-		if (Keyboard.isKeyPressed("h")) {
-			this.printInstructions();
+		if (Keyboard.isKeyDown("h")) {
+			let x;
+			let y;
+			[x, y] = [...Display.inverseCalcElementDimensions(Mouse.x, Mouse.y, -1, -1)];
+			Display.drawText(this.instructions, x + 50, y - 15, 25, true, "white");
+			//this.printInstructions();
 		}
 
 		//Movement inputs
@@ -282,24 +299,39 @@ export class SceneBuilder {
 
 		//Tile placing inputs
 		if (Keyboard.isKeyDown("1")) {
-			this.#setNone();
+			this.#setTile("air");
 		}
 		if (Keyboard.isKeyDown("2")) {
-			this.#setStone();
+			this.#setTile("stoneBrick");
 		}
 		if (Keyboard.isKeyDown("4")) {
-			this.#setRottenWood();
+			this.#setTile("wood");
 		}
 		
 		if (Keyboard.isKeyDown("6")) {
-			this.#setLight();
-		}
-		if (Keyboard.isKeyPressed("7")) {
-			currentTile.hasVines = !currentTile.hasVines;
-			console.log("Vines " + ((currentTile.hasVines)? "enabled" : "disabled"));
+			this.#setTile("light");
 		}
 		if (Keyboard.isKeyDown("=")) {
-			this.#setPlaceholder();
+			this.#setTile("placeholder");
+		}
+		if (Keyboard.controlDown) {
+			let x;
+			let y;
+			[x, y] = [...Display.inverseCalcElementDimensions(Mouse.x, Mouse.y, -1, -1)];
+			Display.draw("blackTile", x, y, 120, 52, true, false, 0, 50);
+			Display.draw(this.collisionTiles[this.collisionTileIndex], x - 35, y, 40, 40);
+			Display.draw(this.collisionlessTiles[this.collisionlessTileIndex], x + 35, y, 40, 40);
+
+			if (Mouse.button1Pressed) {
+				if (++this.collisionTileIndex == this.collisionTiles.length) this.collisionTileIndex = 0;
+			}
+			if (Mouse.button2Pressed) {
+				if (++this.collisionlessTileIndex == this.collisionlessTiles.length) this.collisionlessTileIndex = 0;
+			}
+		} else if (Mouse.button1Down) {
+			this.#setTile(this.collisionTiles[this.collisionTileIndex]);
+		} else if (Mouse.button2Down) {
+			this.#setTile(this.collisionlessTiles[this.collisionlessTileIndex]);
 		}
 	}
 
@@ -357,7 +389,7 @@ export class SceneBuilder {
 	static init() {
 		[this.structure, this.shaderStructure] = [Scene.structure, Scene.shaderStructure];
 		this.collision = false;
-		this.mouseControlsEnabled = false;
+		this.mouseControlsEnabled = true;
 		this.cursorX = 0;
 		this.cursorY = 0;
 	}
@@ -395,7 +427,6 @@ export class SceneBuilder {
 		if (this.shaderStructure == null) {
 			this.shaderStructure = Scene.shaderStructure;
 		}
-		this.#takeInput();
 		if (this.structure == null) {
 			return;
 		}
@@ -407,6 +438,8 @@ export class SceneBuilder {
 		if (this.collisionEditor) {
 			this.#displayCollisionTiles();
 		}
+		this.drawCursor();
+		this.#takeInput();
 	}
 
 	//*********************************************************************//

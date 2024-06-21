@@ -43,6 +43,6 @@ export class Chest extends InteractableObject {
 
 	/** Draws this chest */
 	draw() {
-		Display.draw(((this.coins == 0)? "chestOpened" : "chest"), this.x, this.y, this.width, this.height)
+		Display.draw(((this.coins == 0)? "chestOpened" : "chest"), this.x, this.y, this.width, this.height);
 	}
 }

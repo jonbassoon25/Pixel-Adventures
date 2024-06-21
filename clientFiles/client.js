@@ -25,8 +25,6 @@ import { Level } from "./classes/util/Level.js";
 import { Mouse } from "./classes/util/Mouse.js";
 import { Scene } from "./classes/util/Scene.js";
 import { SceneBuilder } from "./classes/util/SceneBuilder.js";
-import { Util } from "./classes/util/Util.js";
-import { Vector } from "./classes/util/Vector.js";
 
 //UI Object Imports
 import { Leaderboard } from "./classes/UIObjects/Leaderboard.js";
@@ -52,7 +50,6 @@ import { SceneTile } from "./classes/gameObjects/SceneTile.js";
 //Game Entity Imports
 import { Player } from "./classes/gameEntities/Player.js";
 import { Settings } from "./classes/gamestates/Settings.js";
-import { Particle } from "./classes/gameEntities/Particle.js";
 
 //Basic Object Imports
 import { AnimatedObject } from "./classes/basicObjects/AnimatedObject.js";
@@ -72,6 +69,7 @@ const socket = io();
 //------------------------------------------------------------------------------------//
 //Variables
 
+//let hi = new AnimatedObject("maceHeld", 1, 1920/2, 300, 560, 560, false);
 let lastFrameTime = new Date().getTime();
 
 //------------------------------------------------------------------------------------//
@@ -250,21 +248,17 @@ function updateGame() {
 			break;
 			
 		//Other Gamestates
+		case "initAnimationTest":
+			AnimationPlayer.load("maceHeld", true);
+			scene = "animationTest";
+			break;
 		case "animationTest":
-			if (AnimationPlayer.currentAnimations.length == 0) {
-				AnimationPlayer.loadPack("doorOpen", true);
-			}
-			
-			DynamicObject.updateObjects();
-			Scene.drawShadedObjects();
+			//DynamicObject.updateObjects();
+			//Scene.drawShadedObjects();
 			break;
 		default:
-			Display.drawText(scene, 1920/2 - scene.length*60/2, 1080/2, 100, true, "white");
+			Display.drawText(scene, 1920/2 - Display.getTextWidth(scene, 100)/2, 1080/2, 100, true, "white");
 			break;
-	}
-
-	if (scene == "sceneCreator") {
-		SceneBuilder.drawCursor();
 	}
 
 	Display.drawShaders();
@@ -405,6 +399,9 @@ document.addEventListener("keydown", (event) => {
 			Keyboard.controlDown = true;
 			Keyboard.controlPressed = true;
 			break;
+		case "Slash":
+			Keyboard.keyDown("/");
+			break;
 		case "Backquote":
 			Keyboard.backquoteDown = true;
 			Keyboard.backquotePressed = true;
@@ -414,6 +411,7 @@ document.addEventListener("keydown", (event) => {
 				console.log("Unsupported Key Pressed: " + event.key);
 			}
 	}
+	console.log(Game.player1);
 });
 
 //Triggers on all key up events and updates Keyboard to reflect the current situation
@@ -461,6 +459,9 @@ document.addEventListener("keyup", (event) => {
 		case "ControlLeft":
 		case "ControlRight":
 			Keyboard.controlDown = false;
+			break;
+		case "Slash":
+			Keyboard.keyUp("/");
 			break;
 		case "Backquote":
 			Keyboard.backquoteDown = false;

@@ -36,10 +36,21 @@ export class Level {
 	static loadDecorations(level = Level.level) {
 		switch (level) {
 			case 1:
-				Scene.decorations = [new VisualObject("sunset", 1182, 498, 330, 230), new VisualObject("bannerWhiteFBLA", 1456, 920, 114, 180), new VisualObject("woodenTable", 9*48, 3*48 - 4, 24*3, 14*3), new VisualObject("chairRight", 9*48 - 50, 3*48 - 5, 12*3, 14*3), new VisualObject("chairLeft", 9*48 + 50, 3*48 - 5, 12*3, 14*3)];
+				Scene.decorations = [
+					new VisualObject("sunset", 1182, 498, 330, 230),
+					new VisualObject("bannerWhiteFBLA", 1456, 920, 114, 180), 
+					new VisualObject("plainVineSet1 2/3", Scene.snapCoordinates(1738, 59)[0], Scene.snapCoordinates(1738, 59)[1] + (576/8), 64, 576/3),
+					new VisualObject("flowerVineSet1 1/3", Scene.snapCoordinates(175, 62)[0], Scene.snapCoordinates(175, 62)[1] + (576/8), 64, 576/3),
+					new VisualObject("fruitVineSet2 2/3", Scene.snapCoordinates(417, 59)[0], Scene.snapCoordinates(417, 59)[1] + (576/8), 64, 576/3),
+					new VisualObject("woodenTable", 9*48, 3*48 - 4, 24*3, 14*3), 
+					new VisualObject("chairRight", 9*48 - 50, 3*48 - 5, 12*3, 14*3), 
+					new VisualObject("chairLeft", 9*48 + 50, 3*48 - 5, 12*3, 14*3)
+				];
 				return;
 			case 2:
-				Scene.decorations = [new VisualObject("bookshelf", Scene.snapCoordinates(1425, 985)[0], Scene.snapCoordinates(1425, 985)[1] - 12, 120, 144), new VisualObject("skull", Scene.snapCoordinates(958, 256)[0] + 20, Scene.snapCoordinates(958, 256)[1], 105, 105)];
+				Scene.decorations = [
+					new VisualObject("bookshelf", Scene.snapCoordinates(1425, 985)[0], Scene.snapCoordinates(1425, 985)[1] - 12, 120, 144), 
+					new VisualObject("skull", Scene.snapCoordinates(958, 256)[0] + 20, Scene.snapCoordinates(958, 256)[1], 105, 105)];
 				return;
 			case 3:
 				return;

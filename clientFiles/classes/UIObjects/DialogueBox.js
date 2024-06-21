@@ -61,9 +61,9 @@ export class DialogueBox extends VisualObject {
 		}
 		
 		if (this.textQueue.length == 0) {
-			Display.drawText("continue", this.x + this.width/2 - "continue".length * 15 - 10, this.y + this.height/2 - 10, 25, true, "white");
+			Display.drawText("continue", this.x + this.width/2 - "continue".length * 15, this.y + this.height/2 - 10, 25, true, "white");
 			
-			if (Button.simpleButton(this.x + this.width/2 - "continue".length * 15 + 20, this.y + this.height/2 - 28, "continue".length * 20, 25)) {
+			if (Button.simpleButton(this.x + this.width/2 - "continue".length * 15 + 30, this.y + this.height/2 - 28, "continue".length * 20, 25)) {
 				return false;
 			}
 		}

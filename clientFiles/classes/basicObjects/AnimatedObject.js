@@ -782,7 +782,7 @@ export class AnimatedObject extends ShadedObject {
 					"initialDimensions": [20, 20],
 					"finalOpacity": 0,
 					"finalRotation": 360,
-					"frames": 100,
+					"frames": 120,
 					"transitionType": "sinusoidal"
 				}
 			]
@@ -795,6 +795,75 @@ export class AnimatedObject extends ShadedObject {
 					"initialDimensions": [0, 0],
 					"initialOpacity": 0,
 					"frames": 1
+				}
+			]
+		},
+		"shopMace": {
+			"standing": [
+				{
+					"image": "mace-45",
+					"initialPosition": [0, 0],
+					"initialDimensions": [560, 560],
+					"frames": 0
+				}
+			],
+			"falling": [
+				{
+					"image": "mace-45",
+					"initialPosition": [0, 0],
+					"initialRotation": 0,
+					"finalRotation": 180,
+					"initialDimensions": [560, 560],
+					"initialOpacity": 100,
+					"frames": 50,
+					"transitionType": "sinusoidal 1/2"
+				}, 
+				{
+					"finalRotation": 240,
+					"frames": 20,
+					"transitionType": "sinusoidal 2/2"
+				},
+				{
+					"finalRotation": 180,
+					"frames": 20,
+					"transitionType": "sinusoidal 1/2"
+				},
+				{
+					"finalRotation": 160,
+					"frames": 15,
+					"transitionType": "sinusoidal 2/2"
+				},
+				{
+					"finalRotation": 180,
+					"frames": 15,
+					"transitionType": "sinusoidal 1/2"
+				},
+				{
+					"finalRotation": 190,
+					"frames": 15,
+					"transitionType": "sinusoidal 2/2"
+				},
+				{
+					"finalRotation": 180,
+					"frames": 15,
+					"transitionType": "sinusoidal"
+				}
+			],
+			"idle": [
+				{
+					"image": "mace-45",
+					"initialPosition": [0, 0],
+					"initialRotation": 180,
+					"initialDimensions": [560, 560],
+					"frames": 0
+				}
+			],
+			"bought": [
+				{
+					"image": "none",
+					"initialPosition": [0, 0],
+					"initialDimensions": [0, 0],
+					"frames": 0
 				}
 			]
 		}
@@ -963,7 +1032,7 @@ export class AnimatedObject extends ShadedObject {
 				}
 			}
 		}
-		//console.log(this.globalAnimations);
+		console.log(this.globalAnimations);
 	}
 
 	//*********************************************************************//

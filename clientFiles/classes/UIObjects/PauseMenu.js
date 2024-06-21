@@ -52,7 +52,7 @@ export class PauseMenu {
 		if (this.paused) {
 			Display.draw("buttonPressed", 960, 540, 1920, 1080);
 			Display.draw("upgradePlaque", 960, 540, 351, 513);
-			Display.drawText("Menu", 960 - "Menu".length / 2 * 60 * 0.55, 1080/2 - 160, 60, true, "white");
+			Display.drawText("Menu", 960 - Display.getTextWidth("Menu", 60)/2, 1080/2 - 160, 60, true, "white");
 			if (this.menuButton.subsistAsButton()) {
 				Level.level = 0;
 				this.paused = false;

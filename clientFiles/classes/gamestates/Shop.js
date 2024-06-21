@@ -25,6 +25,8 @@ import { Particle } from "../gameEntities/Particle.js";
 
 //Basic Object Imports
 import { ShadedObject } from "../basicObjects/ShadedObject.js";
+import { AnimatedObject } from "../basicObjects/AnimatedObject.js";
+import { Mouse } from "../util/Mouse.js";
 
 //Shop Class
 export class Shop extends Gamestate {
@@ -53,6 +55,9 @@ export class Shop extends Gamestate {
 	static blueToRed = new Button("blueToRed", 1920/2 + 100, 1080/2 + 60, 120, 110);
 	static redToBlue = new Button("redToBlue", 1920/2 - 100, 1080/2 + 60, 120, 110);
 
+	//Shop Mace
+	static mace = new AnimatedObject("shopMace", 0, 1920/2, 300, 560, 560, false);
+	
 	//Mace visual booleans
 	static maceBought = false;
 	static glassBroken = false;
@@ -82,6 +87,10 @@ export class Shop extends Gamestate {
 	
 	static init() {
 		super.init();
+		if (!this.maceBought) {
+			this.mace = new AnimatedObject("shopMace", 0, 1920/2, 300, 560, 560, false);
+			this.mace.currentAnimation = "standing";
+		}
 		this.setScene("shop");
 	}
 	
@@ -93,12 +102,19 @@ export class Shop extends Gamestate {
 		
 		//Mace display
 		if (!this.maceBought) {
-			Display.draw("mace-45", 1920/2, 300, 560, 560);
+			//Display.draw("mace-45", 1920/2, 300, 560, 560);
+			if (this.mace.currentAnimation == "standing") {
+				this.mace.update();
+				this.mace.draw();
+			}
 			if (!this.glassBroken) {
 				Display.draw("glassPane", 1920/2, 220, 200, 400);
 				Display.draw("priceTag", 1920/2 + 90, 220 + 190, 100, 44, true, false, 45);
 				if (Button.simpleButton(1920/2, 220, 200, 400)) {
-					if (Game.player1.coins >= 30 || Game.player2.coins >= 30) {
+					//If the players can afford the mace
+					if (Game.player1.coins + Game.player2.coins >= 30) {
+						this.mace.currentAnimation = "falling";
+						//Spawn glass shatter particles
 						for (let j = 0; j < 2; j++) {
 							for (let i = 0; i < 171; i++) {
 								let x = 1920/2 + ((i%9 - 4) * 20);
@@ -108,29 +124,85 @@ export class Shop extends Gamestate {
 								new Particle("glass", x, y, 20, 20, new Vector([xVel, yVel]), 2, 0.95, true, false, false);
 							}
 						}
+						//Load animations
 						AnimationPlayer.load("priceTagFalls");
-						AnimationPlayer.load("redJump", true);
-						AnimationPlayer.load("blueJump", true);
+						//AnimationPlayer.load("redJump", true);
+						//AnimationPlayer.load("blueJump", true);
+						//Draw from both player's balances to purchase the mace
+						let cost = 30;
+						if (Game.player1.coins >= Game.player2.coins) {
+							if ((Game.player1.coins - Game.player2.coins) >= 30) {
+								Game.player1.coins -= 30;
+								cost = 0;
+							} else {
+								cost -= (Game.player1.coins - Game.player2.coins);
+								Game.player1.coins -= (Game.player1.coins - Game.player2.coins);
+								if (cost % 2 == 0) {
+									Game.player1.coins -= cost/2;
+									Game.player2.coins -= cost/2;
+									cost = 0;
+								} else {
+									Game.player1.coins -= Math.floor(cost/2) + 1;
+									Game.player2.coins -= Math.floor(cost/2);
+									cost = 0;
+								}
+							}
+						} else {
+							if ((Game.player2.coins - Game.player1.coins) >= 30) {
+								Game.player2.coins -= 30;
+								cost = 0;
+							} else {
+								cost -= (Game.player2.coins - Game.player1.coins);
+								Game.player2.coins -= (Game.player2.coins - Game.player1.coins);
+								if (cost % 2 == 0) {
+									Game.player1.coins -= cost/2;
+									Game.player2.coins -= cost/2;
+									cost = 0;
+								} else {
+									Game.player1.coins -= Math.floor(cost/2) + 1;
+									Game.player2.coins -= Math.floor(cost/2);
+									cost = 0;
+								}
+							}
+						}
 						this.glassBroken = true;
 					}
 				}
 			} else {
-				if (Button.simpleButton(1920/2 - 800, 1080/2, 180, 240) && Game.player1.coins >= 30) {
-					Game.player1.coins -= 30;
+				if (Button.simpleButton(1920/2 - 800, 1080/2, 180, 240)) {
 					Player.upgradesBought["playerOneWeapon"] = 0; 
 					Player.retainedValues["p1Weapon"] = Mace;
 					this.maceBought = true;
+					this.mace.currentAnimation = "bought";
 					AnimationPlayer.clear();
 				}
-				if (Button.simpleButton(1920/2 + 800, 1080/2, 180, 240) && Game.player2.coins >= 30) {
-					Game.player2.coins -= 30;
+				if (Button.simpleButton(1920/2 + 800, 1080/2, 180, 240)) {
 					Player.upgradesBought["playerTwoWeapon"] = 0;
 					Player.retainedValues["p2Weapon"] = Mace;
 					this.maceBought = true;
+					this.mace.currentAnimation = "bought";
 					AnimationPlayer.clear();
 				}
 			}
 		}
+		//Update the mace's position as it is dragged
+		if (this.mace.currentAnimation == "falling") {
+			//Smoothly move the mace to the mouse cursor
+			let x; let y;
+			[x, y] = [...Display.inverseCalcElementDimensions(Mouse.x, Mouse.y, -1, -1)];
+			this.mace.x = 1920/2 + (x - 1920/2) * Keyframe.getRawValue(this.mace.currentFrame/150, "log");
+			this.mace.y = 300 + (y - 300) * Keyframe.getRawValue(this.mace.currentFrame/150, "sinusoidal");
+		} else if (this.mace.currentAnimation == "idle") {
+			//Maintain the mace's position at the mouse cursor
+			let x; let y;
+			[x, y] = [...Display.inverseCalcElementDimensions(Mouse.x, Mouse.y, -1, -1)];
+			this.mace.x = x;
+			this.mace.y = y;
+		}
+		//Draw the players
+		Display.draw("redPlayer", 1920/2 - 800, 1080/2, 240, 240);
+		Display.draw("bluePlayerFlipped", 1920/2 + 800, 1080/2, 240, 240);
+		/* Jumping animations (unused)
 		if (!this.glassBroken || this.maceBought) {
 			Display.draw("redPlayer", 1920/2 - 800, 1080/2, 240, 240);
 			Display.draw("bluePlayerFlipped", 1920/2 + 800, 1080/2, 240, 240);
@@ -142,7 +214,7 @@ export class Shop extends Gamestate {
 					Display.drawText("No, me!", 1920/2 + 800 - 90, 1080/2 - 130 - (130 * (Keyframe.getRawValue((AnimationPlayer.getAnimation("redJump").frames - 30)/30, "projectileArc"))), 40, true, "white");
 				}
 			}
-		}
+		}*/
 
 		//Display coin transfer text
 		Display.draw("transferCoins", 1920/2, 1080/2 - 95 + 60, 248, 64);
@@ -253,8 +325,6 @@ export class Shop extends Gamestate {
 				Game.player1.coins++;
 			}
 		}
-		Shop.#updateParticles();
-
 		//Display player identification text
 		Display.drawText("Player 1", 420 - Display.getTextWidth("Player 1", 60)/2, 200, 60, true, "white");
 		Display.drawText("Player 2", 1920 - (420 + Display.getTextWidth("Player 2", 60)/2), 200, 60, true, "white");
@@ -264,6 +334,11 @@ export class Shop extends Gamestate {
 		Display.draw("coin", 202, 1080/2 - 105 - 54 * 3/4 - 3, 54, 54);
 		Display.drawText(Game.player2.coins.toString(), 1920 - 170 - Display.getTextWidth(Game.player2.coins.toString(), 60), 1080/2 - 105, 60);
 		Display.draw("coin", 1920 - 138, 1080/2 - 105 - 54 * 3/4 - 3, 54, 54);
-		
+		//Draw the mace above the rest of the images
+		if (!(this.mace.currentAnimation == "standing")) {
+			this.mace.update();
+			this.mace.draw();
+		}
+		Shop.#updateParticles();
 	}
 }

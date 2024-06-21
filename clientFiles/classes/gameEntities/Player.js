@@ -125,7 +125,7 @@ export class Player extends DynamicObject {
 	}
 
 	#takeInput() {
-		if (Keyboard.isKeyDown(this.keybinds["up"])) {
+		if (Keyboard.isKeyDown(this.keybinds["up"]) || Keyboard.isKeyPressed(this.keybinds["up"]) ) {
 			this.#jump();
 		}
 		if (Keyboard.isKeyDown(this.keybinds["attack"])) {

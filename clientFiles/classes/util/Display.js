@@ -153,6 +153,7 @@ export class Display {
 		//y = canvas.height - y;
 		//Determine if the image given needs to be taken from textures
 		if (typeof image === "string") {
+			//Complex image syntax: "image+-degreesFlipped? altIndex/numAlts". Should work, just please avoid using this in practice
 			if ((image.length == "shader_##".length || image.length == "shader_###".length) && image.substring(0, "shader_".length) == "shader_") {
 				//Draw the shader
 				if (image.length == "shader_##".length) {
@@ -164,6 +165,15 @@ export class Display {
 				}
 				return;
 			}
+			let altSyntax = "1/1";
+			if (image.includes(" ")) {
+				altSyntax = image.substring(image.lastIndexOf(" ") + 1);
+				image = image.substring(0, image.lastIndexOf(" "));
+			}
+			let altIndex = parseInt(altSyntax.substring(0, altSyntax.indexOf("/")));
+			let numAlts = parseInt(altSyntax.substring(altSyntax.indexOf("/") + 1));
+			
+			//Systems for backwards compatibility
 			if (image.includes("Flipped")) {
 				image = image.substring(0, image.indexOf("Flipped"));
 				flipped = true;
@@ -173,29 +183,35 @@ export class Display {
 				degreesRotated += parseInt(image.substring(image.indexOf(image.includes("+")? "+" : "-")));
 				image = image.substring(0, image.indexOf(image.includes("+")? "+" : "-"));
 			}
+			
+			//Is the image loaded?
 			if (textures[image] == undefined) {
 				console.error("Image " + image + " Not Found.");
 				return;
 			}
+			//Handles opacity
 			if (opacity != 100) ctx.globalAlpha = opacity/100;
+			//Handles rotation
 			if (degreesRotated != 0) {
 				x += width/2;
 				y += height/2;
 				ctx.setTransform(flipped? -1 : 1, 0, 0, 1, x, y);
 				ctx.rotate(degreesRotated * Math.PI/180);
-				ctx.drawImage(textures[image], -width/2, -height/2, width, height);
+				ctx.drawImage(textures[image], 0, 0 + (altIndex - 1) * textures[image].height/numAlts, textures[image].width, textures[image].height/numAlts, -width/2, -height/2, width, height);
 				ctx.resetTransform();
 			} else {
+				//Handles image flipping
 				if (flipped) {
 					ctx.setTransform(-1, 0, 0, 1, x, y);
-					ctx.drawImage(textures[image], -width, 0, width, height);
+					ctx.drawImage(textures[image], 0, 0 + (altIndex - 1) * textures[image].height/numAlts, textures[image].width, textures[image].height/numAlts, -width, 0, width, height);
 					ctx.resetTransform();
 				} else {
-					ctx.drawImage(textures[image], x, y, width, height);
+					ctx.drawImage(textures[image], 0, 0 + (altIndex - 1) * textures[image].height/numAlts, textures[image].width, textures[image].height/numAlts, x, y, width, height);
 				}
 			}
+			//Resets opacity
 			if (opacity != 100) ctx.globalAlpha = 1;
-		//The image is a plain image
+		//If the image is a plain image
 		} else if (image instanceof Image) {
 			ctx.drawImage(image, x, y, width, height);
 		} else {
@@ -376,7 +392,14 @@ export class Display {
 	 * @param {boolean} resize - Are the passed in values absolute (true) or relative (false) (optional)
 	 * @param {string} color - The color of the text (optional)
 	 */
-	static drawText(text, x, y, size, resize = true, color = "#ffffff") {
+	static drawText(text, x, y, size, resize = true, color = "#ffffff", dropShadowMultiplier = 1) {
+		//Recursion for handling /n
+		if (text.includes("\n")) {
+			this.drawText(text.substring(0, text.indexOf("\n")), x, y, size, resize, color, dropShadowMultiplier);
+			this.drawText(text.substring(text.indexOf("\n") + 1), x, y + size * 1.1, size, resize, color, dropShadowMultiplier);
+			return;
+		}
+		
 		//Recursion for handling special characters
 		let keys = Object.keys(this.specialCharacters);
 		for (let i = 0; i < keys.length; i++) {
@@ -404,6 +427,10 @@ export class Display {
 		ctx.fillStyle = color;
 		//Draw the text onto the canvas
 		ctx.fillText(text, x, y);
+		//Draw the drop shadow
+		ctx.globalAlpha = 0.4;
+		ctx.fillText(text, x, y + (size/20 * dropShadowMultiplier));
+		ctx.globalAlpha = 1;
 	}
 
 	static markPlayerDisplay(player1, player2) {

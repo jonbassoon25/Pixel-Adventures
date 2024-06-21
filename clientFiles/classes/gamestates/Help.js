@@ -97,10 +97,7 @@ export class Help extends Gamestate {
 				}
 				
 				//Draw instruction text
-				Display.drawText("The red player", 1920/2 - 600, 1080/2 - 50, 20, true, "white");
-				Display.drawText("uses WAD to move,", 1920/2 - 600, 1080/2 - 10, 20, true, "white");
-				Display.drawText("S to interact,", 1920/2 - 600, 1080/2 + 30, 20, true, "white");
-				Display.drawText("and F to attack.", 1920/2 - 600, 1080/2 + 70, 20, true, "white");
+				Display.drawText("The red player\nuses WAD to move,\nS to interact,\nand F to attack.", 1920/2 - 600, 1080/2 - 50, 32, true, "white");
 				break;
 			case "blueHelp":
 				if (this.backButton.subsistAsButton()) {
@@ -132,10 +129,7 @@ export class Help extends Gamestate {
 				}
 
 				//Draw instruction text
-				Display.drawText("The blue player uses", 1920/2 + 600 - "the blue player uses".length * 20 * 0.6, 1080/2 - 50, 20, true, "white");
-				Display.drawText("arrow keys to move,", 1920/2 + 600 - "arrow keys to move".length * 20 * 0.6, 1080/2 - 10, 20, true, "white");
-				Display.drawText("down to interact,", 1920/2 + 600 - "down to interact".length * 20 * 0.6, 1080/2 + 30, 20, true, "white");
-				Display.drawText("and / to attack.", 1920/2 + 600 - "and / to attack".length * 20 * 0.6, 1080/2 + 70, 20, true, "white");
+				Display.drawText("The blue player uses\narrow keys to move,\ndown to interact,\nand / to attack.", 1920/2 + 600 - Display.getTextWidth("the blue player uses", 28), 1080/2 - 50, 28, true, "white");
 				break;
 		}
 	}

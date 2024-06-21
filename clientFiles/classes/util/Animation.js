@@ -243,7 +243,7 @@ export class Animation {
 				"initialPosition": [1920/2, 1000],
 				"finalPosition": [1920/2, 1080/2 + 110],
 				"initialDimensions": [0, 0],
-				"finalDimensions": [1185, 40],
+				"finalDimensions": [1690, 40],
 				"finalOpacity": 0,
 				"frames": 80,
 				"transitionType": "log",
@@ -385,6 +385,22 @@ export class Animation {
 				"finalOpacity": 100,
 				"frames": 75,
 				"transitionType": "sinusoidal"
+			}
+		],
+		"maceHeld": [
+			{
+				"image": "mace-45",
+				"initialPosition": [1920/2, 300],
+				"initialRotation": 0,
+				"finalRotation": 230,
+				"initialDimensions": [560, 560],
+				"initialOpacity": 100,
+				"frames": 60,
+				"transitionType": "sinusoidal"
+			}, 
+			{
+				"finalRotation": 180,
+				"frames": 30
 			}
 		]
     };

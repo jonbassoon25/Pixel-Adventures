@@ -19,7 +19,7 @@ export class SaveScore extends Gamestate {
 	//Static Variables
 	
 	static textbox = new Textbox(1920/2, 1080/2, 1260, 100);
-	static submit = new Button("saveScore", 1920/2, 1080/2 + 200, 385, 40);
+	static submit = new Button("saveScore", 1920/2, 1080/2 + 200, 522, 144);
 
 	//*********************************************************************//
 	//Public Static Methods
@@ -38,7 +38,7 @@ export class SaveScore extends Gamestate {
 	static update() {
 		Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
 		
-		Display.drawText("Your Score: " + Math.round((Game.player1.points + Game.player2.points) * Difficulty.pointMultiplier).toString(), 1920/2 - Display.getTextWidth(("Your Score: " + Math.round(Game.player1.points + Game.player2.points) * Difficulty.pointMultiplier).toString(), 40)/2, 1920/2 - 300, 40, true, "white");
+		Display.drawText("Your Score: " + Math.round((Game.player1.points + Game.player2.points) * Difficulty.pointMultiplier).toString(), 1920/2 - Display.getTextWidth(("Your Score: " + Math.round(Game.player1.points + Game.player2.points) * Difficulty.pointMultiplier).toString(), 80)/2, 1080/2 - 70, 80, true, "white");
 		
 		this.textbox.update();
 		this.submit.update();

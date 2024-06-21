@@ -5,7 +5,7 @@ function loadAssets() {
 	//Assign folders to load
 	foldersToLoad["shaders"] = ["shader_black"];
 	foldersToLoad["decorations"] = ["bannerWhite", "bannerWhiteFBLA", "chairLeft", "chairRight", "plant1", "plant2", "woodenTable", "bookshelf", "sunset", "skull"];
-	foldersToLoad["tiles"] = ["stoneBrick", "rottedWoodPlanks", "vines", "blueTile", "redTile", "blackTile", "insetLantern", "wood"];
+	foldersToLoad["tiles"] = ["stoneBrick", "rottedWoodPlanks", "blueTile", "redTile", "blackTile", "insetLantern", "wood"];
 	foldersToLoad["menu"] = ["mainMenuPanoTinted", "plaque", "banner", "stoneBrickBackground", "woodenPlaque", "leaderboardPlaque", "upgradePlaque", "selectionBox", "settings", "flasher1", "flasher2", "buttonPlaque", "transferCoins", "glassPane", "priceTag", "maceWarning", "congratulations", "youDied"];
 	foldersToLoad["buttons"] = ["buttonHovered", "buttonPressed", "playButton", "back", "cog", "leaderboard", "upgradeJump", "upgradeMaxHealth", "upgradeRegen", "upgradeSpeed", "upgradeWeapon", "upgradeSword", "upgradeMace", "continue", "easy", "medium", "hard", "custom", "sliderFrame", "sliderHandle", "saveScore", "textBox", "escape", "musicEnabled", "musicDisabled", "plus", "minus", "help", "redToBlue", "blueToRed", "clickToReturn"];
 	foldersToLoad["util"] = ["placeholder", "crosshair", "visualDimensions", "painting"];
@@ -19,6 +19,7 @@ function loadAssets() {
 	foldersToLoad["particles"] = ["sparkYellow", "sparkOrange", "sparkRed", "death", "glass"];
 	foldersToLoad["specialCharacters"] = ["centCharacter"];
 	foldersToLoad["gameObjects"] = ["chest", "chestOpened", "door", "chestAlt", "chestOpenedAlt", "doorAlt", "doorEdge"];
+	foldersToLoad["decorations/vineSets"] = ["plainVineSet1", "plainVineSet2", "flowerVineSet1", "flowerVineSet2", "fruitVineSet1", "fruitVineSet2"];
 	console.log("Loading Textures...");
 	//For every folder to load
 	for (let currentFolderIndex = 0; currentFolderIndex < Object.keys(foldersToLoad).length; currentFolderIndex++) {
