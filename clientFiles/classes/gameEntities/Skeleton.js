@@ -42,15 +42,13 @@ export class Skeleton extends Enemy {
 		
 	}
 
-	delete() {
+	die() {
 		for (let i = 0; i < 12; i++) {
 			new Particle("death", this.x, this.y, 12, 12, new Vector([((i < 6)? 1 : -1) * (Math.random() * 2 + 2), ((i < 6)? 1 : -1) * Math.random() * 3 - 2]), 0.75, 0.95, true, true, false);
 		}
-		this.weapon.delete();
-		if (Settings.debug) this.healthbar.delete();
-		super.delete();
+		this.delete();
 	}
-
+	
 	update() {
 		super.update();
 

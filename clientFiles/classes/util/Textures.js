@@ -5,7 +5,7 @@ function loadAssets() {
 	//Assign folders to load
 	foldersToLoad["shaders"] = ["shader_black"];
 	foldersToLoad["decorations"] = ["bannerWhite", "bannerWhiteFBLA", "chairLeft", "chairRight", "plant1", "plant2", "woodenTable", "bookshelf", "sunset", "skull"];
-	foldersToLoad["tiles"] = ["stoneBrick", "rottedWoodPlanks", "blueTile", "redTile", "blackTile", "insetLantern", "wood"];
+	foldersToLoad["tiles"] = ["stoneBrick", "rottedWoodPlanks", "blueTile", "redTile", "blackTile", "insetLantern", "wood", "dirt"];
 	foldersToLoad["menu"] = ["mainMenuPanoTinted", "plaque", "banner", "stoneBrickBackground", "woodenPlaque", "leaderboardPlaque", "upgradePlaque", "selectionBox", "settings", "flasher1", "flasher2", "buttonPlaque", "transferCoins", "glassPane", "priceTag", "maceWarning", "congratulations", "youDied"];
 	foldersToLoad["buttons"] = ["buttonHovered", "buttonPressed", "playButton", "back", "cog", "leaderboard", "upgradeJump", "upgradeMaxHealth", "upgradeRegen", "upgradeSpeed", "upgradeWeapon", "upgradeSword", "upgradeMace", "continue", "easy", "medium", "hard", "custom", "sliderFrame", "sliderHandle", "saveScore", "textBox", "escape", "musicEnabled", "musicDisabled", "plus", "minus", "help", "redToBlue", "blueToRed", "clickToReturn"];
 	foldersToLoad["util"] = ["placeholder", "crosshair", "visualDimensions", "painting"];

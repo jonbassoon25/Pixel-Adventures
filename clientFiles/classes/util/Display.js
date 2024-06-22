@@ -102,10 +102,18 @@ export class Display {
 	 * @returns {number[]} The absolute dimensions of the element [x, y, width, height]
 	 */
 	static * inverseCalcElementDimensions(x, y, width, height) {
-		yield (x - this.horizontalOffset) / this.sizeMult + width/2;
-		yield (y - this.verticalOffset) / this.sizeMult + height/2;
-		yield width / this.sizeMult;
-		yield height / this.sizeMult;
+		if (x != -1 && width != -1) {
+			yield (x - this.horizontalOffset) / this.sizeMult + width/2;
+		} else if (width == -1) {
+			yield (x - this.horizontalOffset) / this.sizeMult;
+		} 
+		if (y != -1 && height != -1) {
+			yield (y - this.verticalOffset) / this.sizeMult + height/2;
+		} else if (height == -1) {
+			yield (y - this.verticalOffset) / this.sizeMult;
+		}
+		if (width != -1) yield width / this.sizeMult;
+		if (height != -1) yield height / this.sizeMult;
 	}
 
 	/** 
@@ -197,7 +205,7 @@ export class Display {
 				y += height/2;
 				ctx.setTransform(flipped? -1 : 1, 0, 0, 1, x, y);
 				ctx.rotate(degreesRotated * Math.PI/180);
-				ctx.drawImage(textures[image], 0, 0 + (altIndex - 1) * textures[image].height/numAlts, textures[image].width, textures[image].height/numAlts, -width/2, -height/2, width, height);
+				ctx.drawImage(textures[image], 0, 0 + (altIndex - 1) * textures[image].height/numAlts, textures[image].width, textures[image].height/numAlts - 1, -width/2, -height/2, width, height);
 				ctx.resetTransform();
 			} else {
 				//Handles image flipping

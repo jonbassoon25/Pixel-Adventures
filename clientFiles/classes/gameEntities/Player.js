@@ -275,13 +275,13 @@ export class Player extends DynamicObject {
 	/** Draws the player */
 	draw() {
 		super.draw();
-		//Draw player healthbar
-		/*if (!this.isDead) {
-			let totalWidth = this.width * 2;
-			Display.draw("shader_05", this.x, this.y - this.height/2 - 7, totalWidth, 10);
-			let redWidth = this.width * 2 * (this.health / this.maxHealth);
-			Display.draw("redTile", this.x - (totalWidth - redWidth)/2, this.y - this.height/2 - 7, redWidth, 10);
-		}*/
+		this.healthbar.draw();
+	}
+
+	delete() {
+		this.healthbar.delete();
+		this.weapon.delete();
+		super.delete();
 	}
 	
 
@@ -293,7 +293,6 @@ export class Player extends DynamicObject {
 			return;
 		}
 		super.update();
-		
 		//Keep the player in bounds
 		if (this.x > 1920) {
 			this.x = 1920;
@@ -319,6 +318,9 @@ export class Player extends DynamicObject {
 		
 		//Update the player's weapon 
 		this.weapon.update(this.flipped, this.isGrounded && this.stunned == 0);
+
+		//Update the player's healthbar
+		this.healthbar.update();
 		
 		//Set the player's animation to jump if the player isn't grounded
 		if (!this.isGrounded) {

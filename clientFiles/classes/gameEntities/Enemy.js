@@ -39,6 +39,17 @@ export class Enemy extends NPC {
 	//*********************************************************************//
 	//Public Methods
 
+	draw() {
+		super.draw();
+		if (this.healthbar != undefined) this.healthbar.draw();
+	}
+	
+	delete() {
+		if (this.weapon != undefined) this.weapon.delete();
+		if (this.healthbar != undefined) this.healthbar.delete();
+		super.delete();
+	}
+	
 	findTarget() {
 		this.target = null;
 		//The enemy targets the closest player
@@ -56,13 +67,14 @@ export class Enemy extends NPC {
 			this.target = this.returnPoint;
 		}
 	}
-
+	
 	
 
 	update() {
 		if (this.health <= 0) {
-			this.delete();
+			this.die();
 		}
+		if (this.healthbar != undefined) this.healthbar.update();
 		this.findTarget();
 		//Flip if change in position between this and target < 0
 		if (this.target[0] - this.x < 0) {
@@ -72,10 +84,5 @@ export class Enemy extends NPC {
 		}
 		let totalWidth = this.width * 2;
 		super.update();
-		if (Settings.debug) {
-			Display.draw("shader_05", this.x, this.y - this.height/2 - 7, totalWidth, 10);
-			let redWidth = this.width * 2 * (this.health / this.maxHealth);
-			Display.draw("redTile", this.x - (totalWidth - redWidth)/2, this.y - this.height/2 - 7, redWidth, 10);
-		}
 	}
 }

@@ -17,14 +17,13 @@ export class SceneTile extends VisualObject {
 	 * @param {boolean} hasCollision - if this SceneTile has collision
 	 * @param {boolean} hasVines - if this SceneTile has vines
 	*/
-	constructor(image, col, row, hasCollision = false, hasVines = false) {
+	constructor(image, col, row, hasCollision = false) {
 		super(image, 0, 0, Scene.tileSize, Scene.tileSize);
-		this.type = "SceneTile"
+		this.type = "SceneTile";
 		this.image = image;
 		this.col = col;
 		this.row = row;
 		this.hasCollision = hasCollision;
-		this.hasVines = hasVines;
 	}
 
 	//*********************************************************************//
@@ -33,9 +32,6 @@ export class SceneTile extends VisualObject {
 	/** Updates and Draws this SceneTile */
 	update() {
 		Display.draw(this.image, this.x, this.y, Scene.tileSize, Scene.tileSize);
-		if (this.hasVines) {
-			Display.draw("vines", this.x, this.y, Scene.tileSize, Scene.tileSize);
-		}
 	}
 
 	//*********************************************************************//
@@ -46,6 +42,12 @@ export class SceneTile extends VisualObject {
 	}
 	get y() {
 		return this.row * Scene.tileSize + Scene.tileSize/2;
+	}
+	get width() {
+		return Scene.tileSize;
+	}
+	get height() {
+		return Scene.tileSize;
 	}
 	
 	get upperLeft() {
@@ -67,4 +69,6 @@ export class SceneTile extends VisualObject {
 	//Needed to avoid set errors in the VisualObject constructor
 	set x(x) {}
 	set y(y) {}
+	set width(w) {}
+	set height(h) {}
 }

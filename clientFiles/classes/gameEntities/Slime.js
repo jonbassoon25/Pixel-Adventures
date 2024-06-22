@@ -99,14 +99,15 @@ export class Slime extends Enemy {
 			return;
 		}
 	}
-	delete() {
+	
+	die() {
 		let v = 3;
 		for (let i = 0; i < 9; i++) {
 			new Particle("slimeDeath", this.x + (10 * (Math.floor(i/3) - 1)), this.y + (10 * (Math.floor(i%3) - 1)), 12, 12, new Vector([v/9 * i - v/2, ((i % 3 == 2)? -2 * v/3 : -2 * Math.random() * v)]), 1.6, 0.95, true, true);
 		}
-		if (Settings.debug) this.healthbar.delete();
-		super.delete();
+		this.delete();
 	}
+	
 	update() {
 		if (this.isGrounded) {
 			this.idleTime++;

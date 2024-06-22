@@ -10,7 +10,11 @@ import { Util } from "./Util.js";
 import { LightTile } from "../gameObjects/LightTile.js";
 import { SceneTile } from "../gameObjects/SceneTile.js";
 
-//SceneBuilder Class
+//Basic Object Imports
+import { ShadedObject } from "../basicObjects/ShadedObject.js";
+import { FileManager } from "./FileManager.js";
+
+//Scene Builder Class
 export class SceneBuilder {
 	//Static Variables
 	static cursorX = 0;
@@ -21,35 +25,35 @@ export class SceneBuilder {
 
 	static collisionTileIndex = 0;
 	static collisionTiles = [
-		"wood"
+		"wood",
+		"stoneBrick"
 	]
 
 	static collisionlessTileIndex = 0;
 	static collisionlessTiles = [
 		"stoneBrick",
+		"dirt",
 		"none"
 	]
 
 	
 	static instructions = 
 	"Controls:\n" + 
-	"	WASD to move\n" + 
-	"	Use arrow keys to edit block specific properties\n" +
+	"	Hold control and left/right click to select\n		collision (left) and collisionless (right) tiles\n" + 
+	"	Left click to place a collision tile\n" + 
+	"	Right click to place a collisionless tile\n" + 
+	"	Press 'l' to place a lantern\n" + 
+	"	Use arrow keys to edit block specific properties\n		(ex: light radius and strength)" +
 	"	Press 'b' to bake scene lighting\n" +
-	"	Press 'c' to clear current scene\n" + 
-	"	Press '~ + 1-0' to save current scene\n" + 
-	"	Press '~ + idk' to load last saved scene\n" +
-	"	Press 'm' to enable mouse controls\n" + 
-	"	Press 'n' to toggle collision for placed blocks\n" +
-	"	Press 'o' to toggle collision editor\n" +
+	"	Press '~ + alt + 1-9' to save current scene\n" + 
+	"	Press '~ + 1-9' to load last saved scene\n" +
+	"	Press 'm' to toggle mouse controls\n" + 
+	"	With keyboard controls, press WASD to move\n" + 
+	"	Press 'n' to toggle collision for hovered tile\n" +
+	"	Press 'o' to toggle collision viewer\n" +
 	"	Press 'z' to log the currently selected tile\n" +
-	"	Press '1' to replace tile with none\n" + 
-	"	Press '2' to replace tile with stone bricks\n" + 
-	"	Press '4' to replace tile with wood\n" + 
-	"	Press '6' to place light\n" + 
-	"	Press '7' to place vines\n" +
-	"	Press '=' to replace tile with placeholder\n" + 
-  "\n	Press 'h' to relog instructions";
+  "\n	Hold 'h' to display controls";
+	//"	Press 'c' to clear current scene\n" + (doesn't work)
 
 	//*********************************************************************//
 	//Private Static Methods
@@ -78,41 +82,22 @@ export class SceneBuilder {
 		}
 	}
 
-	static #setTile(name) {
+	static #setTile(name, hasCollision = false) {
 		switch (name) {
 			case "none":
-				this.structure[this.cursorY][this.cursorX] = new SceneTile("none", this.cursorX, this.cursorY);
-				break;
 			case "wood":
-				this.structure[this.cursorY][this.cursorX] = new SceneTile("wood", this.cursorX, this.cursorY, true);
-				break;
 			case "stoneBrick":
-				this.structure[this.cursorY][this.cursorX] = new SceneTile("stoneBrick", this.cursorX, this.cursorY, false);
+			case "dirt":
+				this.structure[this.cursorY][this.cursorX] = new SceneTile(name, this.cursorX, this.cursorY, hasCollision);
 				break;
 			case "light":
 				let replacedTile = this.structure[this.cursorY][this.cursorX];
-				this.structure[this.cursorY][this.cursorX] = new LightTile(replacedTile.image, this.cursorX, this.cursorY, 15, 10, replacedTile.hasCollision, replacedTile.hasVines);
+				this.structure[this.cursorY][this.cursorX] = new LightTile(replacedTile.image, this.cursorX, this.cursorY, 15, 10, replacedTile.hasCollision, false);
 				break;
 			default:
-				this.structure[this.cursorY][this.cursorX] = new SceneTile("placeholder", this.cursorX, this.cursorY, false);
+				this.structure[this.cursorY][this.cursorX] = new SceneTile("placeholder", this.cursorX, this.cursorY, hasCollision);
 				break;
 		}
-	}
-
-	static #save(fileName = "lastSaved") {
-		document.dispatchEvent(new CustomEvent("emit", {"detail": {"name": "saveScene", "data": [fileName, this.structure]}}));
-		console.log("Saving scene to " + fileName);
-	}
-
-	static #load(name = "lastSaved") {
-		document.dispatchEvent(new CustomEvent("emit", {"detail": {"name": "loadScene", "data": name}}));
-		this.init();
-		this.clear();
-		Scene.structure = null;
-		Scene.shaderStructure = null;
-		this.structure = null;
-		console.log("loading scene");
-		return;
 	}
 
 	static #updateCoords() {
@@ -132,82 +117,8 @@ export class SceneBuilder {
 	}
 
 	static #takeInput() {
-		//Save
-		if (Keyboard.backquoteDown && Keyboard.isKeyPressed("k")) {
-			this.#save();
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.altDown && Keyboard.isKeyPressed("1")) {
-			this.#save("Save_1");
-			Keyboard.keyUp("1");
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.altDown && Keyboard.isKeyPressed("2")) {
-			this.#save("Save_2");
-			Keyboard.keyUp("2");
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.altDown && Keyboard.isKeyPressed("3")) {
-			this.#save("Save_3");
-			Keyboard.keyUp("3");
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.altDown && Keyboard.isKeyPressed("4")) {
-			this.#save("Save_4");
-			Keyboard.keyUp("4");
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.altDown && Keyboard.isKeyPressed("5")) {
-			this.#save("Save_5");
-			Keyboard.keyUp("5");
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.altDown && Keyboard.isKeyPressed("6")) {
-			this.#save("Save_6");
-			Keyboard.keyUp("6");
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.altDown && Keyboard.isKeyPressed("7")) {
-			this.#save("Save_7");
-			Keyboard.keyUp("7");
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.altDown && Keyboard.isKeyPressed("8")) {
-			this.#save("Save_8");
-			Keyboard.keyUp("8");
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.altDown && Keyboard.isKeyPressed("9")) {
-			this.#save("Save_9");
-			Keyboard.keyUp("9");
-			return;
-		}
 
-		//Load
-		if (Keyboard.backquoteDown && Keyboard.isKeyPressed("l")) {
-			this.#load();
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.isKeyPressed("1")) {
-			this.#load("Save_1");
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.isKeyPressed("2")) {
-			this.#load("Save_2");
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.isKeyPressed("3")) {
-			this.#load("Save_3");
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.isKeyPressed("4")) {
-			this.#load("Save_4");
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.isKeyPressed("5")) {
-			this.#load("Save_5");
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.isKeyPressed("6")) {
-			this.#load("Save_6");
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.isKeyPressed("7")) {
-			this.#load("Save_7");
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.isKeyPressed("8")) {
-			this.#load("Save_8");
-			return;
-		} else if (Keyboard.backquoteDown && Keyboard.isKeyPressed("9")) {
-			this.#load("Save_9");
-			return;
-		}
-
-		//Erase
+		//Erase (doesn't work)
 		if (Keyboard.isKeyPressed("c")) {
 			this.structure = SceneCreator.createEmptyScene(48, 27);
 		}
@@ -223,6 +134,20 @@ export class SceneBuilder {
 		//Print tile components
 		if (Keyboard.isKeyPressed("z")) {
 			console.log(currentTile);
+		}
+
+		//Display tile information
+		if (Keyboard.isKeyDown("z")) {
+			let x;
+			let y;
+			let tileInfo = 
+				"Type: " + currentTile.type + "\n" +
+				"Image: " + currentTile.image + "\n" +
+				"Row: " + currentTile.row + "\n" +
+				"Column: " + currentTile.col + "\n" +
+				"hasCollision: " + currentTile.hasCollision + "\n";
+			[x, y] = [...Display.inverseCalcElementDimensions(Mouse.x, Mouse.y, -1, -1)];
+			Display.drawText(tileInfo, x + 50, y - 15, 25, true, "white");
 		}
 
 		//Bake lighting
@@ -298,21 +223,8 @@ export class SceneBuilder {
 		}
 
 		//Tile placing inputs
-		if (Keyboard.isKeyDown("1")) {
-			this.#setTile("air");
-		}
-		if (Keyboard.isKeyDown("2")) {
-			this.#setTile("stoneBrick");
-		}
-		if (Keyboard.isKeyDown("4")) {
-			this.#setTile("wood");
-		}
-		
-		if (Keyboard.isKeyDown("6")) {
+		if (Keyboard.isKeyDown("l")) {
 			this.#setTile("light");
-		}
-		if (Keyboard.isKeyDown("=")) {
-			this.#setTile("placeholder");
 		}
 		if (Keyboard.controlDown) {
 			let x;
@@ -329,9 +241,9 @@ export class SceneBuilder {
 				if (++this.collisionlessTileIndex == this.collisionlessTiles.length) this.collisionlessTileIndex = 0;
 			}
 		} else if (Mouse.button1Down) {
-			this.#setTile(this.collisionTiles[this.collisionTileIndex]);
+			this.#setTile(this.collisionTiles[this.collisionTileIndex], true);
 		} else if (Mouse.button2Down) {
-			this.#setTile(this.collisionlessTiles[this.collisionlessTileIndex]);
+			this.#setTile(this.collisionlessTiles[this.collisionlessTileIndex], false);
 		}
 	}
 
@@ -401,6 +313,8 @@ export class SceneBuilder {
 		return this.shaderStructure;
 	}
 
+	
+
 	/** Clears the current scene data */
 	static clear() {
 		[this.structure, this.shaderStructure] = SceneCreator.createEmptyShadedScene(48, 27);
@@ -421,14 +335,17 @@ export class SceneBuilder {
 		if (Scene.structure == null) {
 			return;
 		}
+		//Handles saving and loading of files
+		FileManager.takeInput();
+		if (Scene.structure == null) {
+			return;
+		}
+		
 		if (this.structure == null) {
 			this.structure = Scene.structure;
 		}
 		if (this.shaderStructure == null) {
 			this.shaderStructure = Scene.shaderStructure;
-		}
-		if (this.structure == null) {
-			return;
 		}
 		for (let i = 0; i < Scene.structure.length; i++) {
 			for (let j = 0; j < Scene.structure[i].length; j++) {

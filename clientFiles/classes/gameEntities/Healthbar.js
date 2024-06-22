@@ -9,10 +9,10 @@
 //Game Entity Imports
 
 //Basic Object Imports
-import { DynamicObject } from "../basicObjects/DynamicObject.js";
+import { ShadedObject } from "../basicObjects/ShadedObject.js";
 import { Display } from "../util/Display.js";
 
-export class Healthbar extends DynamicObject {
+export class Healthbar extends ShadedObject {
 
     /*
     Notes:
@@ -33,10 +33,8 @@ export class Healthbar extends DynamicObject {
     //*********************************************************************//
     //Constructor - Must have JSDocs
     constructor(parent, clearance = 7) {
-        super("healthbar", 0, parent.x, parent.y - clearance, parent.width * 2, 10, false, true);
+        super("healthbar", 0, parent.x, parent.y - clearance, parent.width * 2, 10, true);
         this.parent = parent;
-        this.x = this.parent.x;
-        this.y = this.parent.y - this.parent.height/2 - 7;
         this.visualHeight *= 1.2;
         this.visualWidth *= 1.1;
         this.clearance = clearance;
@@ -57,11 +55,11 @@ export class Healthbar extends DynamicObject {
             Display.draw("redTile", this.x - (this.width - redWidth)/2, this.y, redWidth, 10);
         }
     }
+
     update() {
         this.x = this.parent.x;
         this.y = this.parent.y - this.parent.height/2 - this.clearance;
     }
-
     //*********************************************************************//
     //Getters - No required JSDocs
 

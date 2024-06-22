@@ -39,9 +39,9 @@ export class Level {
 				Scene.decorations = [
 					new VisualObject("sunset", 1182, 498, 330, 230),
 					new VisualObject("bannerWhiteFBLA", 1456, 920, 114, 180), 
-					new VisualObject("plainVineSet1 2/3", Scene.snapCoordinates(1738, 59)[0], Scene.snapCoordinates(1738, 59)[1] + (576/8), 64, 576/3),
-					new VisualObject("flowerVineSet1 1/3", Scene.snapCoordinates(175, 62)[0], Scene.snapCoordinates(175, 62)[1] + (576/8), 64, 576/3),
-					new VisualObject("fruitVineSet2 2/3", Scene.snapCoordinates(417, 59)[0], Scene.snapCoordinates(417, 59)[1] + (576/8), 64, 576/3),
+					new VisualObject("plainVineSet1 2/3", Scene.snapCoordinates(1738, 59)[0], Scene.snapCoordinates(1738, 59)[1] + (576/8) + 4, 64, 576/3),
+					new VisualObject("flowerVineSet1 1/3", Scene.snapCoordinates(175, 62)[0], Scene.snapCoordinates(175, 62)[1] + (576/8) + 4, 64, 576/3),
+					new VisualObject("fruitVineSet2 2/3", Scene.snapCoordinates(417, 59)[0], Scene.snapCoordinates(417, 59)[1] + (576/8) + 4, 64, 576/3),
 					new VisualObject("woodenTable", 9*48, 3*48 - 4, 24*3, 14*3), 
 					new VisualObject("chairRight", 9*48 - 50, 3*48 - 5, 12*3, 14*3), 
 					new VisualObject("chairLeft", 9*48 + 50, 3*48 - 5, 12*3, 14*3)

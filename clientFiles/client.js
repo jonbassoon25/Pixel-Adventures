@@ -25,6 +25,7 @@ import { Level } from "./classes/util/Level.js";
 import { Mouse } from "./classes/util/Mouse.js";
 import { Scene } from "./classes/util/Scene.js";
 import { SceneBuilder } from "./classes/util/SceneBuilder.js";
+import { Spawner } from "./classes/util/Spawner.js";
 
 //UI Object Imports
 import { Leaderboard } from "./classes/UIObjects/Leaderboard.js";
@@ -256,6 +257,9 @@ function updateGame() {
 			//DynamicObject.updateObjects();
 			//Scene.drawShadedObjects();
 			break;
+		case "spawner":
+			Spawner.update();
+			break;
 		default:
 			Display.drawText(scene, 1920/2 - Display.getTextWidth(scene, 100)/2, 1080/2, 100, true, "white");
 			break;
@@ -411,7 +415,6 @@ document.addEventListener("keydown", (event) => {
 				console.log("Unsupported Key Pressed: " + event.key);
 			}
 	}
-	console.log(Game.player1);
 });
 
 //Triggers on all key up events and updates Keyboard to reflect the current situation
@@ -491,28 +494,90 @@ document.addEventListener("emit", (event) => {
 
 //Catch scene from server
 socket.on("scene", (data) => {
+	console.log("Received Scene Data from Server.");
+	
+	let receivedStructure = data["structure"];
 	let structure = [];
+	
 	//Create SceneTiles from scene title values
-	for (let i = 0; i < data.length; i++) {
+	console.log("Loading Structure...");
+	for (let i = 0; i < receivedStructure.length; i++) {
 		structure.push([]);
-		for (let j = 0; j < data[i].length; j++) {
-			if (data[i][j]["type"] == "SceneTile") {
-				structure[i].push(new SceneTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["hasCollision"], data[i][j]["hasVines"]));
-			} else if (data[i][j]["type"] == "LightTile") {
-				structure[i].push(new LightTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["str"], data[i][j]["rad"], data[i][j]["hasCollision"], data[i][j]["hasVines"]));
-			} else {
-				console.warn("Undetermined SceneTile type. Creating with default values")
-				structure[i].push(new SceneTile(data[i][j]["image"], data[i][j]["col"], data[i][j]["row"], data[i][j]["hasCollision"], data[i][j]["hasVines"]));
+		for (let j = 0; j < receivedStructure[i].length; j++) {
+			
+			let curTile = receivedStructure[i][j];
+			
+			switch (curTile["type"]) {
+				case "SceneTile":
+					structure[i].push(new SceneTile(curTile["image"], curTile["col"], curTile["row"], curTile["hasCollision"]));
+					break;
+				case "LightTile":
+					structure[i].push(new LightTile(curTile["image"], curTile["col"], curTile["row"], curTile["str"], curTile["rad"], curTile["hasCollision"]));
+					break;
+				default:
+					console.warn("Undetermined SceneTile Type: " + curTile["type"] + ". Creating Standard SceneTile");
+					structure[i].push(new SceneTile(curTile["image"], curTile["col"], curTile["row"], curTile["hasCollision"]));
 			}
 		}
 	}
-	console.log("initializing scene");
-	
+	console.log("Baking Scene...");
 	Scene.initScene(structure, SceneBuilder.bakeScene(structure));
-	
-	SceneBuilder.structure = structure;
+	console.log("Scene Baked.");
+	//Link by reference
+	SceneBuilder.structure = Scene.structure;
 	SceneBuilder.shaderStructure = Scene.shaderStructure;
-	console.log("recieved");
+
+	//Load Decorations
+	console.log("Loading Decorations...");
+	let receivedDecorations = data["decorations"];
+	Scene.decorations = [];
+	
+	for (let i = 0; i < receivedDecorations.length; i++) {
+		let curDecor = receivedDecorations[i];
+		Scene.decorations.push(new VisualObject(curDecor["image"], curDecor["x"], curDecor["y"], curDecor["width"], curDecor["height"]));
+	}
+	//Link by reference
+	SceneBuilder.currentDecorations = Scene.decorations;
+
+	//Load and Spawn Objects
+	console.log("Loading Objects...");
+	let receivedObjects = data["objects"];
+	SceneBuilder.currentObjects = [];
+	
+	for (let i = 0; i < receivedObjects.length; i++) {
+		let curObj = receivedObjects[i];
+		SceneBuilder.currentObjects.push(curObj);
+		switch (curObj["type"]) {
+			case "chest":
+				new Chest(curObj["x"], curObj["y"], curObj["coinRange"]);
+			case "door":
+				new Door(curObj["x"], curObj["y"]);
+			default:
+				console.warn("Undetermined Object Type: " + curObj["type"] + ". Creating Standard Object");
+				new ShadedObject(curObj["image"], curObj["orderNum"], curObj["x"], curObj["y"], curObj["width"], curObj["height"], curObj["shade"]);
+		}
+	}
+
+	//Load and Spawn Entities
+	console.log("Loading Entities...");
+	let receivedEntities = data["entities"];
+	SceneBuilder.currentEntities = [];
+	
+	for (let i = 0; i < receivedEntities.length; i++) {
+		let curEntity = receivedEntities[i];
+		SceneBuilder.currentEntities.push(curEntity);
+		switch (curEntity["type"]) {
+			case "slime":
+				new Slime(curEntity["x"], curEntity["y"]);
+			case "skeleton":
+				new Skeleton(curEntity["x"], curEntity["y"]);
+			default:
+				console.warn("Undetermined Entity Type: " + curEntity["type"] + ". Creating Standard Entity");
+				new DynamicObject(curEntity["type"], curEntity["orderNum"], curEntity["x"], curEntity["y"], curEntity["width"], curEntity["height"], curEntity["hasCollision"], curEntity["shade"]);
+		}
+	}
+	
+	console.log("Scene Loading Completed.");
 });
 
 socket.on("leaderboardUpdate", (data) => {

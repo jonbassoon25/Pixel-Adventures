@@ -130,6 +130,10 @@ export class Game extends Gamestate {
 					this.setScene("sceneCreator");
 					break;
 				}
+				if (Keyboard.controlPressed && Keyboard.backquoteDown) {
+					this.setScene("spawner");
+					break;
+				}
 				
 				//Draw items and dynamicObjects in Scene
 				Item.drawItems();

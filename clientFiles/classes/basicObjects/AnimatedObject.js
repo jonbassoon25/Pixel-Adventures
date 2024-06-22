@@ -787,17 +787,6 @@ export class AnimatedObject extends ShadedObject {
 				}
 			]
 		},
-		"healthbar": {
-			"idle": [
-				{
-					"image": "none",
-					"initialPosition": [0, 0],
-					"initialDimensions": [0, 0],
-					"initialOpacity": 0,
-					"frames": 1
-				}
-			]
-		},
 		"shopMace": {
 			"standing": [
 				{

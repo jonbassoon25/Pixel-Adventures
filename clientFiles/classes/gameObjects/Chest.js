@@ -21,7 +21,7 @@ export class Chest extends InteractableObject {
 		this.coinRange = coinRange;
 		this.coins = Util.randInt(coinRange[0], coinRange[1]);
 		
-		this.type = "Chest";
+		this.type = "chest";
 	}
 
 	//*********************************************************************//

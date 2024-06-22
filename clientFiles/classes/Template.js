@@ -16,15 +16,15 @@ export class Template {
 	Notes:
 		- stuff
 	*/
-	
+
 	//*********************************************************************//
 	//Static Variables
 
-	
+
 	//*********************************************************************//
 	//Private Static Methods - No required JSDocs
 
-	
+
 	//*********************************************************************//
 	//Public Static Methods - Must Have JSDocs
 
@@ -48,5 +48,5 @@ export class Template {
 	//*********************************************************************//
 	//Setters - Must have JSDocs
 
-	
+
 }

@@ -13,8 +13,6 @@ export class VisualObject {
 	@param {number} height - Absolute height of the visualObject
 	*/
 	constructor(image, x, y, width = -1, height = -1) {
-		//Set name
-		this.name = "VisualObject";
 		//Set image
 		this.image = image;
 		//Set absolute position values
