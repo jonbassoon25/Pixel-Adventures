@@ -15,6 +15,10 @@ export class Util {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 	}
 
+	static add2DArrays(array1, array2) {
+		return [array1[0] + array2[0], array1[1] + array2[1]];
+	}
+	
 	//Creates a deep copy of an object, array1 == array2 without array1 === array2
 	/** 
 	Creates a deep copy of a simple object, output is stored at a different location than input
@@ -37,7 +41,7 @@ export class Util {
 	@returns {Array} The array with the specified index deleted
 	*/
 	static delIndex(array, index) {
-		array.splice(index, 1);
+		if (index >= 0) array.splice(index, 1);
 		return array;
 	}
 

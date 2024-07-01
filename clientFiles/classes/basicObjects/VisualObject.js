@@ -53,9 +53,10 @@ export class VisualObject {
 	 */
 	isEnclosing(point, inclusive = true) {
 		if (inclusive) {
-			return point[0] >= this.x - this.width/2 && point[0] <= this.x + this.width/2 && point[1] >= this.y - this.height/2 && point[1] <= this.y + this.height/2;
+			//return point[0] >= this.x - this.width/2 && point[0] <= this.x + this.width/2 && point[1] >= this.y - this.height/2 && point[1] <= this.y + this.height/2;
+			return point[0] >= this.upperLeft[0] && point[0] <= this.upperRight[0] && point[1] >= this.upperLeft[1] && point[1] <= this.bottomLeft[1];
 		} else {
-			return point[0] > this.x - this.width/2 && point[0] < this.x + this.width/2 && point[1] > this.y - this.height/2 && point[1] < this.y + this.height/2;
+			return point[0] > this.upperLeft[0] && point[0] < this.upperRight[0] && point[1] > this.upperLeft[1] && point[1] < this.bottomLeft[1];
 		}
 	}
 

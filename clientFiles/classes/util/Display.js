@@ -158,7 +158,6 @@ export class Display {
 			//Calculate the new element dimensions
 			[x, y, width, height] = this.calcElementDimensions(x, y, width, height);
 		}
-		//y = canvas.height - y;
 		//Determine if the image given needs to be taken from textures
 		if (typeof image === "string") {
 			//Complex image syntax: "image+-degreesFlipped? altIndex/numAlts". Should work, just please avoid using this in practice
@@ -180,7 +179,7 @@ export class Display {
 			}
 			let altIndex = parseInt(altSyntax.substring(0, altSyntax.indexOf("/")));
 			let numAlts = parseInt(altSyntax.substring(altSyntax.indexOf("/") + 1));
-			
+
 			//Systems for backwards compatibility
 			if (image.includes("Flipped")) {
 				image = image.substring(0, image.indexOf("Flipped"));
@@ -205,7 +204,7 @@ export class Display {
 				y += height/2;
 				ctx.setTransform(flipped? -1 : 1, 0, 0, 1, x, y);
 				ctx.rotate(degreesRotated * Math.PI/180);
-				ctx.drawImage(textures[image], 0, 0 + (altIndex - 1) * textures[image].height/numAlts, textures[image].width, textures[image].height/numAlts - 1, -width/2, -height/2, width, height);
+				ctx.drawImage(textures[image], 0, 0 + (altIndex - 1) * textures[image].height/numAlts, textures[image].width, textures[image].height/numAlts, -width/2, -height/2, width, height);
 				ctx.resetTransform();
 			} else {
 				//Handles image flipping
@@ -224,6 +223,209 @@ export class Display {
 			ctx.drawImage(image, x, y, width, height);
 		} else {
 			console.error("Data not recognized as string or Image: " + image);
+		}
+	}
+
+	static drawCanvas(canvas, x = 0, y = 0) {
+		[x, y] = this.calcElementDimensions(x, y, -1, -1);
+		ctx.drawImage(canvas, x, y);
+	}
+	
+	static drawSet(image, x, y, width, height, setLength, extensionDirection) {
+		//Limited use, so lacks support for complex images
+		[x, y, width, height] = this.calcElementDimensions(x, y, width, height);
+		if (textures[image] == undefined) {
+			console.error("Image " + image + " Not Found.");
+			return;
+		}
+		switch (extensionDirection) {
+			case "up":
+				if (textures[image + "Vertical"] instanceof Image) image += "Vertical";
+				for (let i = 0; i < setLength; i++) {
+					if (i == 0 && textures[image + "EndDown"] instanceof Image) {
+						if (i == Math.floor(setLength)) {
+							ctx.drawImage(textures[image + "EndDown"], 
+										  0, //Sample x
+										  0 + (1 - (setLength - i)) * textures[image].height, //Sample y
+										  textures[image].width, //Sample width
+										  (setLength - i) * textures[image].height, //Sample height
+										  x, //Destination x
+										  y - (i * height) + (1 - (setLength - i)) * height, //Destination y
+										  width, //Destination width
+										  (setLength - i) * height //Destination height
+										 );
+
+						} else {
+							ctx.drawImage(textures[image + "EndDown"], 
+										  x, //Destination x
+										  y - (i * height), //Destination y
+										  width, //Destination width
+										  height //Destination height
+										 );
+						}
+						continue;
+					}
+					if (i == Math.floor(setLength)) {
+						ctx.drawImage(textures[image], 
+									  0, //Sample x
+									  0 + (1 - (setLength - i)) * textures[image].height, //Sample y
+									  textures[image].width, //Sample width
+									  (setLength - i) * textures[image].height, //Sample height
+									  x, //Destination x
+									  y - (i * height) + (1 - (setLength - i)) * height, //Destination y
+									  width, //Destination width
+									  (setLength - i) * height //Destination height
+									 );
+						
+					} else {
+						ctx.drawImage(textures[image], 
+									  x, //Destination x
+									  y - (i * height), //Destination y
+									  width, //Destination width
+									  height //Destination height
+									 );
+					}
+				}
+				break;
+			case "down":
+				if (textures[image + "Vertical"] instanceof Image) image += "Vertical";
+				for (let i = 0; i < setLength; i++) {
+					if (i == 0 && textures[image + "EndUp"] instanceof Image) {
+						if (i == Math.floor(setLength)) {
+							ctx.drawImage(textures[image + "EndUp"], 
+										  0, //Sample x
+										  0, //Sample y
+										  textures[image].width, //Sample width
+										  (setLength - i) * textures[image].height, //Sample height
+										  x, //Destination x
+										  y + (i * height), //Destination y
+										  width, //Destination width
+										  (setLength - i) * height //Destination height
+										 );
+						} else {
+							ctx.drawImage(textures[image + "EndUp"], 
+										  x, //Destination x
+										  y + (i * height), //Destination y
+										  width, //Destination width
+										  height //Destination height
+										 );
+						}
+						continue;
+					}
+					if (i == Math.floor(setLength)) {
+						ctx.drawImage(textures[image], 
+									  0, //Sample x
+									  0, //Sample y
+									  textures[image].width, //Sample width
+									  (setLength - i) * textures[image].height, //Sample height
+									  x, //Destination x
+									  y + (i * height), //Destination y
+									  width, //Destination width
+									  (setLength - i) * height //Destination height
+									 );
+					} else {
+						ctx.drawImage(textures[image], 
+									  x, //Destination x
+									  y + (i * height), //Destination y
+									  width, //Destination width
+									  height //Destination height
+									 );
+					}
+				}
+				break;
+			case "left":
+				if (textures[image + "Horizontal"] instanceof Image) image += "Horizontal";
+				for (let i = 0; i < setLength; i++) {
+					if (i == 0 && textures[image + "EndRight"] instanceof Image) {
+						if (i == Math.floor(setLength)) {
+							ctx.drawImage(textures[image + "EndRight"], 
+										  0 + (1 - (setLength - i)) * textures[image].width, //Sample x
+										  0, //Sample y
+										  (setLength - i) * textures[image].width, //Sample width
+										  textures[image].height, //Sample height
+										  x - (i * width) + (1 - (setLength - i)) * width, //Destination x
+										  y, //Destination y
+										  (setLength - i) * width, //Destination width
+										  height //Destination height
+										 );
+						} else {
+							ctx.drawImage(textures[image + "EndRight"], 
+										  x - (i * width), //Destination x
+										  y, //Destination y
+										  width, //Destination width
+										  height //Destination height
+										 );
+						}
+						continue;
+					}
+					if (image == "cobblestoneHorizontal") image += "Flipped";
+					if (i == Math.floor(setLength)) {
+						ctx.drawImage(textures[image], 
+									  0 + (1 - (setLength - i)) * textures[image].width, //Sample x
+									  0, //Sample y
+									  (setLength - i) * textures[image].width, //Sample width
+									  textures[image].height, //Sample height
+									  x - (i * width) + (1 - (setLength - i)) * width, //Destination x
+									  y, //Destination y
+									  (setLength - i) * width, //Destination width
+									  height //Destination height
+									 );
+					} else {
+						ctx.drawImage(textures[image], 
+									  x - (i * width), //Destination x
+									  y, //Destination y
+									  width, //Destination width
+									  height //Destination height
+									 );
+					}
+				}
+				break;
+			case "right":
+				if (textures[image + "Horizontal"] instanceof Image) image += "Horizontal";
+				for (let i = 0; i < setLength; i++) {
+					if (i == 0 && textures[image + "EndLeft"] instanceof Image) {
+						if (i == Math.floor(setLength)) {
+							ctx.drawImage(textures[image + "EndLeft"], 
+										  0, //Sample x
+										  0, //Sample y
+										  (setLength - i) * textures[image].width, //Sample width
+										  textures[image].height, //Sample height
+										  x + (i * width), //Destination x
+										  y, //Destination y
+										  (setLength - i) * width, //Destination width
+										  height //Destination height
+										 );
+						} else {
+							ctx.drawImage(textures[image + "EndLeft"], 
+										  x + (i * width), //Destination x
+										  y, //Destination y
+										  width, //Destination width
+										  height //Destination height
+										 );
+						}
+						continue;
+					}
+					if (i == Math.floor(setLength)) {
+						ctx.drawImage(textures[image], 
+									  0, //Sample x
+									  0, //Sample y
+									  (setLength - i) * textures[image].width, //Sample width
+									  textures[image].height, //Sample height
+									  x + (i * width), //Destination x
+									  y, //Destination y
+									  (setLength - i) * width, //Destination width
+									  height //Destination height
+									 );
+					} else {
+						ctx.drawImage(textures[image], 
+									  x + (i * width), //Destination x
+									  y, //Destination y
+									  width, //Destination width
+									  height //Destination height
+									 );
+					}
+				}
+				break;
 		}
 	}
 
@@ -277,6 +479,7 @@ export class Display {
 	 * @param {number} dh - height of extracted data (default: -1 / full height)
 	 */
 	static drawData(imageData, x, y, dx = 0, dy = 0, dw = -1, dh = -1, shaderData = false, resize = true) {
+		console.warn("draw data used");
 		//Assign x and y
 		if (resize) {
 			[x, y] = this.calcElementDimensions(x, y, -1, -1);
@@ -471,5 +674,32 @@ export class Display {
 		x = Math.round(x);
 		y = Math.round(y);
 		return ctx.getImageData(x, y, width, height);
+	}
+
+	static get displayCanvas() {
+		let shadowCanvas = document.createElement('canvas');
+		let shadowCtx = shadowCanvas.getContext('2d');
+
+		let data = this.imageData;
+		
+		shadowCanvas.width = window.innerWidth;
+		shadowCanvas.height = window.innerHeight;
+
+		
+		for (let y = 0; y < data.height; y++) {
+			for (let x = 0; x < data.width; x++) {
+				let rgba = [
+					data.data[(y * data.width + x) * 4],
+					data.data[(y * data.width + x) * 4 + 1],
+					data.data[(y * data.width + x) * 4 + 2],
+					data.data[(y * data.width + x) * 4 + 3]/255
+				]
+				//console.log(rgba);
+				shadowCtx.fillStyle = "rgba(" + rgba + ")";
+
+				shadowCtx.fillRect(x, y, 1, 1);
+			}
+		}
+		return shadowCanvas;
 	}
 }

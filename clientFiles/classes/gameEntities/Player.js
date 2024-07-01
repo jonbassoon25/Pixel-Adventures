@@ -81,8 +81,6 @@ export class Player extends DynamicObject {
 		this.health = this.maxHealth;
 		this.regen = 0.1 + Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Regen"] * 0.02;
 		this.isDead = false;
-		this.visualWidth = 65;
-		this.visualHeight = 65;
 		if (color == "red") this.weapon = new Player.retainedValues["p1Weapon"](this); else this.weapon = new Player.retainedValues["p2Weapon"](this);
 		this.weapon.damage += Player.upgradesBought["player" + ((color == "red")? "One": "Two") + "Weapon"] * 5;
 		this.grave = null;
@@ -147,7 +145,7 @@ export class Player extends DynamicObject {
 		} else {
 			this.#haltX();
 		}
-		if (Mouse.button1Released && Settings.debug) {
+		if (Mouse.button1Released && Settings.debug && Keyboard.backquoteDown) {
 			[this.x, this.y] = [...Display.inverseCalcElementDimensions(Mouse.x, Mouse.y, -1, -1)];
 			this.y -= this.height/2;
 		}
@@ -353,6 +351,7 @@ export class Player extends DynamicObject {
 		//Make the player walk if the x velocity isn't 0 and the player isn't jumping. Always makes the player finish their step when they aren't supposed to be moving unless they player jumps
 		if (this.velocity.x != 0 && this.currentAnimation == "idle") {
 			this.setAnimation("walk");
+			AudioPlayer.play("step");
 		}
 		this.#takeInput();
 		this.#interact();

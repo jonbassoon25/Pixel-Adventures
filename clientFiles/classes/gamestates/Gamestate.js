@@ -1,3 +1,4 @@
+import { Particle } from "../gameEntities/Particle.js";
 import { AnimationPlayer } from "../util/AnimationPlayer.js";
 import { AudioPlayer } from "../util/AudioPlayer.js";
 
@@ -14,6 +15,7 @@ export class Gamestate {
 	static init() {
 		AnimationPlayer.clear();
 		AudioPlayer.pauseAll();
+		Particle.clear();
 	}
 
 	/** Emits a message and data to the server */

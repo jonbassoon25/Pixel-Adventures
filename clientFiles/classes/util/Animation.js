@@ -243,7 +243,7 @@ export class Animation {
 				"initialPosition": [1920/2, 1000],
 				"finalPosition": [1920/2, 1080/2 + 110],
 				"initialDimensions": [0, 0],
-				"finalDimensions": [1690, 40],
+				"finalDimensions": [1675, 40],
 				"finalOpacity": 0,
 				"frames": 80,
 				"transitionType": "log",
@@ -277,7 +277,7 @@ export class Animation {
 				"finalPosition": [1920/2, 1080/2 + 180 - 45], 
 				"finalRotation": 0,
 				"frames": 100,
-				"xTransitionType": "log",
+				"yTransitionType": "log",
 				"rotationTransitionType": "growth"
 			}
 		],
@@ -401,6 +401,31 @@ export class Animation {
 			{
 				"finalRotation": 180,
 				"frames": 30
+			}
+		],
+		"effigyAwakens": [
+			{
+				"image": "effigyDormant",
+				"initialPosition": [540, 972],
+				"initialDimensions": [32, 56],
+				"frames": 120,
+				"transitionType": "sinusoidal"
+			},
+			{
+				"image": "effigy",
+				"initialOpacity": 0,
+				"finalOpacity": 100,
+				"startFrame": 0,
+				"endFrame": 120,
+				"transitionType": "sinusoidal"
+			},
+			{
+				"image": "mace", 
+				"initialPosition": [540 + 5, 972 + 2],
+				"initialDimensions": [80, 80],
+				"initialRotation": 195,
+				"startFrame": 0,
+				"endFrame": 120
 			}
 		]
     };
@@ -576,14 +601,18 @@ export class Animation {
      * @returns {boolean} Did the frame update successfully
     */
     update() {
+		let keyframeDrawn = false;
         for (let i = 0; i < this.keyframes.length; i++) {
             let keyframe = this.keyframes[i];
             if (keyframe.startFrame <= this.frames && keyframe.endFrame >= this.frames) {
                 keyframe.draw(this.frames);
-                this.frames++;
-                return true;
+                keyframeDrawn = true;
             }
         }
+		if (keyframeDrawn) {
+			this.frames++;
+			return true;
+		}
 		//No frame was drawn, draw final frame
 		let finalKeyframe = this.keyframes[this.keyframes.length - 1];
 		finalKeyframe.draw(finalKeyframe.endFrame);

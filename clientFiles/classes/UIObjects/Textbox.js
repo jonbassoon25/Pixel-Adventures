@@ -40,12 +40,12 @@ export class Textbox extends VisualObject {
 			//Remove the last character of the textbox text
 			this.text = this.text.slice(0, -1);
 		}
-		//If the character limit is reached or exceeded, don't allow more characters to be entered
-		if (this.text.length >= this.charLimit) {
-			return;
-		}
 		//For every key pressed this frame, add it to the textbox text
 		for (let i = 0; i < Keyboard.keysPressed.length; i++) {
+			//If the character limit is reached or exceeded, don't allow more characters to be entered
+			if (this.text.length >= this.charLimit) {
+				return;
+			}
 			if (!Keyboard.shiftDown) {
 				this.text += Keyboard.keysPressed[i];
 			} else {

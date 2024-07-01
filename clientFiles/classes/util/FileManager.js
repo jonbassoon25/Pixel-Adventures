@@ -7,6 +7,7 @@ import { Util } from "./Util.js";
 
 //Basic Object Imports
 import { ShadedObject } from "../basicObjects/ShadedObject.js";
+import { InteractableObject } from "../basicObjects/InteractableObject.js";
 
 export class FileManager {
 	static takeInput() {
@@ -86,9 +87,9 @@ export class FileManager {
 		}
 	}
 
-	static save(fileName, data) {
+	static save(fileName = "lastSaved") {
 		//Prepare structure for saving
-		let structure = Util.clone(this.structure);
+		let structure = Util.clone(Scene.structure);
 		for (let i = 0; i < structure.length; i++) {
 			for (let j = 0; j < structure[i].length; j++) {
 				let curTile = structure[i][j];
@@ -98,12 +99,20 @@ export class FileManager {
 				delete curTile["visualHeight"];
 			}
 		}
+		console.log("done loop");
 		//Save all needed values
+		let data = {"structure": structure, "entities": [], "objects": InteractableObject.interactableObjects, "decorations": Scene.decorations};
+
+		for (let i = 0; i < Spawner.currentEntities.length; i++) {
+			let curEntity = Spawner.currentEntities[i];
+			data["entities"].push({"type": curEntity.type, "x": curEntity.x, "y": curEntity.y})
+		}
+		
 		document.dispatchEvent(new CustomEvent("emit", {"detail": {"name": "saveScene", "data": [fileName, data]}}));
 		console.log("Saving to " + fileName);
 	}
 
-	static load(fileName) {
+	static load(fileName = "lastSaved") {
 		document.dispatchEvent(new CustomEvent("emit", {"detail": {"name": "loadScene", "data": fileName}}));
 		SceneBuilder.init();
 		SceneBuilder.clear();

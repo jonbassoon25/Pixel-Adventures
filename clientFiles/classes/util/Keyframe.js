@@ -139,6 +139,8 @@ export class Keyframe {
                 return Keyframe.#parabolicParent(frame);
             case "sinusoidal":
                 return Keyframe.#sinusoidalParent(frame);
+            case "sinusoidalDerivative":
+                return Math.PI/2 * Math.sin(Math.PI * frame);
             case "sinusoidal 1/2":
                 return Keyframe.#sinusoidalParent_2_2(frame);
             case "sinusoidal 2/2":
@@ -172,7 +174,6 @@ export class Keyframe {
         let height = this.getValue(frame, this.initialDimensions[1], this.finalDimensions[1], this.heightTransitionType);
         let rotation = this.getValue(frame, this.initialRotation, this.finalRotation, this.rotationTransitionType);
 		let opacity = this.getValue(frame, this.initialOpacity, this.finalOpacity, this.opacityTransitionType);
-        
 		Display.draw(this.image, x, y, width, height, true, flipped, rotation, opacity);
     }
 }

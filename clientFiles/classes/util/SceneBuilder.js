@@ -14,6 +14,9 @@ import { SceneTile } from "../gameObjects/SceneTile.js";
 import { ShadedObject } from "../basicObjects/ShadedObject.js";
 import { FileManager } from "./FileManager.js";
 
+//Gamestate Imports
+import { Game } from "../gamestates/Game.js";
+
 //Scene Builder Class
 export class SceneBuilder {
 	//Static Variables
@@ -262,7 +265,7 @@ export class SceneBuilder {
 		for (let i = 0; i < this.shaderStructure.length; i++) {
 			for (let j = 0; j < this.shaderStructure[i].length; j++) {
 				//this.shaderStructure[i][j].shaderLevel = 20;
-				this.shaderStructure[i][j].shaderLevel = 1;
+				this.shaderStructure[i][j].shaderLevel = 1 ;
 			}
 		}
 

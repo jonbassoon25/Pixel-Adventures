@@ -1,9 +1,13 @@
 //Util Imports
 import { Display } from "./Display.js";
 import { Util } from "./Util.js";
+import { Keyframe } from "./Keyframe.js";
 
 //Game Object Imports
 import { SceneTile } from "../gameObjects/SceneTile.js";
+
+//Game Entity Imports
+import { MovingTileSet } from "../gameEntities/MovingTileSet.js";
 
 //Basic Object Imports
 import { ShadedObject } from "../basicObjects/ShadedObject.js";
@@ -25,6 +29,29 @@ export class Scene {
 	static lightQuality = Math.pow(2, 3);
 
 	//*********************************************************************//
+	//Private Static Methods
+
+	static #identifyLightSources() { 
+		this.lightSources = [];
+		//Identify light sources for particle generation
+		for (let i = 0; i < this.structure.length; i++) {
+			for (let j = 0; j < this.structure[i].length; j++) {
+				if (this.structure[i][j].type == "LightTile") {
+					//Don't spawn particles at a light source if it is obscured by a decoration
+					let allowed = true;
+					for (let k = 0; k < this.decorations.length; k++) {
+						if (this.decorations[k].isEnclosing([this.structure[i][j].x, this.structure[i][j].y])) {
+							allowed = false;
+							break;
+						}
+					}
+					if (allowed) this.lightSources.push([this.structure[i][j].x, this.structure[i][j].y]);
+				}
+			}
+		}
+	}
+	
+	//*********************************************************************//
 	//Public Static Methods
 
 	/** 
@@ -36,24 +63,6 @@ export class Scene {
 		this.structure = structure;
 		this.shaderStructure = shaderStructure;
 		this.tileSize = tileSize;
-		this.lightSources = [];
-		//Identify light sources for particle generation
-		for (let i = 0; i < structure.length; i++) {
-			for (let j = 0; j < structure[i].length; j++) {
-				if (structure[i][j].type == "LightTile") {
-					//Don't spawn particles at a light source if it is obscured by a decoration
-					let allowed = true;
-					for (let k = 0; k < this.decorations.length; k++) {
-						if (this.decorations[k].isEnclosing([structure[i][j].x, structure[i][j].y])) {
-							allowed = false;
-							break;
-						}
-					}
-					if (allowed) this.lightSources.push([structure[i][j].x, structure[i][j].y]);
-				}
-			}
-		}
-		this.flash();
 	}
 
 	/** Draws the background of the Scene, flashes the screen on canvas resize */
@@ -61,11 +70,10 @@ export class Scene {
 		//Flash the screen on canvas resize to avoid size errors
 		if (Display.resized) {
 			this.flash(true);
-
 			return;
 		}
-		if (this.background != null) {
-			Display.drawData(this.background, 0, 0);
+		if (this.tileBackground != null) {
+			Display.drawCanvas(this.tileBackground, 0, 0);
 		}
 	}
 
@@ -80,17 +88,18 @@ export class Scene {
 	/** Draws the shaders for all shadedObjects */
 	static drawShadedObjects() {
 		let curObj;
-
 		//Update Tile Backgrounds
-		for (let i = Object.keys(ShadedObject.shadedObjects).length - 1; i >= 0; i--) {
+		
+		/*for (let i = Object.keys(ShadedObject.shadedObjects).length - 1; i >= 0; i--) {
 			for (let j = 0; j < Object.values(ShadedObject.shadedObjects)[i].length; j++) {
 				//Assign current object
 				curObj = Object.values(ShadedObject.shadedObjects)[i][j];
 				if (!curObj.shaded) continue;
+				if (curObj instanceof MovingTileSet) continue;
 				Display.drawData(this.tileBackground, 0, 0, ...curObj.vUpperLeft, curObj.visualWidth, curObj.visualHeight);
 			}
 			
-		}
+		}*/
 
 		//Draw Shaded Objects
 		for (let i = Object.keys(ShadedObject.shadedObjects).length - 1; i >= 0; i--) {
@@ -101,17 +110,37 @@ export class Scene {
 
 		}
 
-		Display.updateCurrentData();
+		Display.drawCanvas(this.shaderBackground);
+
+		//Display.updateCurrentData();
 
 		//Update Shader Overlay
-		for (let i = Object.keys(ShadedObject.shadedObjects).length - 1; i >= 0; i--) {
+		/*for (let i = Object.keys(ShadedObject.shadedObjects).length - 1; i >= 0; i--) {
 			for (let j = 0; j < Object.values(ShadedObject.shadedObjects)[i].length; j++) {
 				curObj = Object.values(ShadedObject.shadedObjects)[i][j];
 				if (!curObj.shaded) continue;
-				Display.drawData(this.shaderBackground, 0, 0, ...curObj.vUpperLeft, curObj.visualWidth, curObj.visualHeight, true);
+				if (!(curObj instanceof MovingTileSet)) {
+					Display.drawData(this.shaderBackground, 0, 0, ...curObj.vUpperLeft, curObj.visualWidth, curObj.visualHeight, true);
+				} else {
+					switch(curObj.direction) {
+						case "up":
+							Display.drawData(this.shaderBackground, 0, 0, curObj.upperLeft[0], curObj.upperRight[1], curObj.visualWidth, curObj.visualHeight * Keyframe.getRawValue((curObj.time - curObj.currentFrame) / curObj.time, "sinusoidal"), true);
+							break;
+						case "left":
+							Display.drawData(this.shaderBackground, 0, 0, curObj.upperLeft[0], curObj.upperRight[1], curObj.visualWidth * Keyframe.getRawValue((curObj.time - curObj.currentFrame) / curObj.time, "sinusoidal"), curObj.visualHeight, true);
+							break;
+						case "down":
+							Display.drawData(this.shaderBackground, 0, 0, curObj.upperLeft[0], curObj.upperRight[1], curObj.visualWidth, curObj.visualHeight * Keyframe.getRawValue((curObj.time - curObj.currentFrame) / curObj.time, "sinusoidal"), true);
+							break;
+						case "right":
+							Display.drawData(this.shaderBackground, 0, 0, curObj.upperLeft[0], curObj.upperRight[1], curObj.visualWidth * Keyframe.getRawValue((curObj.time - curObj.currentFrame) / curObj.time, "sinusoidal"), curObj.visualHeight, true);
+							break;
+						default:
+							console.log("illegal direction in MovingTileSet " + this.direction);
+					}
+				}
 			}
-
-		}
+		}*/
 	}
 
 	/**
@@ -193,24 +222,28 @@ export class Scene {
 	}
 
 	/** Flashes the new shader background and background to memory */
-	static flash(drawBackground = false) {		
+	static flash(drawBackground = false) {	
+		console.log("Flashing");
 		//Capture new backgrounds
 		Display.clear();
 		
 		this.displayAllShaders();
-		this.shaderBackground = Display.imageData;
+		this.shaderBackground = Display.displayCanvas;
 		Display.clear();
 
 		this.displayAllTiles();
 		this.drawDecorations();
 		
-		this.tileBackground = Display.imageData;
+		this.tileBackground = Display.displayCanvas;
 
-		this.displayAllShaders();
-		this.background = Display.imageData;
+		if (this.structure != null) this.#identifyLightSources();
+
+		
 
 		if (!drawBackground) {
 			Display.clear();
+		} else {
+			Display.drawCanvas(this.shaderBackground);
 		}
 	}
 }

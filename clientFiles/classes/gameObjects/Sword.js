@@ -8,6 +8,7 @@ import { MeleeWeapon } from "./MeleeWeapon.js";
 //Game Entity Imports
 import { Enemy } from "../gameEntities/Enemy.js";
 import { Player } from "../gameEntities/Player.js";
+import { Healthbar } from "../gameEntities/Healthbar.js";
 
 //Basic Object Imports
 import { VisualObject } from "../basicObjects/VisualObject.js";
@@ -33,8 +34,10 @@ export class Sword extends MeleeWeapon {
 		super.upgrade(5);
 	}
 	attack() {
+		if (this.currentAnimation == "idle") {
+			AudioPlayer.play("swordSwing");
+		}
 		super.attack();
-		AudioPlayer.play("swordSwing");
 	}
 	update(flipped = false, grounded = false) {
 		super.update(flipped, grounded);
@@ -49,6 +52,8 @@ export class Sword extends MeleeWeapon {
 					continue;
 				}
 				if (attackBox.isColliding(curObj)) {
+					if (curObj.type == "effigy" && curObj.currentAnimation == "statue") continue;
+					if (curObj instanceof Healthbar) continue;
 					curObj.health -= this.damage;
 					curObj.takeKnockback(this);
 					if (curObj.health <= 0 && this.parent instanceof Player) {

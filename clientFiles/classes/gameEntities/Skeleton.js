@@ -22,12 +22,11 @@ import { Settings } from "../gamestates/Settings.js";
 export class Skeleton extends Enemy {
 	//Constructor
 
-	constructor(x, y) {
+	constructor(x, y, tag) {
 		super("skeleton", x, y, 16, 52, 2, 15, 120, 300, 1);
 		this.targetCompleteDistance = 50;
-		this.visualWidth = 80;
-		this.visualHeight = 75;
 		this.weapon = new Sword(this, this.damage);
+		this.tags.push(tag);
 		if (Settings.debug) this.healthbar = new Healthbar(this);
 	}
 
@@ -45,6 +44,15 @@ export class Skeleton extends Enemy {
 	die() {
 		for (let i = 0; i < 12; i++) {
 			new Particle("death", this.x, this.y, 12, 12, new Vector([((i < 6)? 1 : -1) * (Math.random() * 2 + 2), ((i < 6)? 1 : -1) * Math.random() * 3 - 2]), 0.75, 0.95, true, true, false);
+		}
+		if (this.trigger != undefined) {
+			if (!Array.isArray(this.trigger)) {
+				this.trigger.trigger();
+			} else {
+				for (let i = 0; i < this.trigger.length; i++) {
+					this.trigger[i].trigger();
+				}
+			}
 		}
 		this.delete();
 	}

@@ -18,7 +18,7 @@ export class Menu extends Gamestate {
 	
 	static helpButton = new Button("help", 1920/2, 1080/2 + 240 + 60, 408, 144);
 
-	static settingsButton = new Button("settings", 1920 - 100, 1080 - 100, 128, 128);
+	//static settingsButton = new Button("settings", 1920 - 100, 1080 - 100, 128, 128);
 
 	static firstLoad = true;
 	
@@ -53,11 +53,11 @@ export class Menu extends Gamestate {
 		this.playButton.update();
 		this.leaderboardButton.update();
 		this.helpButton.update();
-		this.settingsButton.update();
+		//this.settingsButton.update();
 
 		//Check for button presses, change scene if button pressed
 		if (this.playButton.isReleased()) {
-			this.setScene("initGameSelection");
+			this.setScene("initDifficultySelect");
 		}
 		if (this.leaderboardButton.isReleased()) {
 			this.setScene("initLeaderboard");
@@ -65,8 +65,8 @@ export class Menu extends Gamestate {
 		if (this.helpButton.isReleased()) {
 			this.setScene("initHelp");
 		}
-		if (this.settingsButton.isReleased()) {
+		/*if (this.settingsButton.isReleased()) {
 			this.setScene("initSettings");
-		}
+		}*/
 	}
 }

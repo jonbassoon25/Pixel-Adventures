@@ -1,14 +1,5 @@
 //Util Imports
 import { Keyframe } from "../util/Keyframe.js";
-import { Util } from "../util/Util.js";
-
-//UI Object Imports
-
-//Gamestate Imports
-
-//Game Object Imports
-
-//Game Entity Imports
 
 //Basic Object Imports
 import { ShadedObject } from "../basicObjects/ShadedObject.js";
@@ -323,9 +314,17 @@ export class AnimatedObject extends ShadedObject {
 		"effigy": {
 			"idle": [
 				{
-					"image": "skeleton",
+					"image": "effigy",
 					"initialPosition": [0, 0],
-					"initialDimensions": [34, 52],
+					"initialDimensions": [32, 56],
+					"frames": 0
+				}
+			],
+			"statue": [
+				{
+					"image": "effigyDormant",
+					"initialPosition": [0, 0],
+					"initialDimensions": [32, 56],
 					"frames": 0
 				}
 			],
@@ -333,32 +332,39 @@ export class AnimatedObject extends ShadedObject {
 				{
 					"image": "skeletonJump",
 					"initialPosition": [0, 0],
-					"initialDimensions": [34, 52],
+					"initialDimensions": [32, 56],
 					"frames": 0
 				}
 			],
 			"walk": [
 				{
-					"image": "skeleton",
+					"image": "effigy",
 					"initialPosition": [0, 0],
-					"initialDimensions": [34, 52],
+					"initialDimensions": [32, 56],
 					"frames": 10
 				}, 
-				{"image": "skeletonWalk"}
+				{"image": "effigyWalk"}
 			],
 			"maceCharge": [
 				{
-					"image": "bluePlayerCharge1",
+					"image": "effigyDormant",
 					"initialPosition": [0, 0],
-					"initialDimensions": [60, 60],
+					"initialDimensions": [32, 56],
+					"initialOpacity": 100,
+					"finalOpacity": 0,
+					"frames": 120
+				},
+				{
+					"image": "effigyCharge1",
+					"initialOpacity": 100,
 					"frames": 15
 				},
 				{
-					"image": "bluePlayerCharge2",
+					"image": "effigyCharge2",
 					"frames": 10
 				},
 				{
-					"image": "bluePlayerCharge3",
+					"image": "effigyCharge3",
 					"frames": 10
 				},
 				{
@@ -367,50 +373,38 @@ export class AnimatedObject extends ShadedObject {
 			],
 			"maceCancelCharge": [
 				{
-					"image": "bluePlayerCharge3",
+					"image": "effigyCharge3",
 					"initialPosition": [0, 0],
-					"initialDimensions": [60, 60],
+					"initialDimensions": [32, 56],
 					"frames": 10
 				},
 				{
-					"image": "bluePlayerCharge2",
+					"image": "effigyCharge2",
 					"frames": 10
 				},
 				{
-					"image": "bluePlayerCharge1",
+					"image": "effigyCharge1",
 					"frames": 15
 				}
 			],
 			"maceAttack": [
 				{
-					"image": "bluePlayerAttack1",
+					"image": "effigyAttack1",
 					"initialPosition": [0, 0],
-					"initialDimensions": [60, 60],
+					"initialDimensions": [32, 56],
 					"frames": 4
 				},
 				{
-					"image": "bluePlayerAttack2",
+					"image": "effigyAttack2",
 					"frames": 5
 				},
 				{
-					"image": "bluePlayerAttack3",
+					"image": "effigyAttack3",
 					"frames": 4
 				},
 				{
-					"image": "bluePlayerAttack4",
+					"image": "effigyAttack4",
 					"frames": 24
-				},
-				{
-					"image": "bluePlayerReturn1",
-					"frames": 16
-				},
-				{
-					"image": "bluePlayerReturn2",
-					"frames": 12
-				},
-				{
-					"image": "bluePlayerReturn3",
-					"frames": 12
 				}
 			]
 		},
@@ -606,88 +600,59 @@ export class AnimatedObject extends ShadedObject {
 			"dormant": [
 				{ //initial keyframe requires "image", "initialPosition", "initialDimensions", "frames"
 					"image": "mace", 
-					"initialPosition": [8, 2],
+					"initialPosition": [5, 2],
 					"initialDimensions": [80, 80],
-					"initialRotation": 135,
+					"initialRotation": 195,
 					"frames": 0
 				}
 			],
 			"idle": [
 				{ //initial keyframe requires "image", "initialPosition", "initialDimensions", "frames"
 					"image": "mace", 
-					"initialPosition": [8, 2],
+					"initialPosition": [7, 2],
 					"initialDimensions": [80, 80],
-					"initialRotation": 200,
+					"initialRotation": -90,
 					"frames": 0
 				}
 			],
 			"charge": [
 				{
 					"image": "mace",
-					"initialPosition": [8, 2],
-					"finalPosition": [0, 2],
+					"initialPosition": [5, 2],
 					"initialDimensions": [80, 80],
-					"initialRotation": 200,
-					"finalRotation": 210,
-					"frames": 10
+					"initialRotation": 195,
+					"frames": 120
 				},
 				{
-					"finalPosition": [10, 2],
+					"finalPosition": [0, 2],
+					"finalRotation": 210,
+					"frames": 50
+				},
+				{
+					"finalPosition": [7, 2],
 					"finalRotation": 250,
-					"frames": 10
+					"frames": 50
 				},
 				{
 					"finalRotation": 270,
-					"frames": 15,
+					"frames": 30,
 					"transitionType": "sinusoidal"
 				},
-				{
-					"frames": -1
-				}
-			],
-			"cancelCharge": [
-				{
-					"image": "mace",
-					"initialPosition": [10, 2],
-					"initialDimensions": [80, 80],
-					"initialRotation": 270,
-					"finalRotation": 250,
-					"frames": 15,
-					"transitionType": "sinusoidal"
-				},
-				{
-					"transitionType": "linear",
-					"finalPosition": [0, 2],
-					"finalRotation": 210,
-					"frames": 10
-				},
-				{
-					"finalPosition": [8, 2],
-					"finalRotation": 200,
-					"frames": 10
-				}
 			],
 			"attack": [
 				{
 					"image": "mace",
-					"initialPosition": [10, 2],
+					"initialPosition": [7, 2],
 					"initialDimensions": [80, 80],
 					"frames": 15,
 					"initialRotation": -90,
 					"finalRotation": 70,
 					"transitionType": "sinusoidal"
-				}, {"frames": 15},
+				}, { "frames": 60 },
 				{
-					"finalPosition": [10, -4],
-					"finalRotation": 135,
-					"frames": 15,
-					"transitionType": "sinusoidal 1/2"
-				},
-				{
-					"finalPosition": [8, 2],
-					"finalRotation": 200,
-					"frames": 15,
-					"transitionType": "sinusoidal 2/2"
+					"frames": 35,
+					"finalRotation": -90,
+					"transitionType": "sinusoidal"
 				}
 			],
 			"jump": [
@@ -1043,6 +1008,8 @@ export class AnimatedObject extends ShadedObject {
 
 	/** Draws this AnimatedObject */
 	draw() {
+		//console.log(this.type + " drawn");
+		if (this.type == "playerSword") console.log(this.currentFrame);
 		this.currentKeyframe.draw(this.currentFrame, this.x, this.y, this.flipped);
 	}
 
@@ -1051,6 +1018,10 @@ export class AnimatedObject extends ShadedObject {
 	 * @param {string} animation - animation to set to
 	 */
 	setAnimation(animation) {
+		if (AnimatedObject.globalAnimations[this.type][animation] == undefined) {
+			throw new SyntaxError("Animation Name not Recognized: " + animation);
+		}
+		
 		this.currentAnimation = animation;
 		this.currentFrame = 0;
 		this.currentKeyframe = AnimatedObject.globalAnimations[this.type][animation][0];

@@ -1,10 +1,9 @@
 //Util Imports
+import { AudioPlayer } from "../util/AudioPlayer.js";
 import { Display } from "../util/Display.js";
 import { Difficulty } from "../util/Difficulty.js";
-import { AudioPlayer } from "../util/AudioPlayer.js";
 import { AnimationPlayer } from "../util/AnimationPlayer.js";
 import { Keyboard } from "../util/Keyboard.js";
-import { Util } from "../util/Util.js";
 import { Vector } from "../util/Vector.js";
 import { Keyframe } from "../util/Keyframe.js";
 
@@ -57,6 +56,10 @@ export class Shop extends Gamestate {
 
 	//Shop Mace
 	static mace = new AnimatedObject("shopMace", 0, 1920/2, 300, 560, 560, false);
+
+	//Mace alloctaion buttons
+	static giveToRed = new Button("shader_06", 1920/2 - 800, 1080/2, 160, 240);
+	static giveToBlue = new Button("shader_06", 1920/2 + 800, 1080/2, 160, 240);
 	
 	//Mace visual booleans
 	static maceBought = false;
@@ -100,9 +103,12 @@ export class Shop extends Gamestate {
 		Display.draw("upgradePlaque", 420, 1080/2, 702, 1026);
 		Display.draw("upgradePlaque", 1920-420, 1080/2, 702, 1026);
 		
+		//Draw the players
+		Display.draw("redPlayer", 1920/2 - 800, 1080/2, 240, 240);
+		Display.draw("bluePlayerFlipped", 1920/2 + 800, 1080/2, 240, 240);
+		
 		//Mace display
 		if (!this.maceBought) {
-			//Display.draw("mace-45", 1920/2, 300, 560, 560);
 			if (this.mace.currentAnimation == "standing") {
 				this.mace.update();
 				this.mace.draw();
@@ -114,6 +120,8 @@ export class Shop extends Gamestate {
 					//If the players can afford the mace
 					if (Game.player1.coins + Game.player2.coins >= 30) {
 						this.mace.currentAnimation = "falling";
+						//Play glass shatter sound
+						AudioPlayer.play("glassShatter");
 						//Spawn glass shatter particles
 						for (let j = 0; j < 2; j++) {
 							for (let i = 0; i < 171; i++) {
@@ -169,20 +177,22 @@ export class Shop extends Gamestate {
 					}
 				}
 			} else {
-				if (Button.simpleButton(1920/2 - 800, 1080/2, 180, 240)) {
+				if (Shop.giveToRed.subsistAsButton()) {
 					Player.upgradesBought["playerOneWeapon"] = 0; 
 					Player.retainedValues["p1Weapon"] = Mace;
 					this.maceBought = true;
 					this.mace.currentAnimation = "bought";
 					AnimationPlayer.clear();
 				}
-				if (Button.simpleButton(1920/2 + 800, 1080/2, 180, 240)) {
+				if (Shop.giveToBlue.subsistAsButton()) {
 					Player.upgradesBought["playerTwoWeapon"] = 0;
 					Player.retainedValues["p2Weapon"] = Mace;
 					this.maceBought = true;
 					this.mace.currentAnimation = "bought";
 					AnimationPlayer.clear();
 				}
+				//Display.draw("blackTile", 1920/2 - 800, 1080/2, 160, 240, true, false, 0, 30);
+				//Display.draw("blackTile", 1920/2 + 800, 1080/2, 160, 240, true, false, 0, 30);
 			}
 		}
 		//Update the mace's position as it is dragged
@@ -199,9 +209,7 @@ export class Shop extends Gamestate {
 			this.mace.x = x;
 			this.mace.y = y;
 		}
-		//Draw the players
-		Display.draw("redPlayer", 1920/2 - 800, 1080/2, 240, 240);
-		Display.draw("bluePlayerFlipped", 1920/2 + 800, 1080/2, 240, 240);
+
 		/* Jumping animations (unused)
 		if (!this.glassBroken || this.maceBought) {
 			Display.draw("redPlayer", 1920/2 - 800, 1080/2, 240, 240);

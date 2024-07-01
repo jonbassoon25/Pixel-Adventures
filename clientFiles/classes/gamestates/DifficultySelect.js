@@ -16,7 +16,6 @@ import { Game } from "./Game.js";
 
 //Game Entity Imports
 import { Player } from "../gameEntities/Player.js";
-import { Level } from "../util/Level.js";
 
 //Template Class
 export class DifficultySelect extends Gamestate {
@@ -67,24 +66,24 @@ export class DifficultySelect extends Gamestate {
 			//Enemy Health Slider
 			this.enemyHealth.update();
 			//Enemy Health Text
-			Display.drawText("Enemy Health Multiplier", 1920/2 - "Enemy Health Multiplier".length*60*0.55/2, 1080/2 - 300 - 40, 60, true, "black");
+			Display.drawText("Enemy Health Multiplier", 1920/2 - Display.getTextWidth("Enemy Health Multiplier", 60)/2, 1080/2 - 300 - 40, 60, true, "black");
 			Display.drawText(this.enemyHealth.snappedOutput.toString(), 1920/2 + 320, 1080/2 - 300 + 50, 60, true, "black");
 
 			//Enemy Damage Slider
 			this.enemyDamage.update();
 			//Enemy Damage Text
-			Display.drawText("Enemy Damage Multiplier", 1920/2 - "Enemy Damage Multiplier".length*60*0.55/2, 1080/2 - 120 - 40, 60, true, "black");
+			Display.drawText("Enemy Damage Multiplier", 1920/2 - Display.getTextWidth("Enemy Damage Multiplier", 60)/2, 1080/2 - 120 - 40, 60, true, "black");
 			Display.drawText(this.enemyDamage.snappedOutput.toString(), 1920/2 + 320, 1080/2 - 120 + 50, 60, true, "black");
 
 			//Enemy Speed Slider
 			this.enemySpeed.update();
 			//Enemy Speed Text
-			Display.drawText("Enemy Speed Multiplier", 1920/2 - "Enemy Speed Multiplier".length*60*0.55/2, 1080/2 + 60 - 40, 60, true, "black");
+			Display.drawText("Enemy Speed Multiplier", 1920/2 - Display.getTextWidth("Enemy Speed Multiplier", 60)/2, 1080/2 + 60 - 40, 60, true, "black");
 			Display.drawText(this.enemySpeed.snappedOutput.toString(), 1920/2 + 320, 1080/2 + 60 + 50, 60, true, "black");
 
 			//Price Slider
 			this.price.update();
-			Display.drawText("Price Multiplier", 1920/2 - "Price Multiplier".length*60*0.55/2, 1080/2 + 240 - 40, 60, true, "black");
+			Display.drawText("Price Multiplier", 1920/2 - Display.getTextWidth("Price Multiplier", 60)/2, 1080/2 + 240 - 40, 60, true, "black");
 			Display.drawText(this.price.snappedOutput.toString(), 1920/2 + 320, 1080/2 + 240 + 50, 60, true, "black");
 
 			//Continue Button
@@ -94,7 +93,7 @@ export class DifficultySelect extends Gamestate {
 				Difficulty.enemySpeedMult = this.enemySpeed.snappedOutput;
 				Difficulty.priceMult = this.price.snappedOutput;
 				Difficulty.pointMultiplier = 0;
-				Level.level = 1;
+				Game.level = 1;
 				this.setScene("initGame");
 			}
 			return;
@@ -106,19 +105,19 @@ export class DifficultySelect extends Gamestate {
 		//Easy button
 		if (this.easy.subsistAsButton()) {
 			Difficulty.setEasy();
-			Level.level = 1;
+			Game.level = 1;
 			this.setScene("initGame");
 		}
 		//Medium button
 		if (this.medium.subsistAsButton()) {
 			Difficulty.setMedium();
-			Level.level = 1;
+			Game.level = 1;
 			this.setScene("initGame");
 		}
 		//Hard button
 		if (this.hard.subsistAsButton()) {
 			Difficulty.setHard();
-			Level.level = 1;
+			Game.level = 1;
 			this.setScene("initGame");
 		}
 		//Custom button

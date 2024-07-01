@@ -19,13 +19,14 @@ Created: 11.4.23
 //Util Imports
 import { Animation } from "./classes/util/Animation.js";
 import { AnimationPlayer } from "./classes/util/AnimationPlayer.js";
+import { AudioPlayer } from "./classes/util/AudioPlayer.js";
 import { Display } from "./classes/util/Display.js";
 import { Keyboard } from "./classes/util/Keyboard.js";
-import { Level } from "./classes/util/Level.js";
 import { Mouse } from "./classes/util/Mouse.js";
 import { Scene } from "./classes/util/Scene.js";
 import { SceneBuilder } from "./classes/util/SceneBuilder.js";
 import { Spawner } from "./classes/util/Spawner.js";
+import { DataManager } from "./classes/util/DataManager.js";
 
 //UI Object Imports
 import { Leaderboard } from "./classes/UIObjects/Leaderboard.js";
@@ -41,22 +42,28 @@ import { Scoreboard } from "./classes/gamestates/Scoreboard.js";
 import { Lose } from "./classes/gamestates/Lose.js";
 import { Menu } from "./classes/gamestates/Menu.js";
 import { SaveScore } from "./classes/gamestates/SaveScore.js";
+import { Settings } from "./classes/gamestates/Settings.js";
 import { Shop } from "./classes/gamestates/Shop.js";
 import { Win } from "./classes/gamestates/Win.js";
 
 //Game Object Imports
 import { LightTile } from "./classes/gameObjects/LightTile.js";
 import { SceneTile } from "./classes/gameObjects/SceneTile.js";
+import { Chest } from "./classes/gameObjects/Chest.js";
+import { Door } from "./classes/gameObjects/Door.js";
 
 //Game Entity Imports
 import { Player } from "./classes/gameEntities/Player.js";
-import { Settings } from "./classes/gamestates/Settings.js";
+import { Skeleton } from "./classes/gameEntities/Skeleton.js";
+import { Slime } from "./classes/gameEntities/Slime.js";
+import { MovingTileSet } from "./classes/gameEntities/MovingTileSet.js";
 
 //Basic Object Imports
 import { AnimatedObject } from "./classes/basicObjects/AnimatedObject.js";
 import { DynamicObject } from "./classes/basicObjects/DynamicObject.js";
 import { ShadedObject } from "./classes/basicObjects/ShadedObject.js";
-import { GameSelection } from "./classes/gamestates/GameSelection.js";
+import { VisualObject } from "./classes/basicObjects/VisualObject.js";
+import { InteractableObject } from "./classes/basicObjects/InteractableObject.js";
 
 
 //------------------------------------------------------------------------------------//
@@ -70,7 +77,9 @@ const socket = io();
 //------------------------------------------------------------------------------------//
 //Variables
 
-//let hi = new AnimatedObject("maceHeld", 1, 1920/2, 300, 560, 560, false);
+let temp;
+let temp2;
+let temp3;
 let lastFrameTime = new Date().getTime();
 
 //------------------------------------------------------------------------------------//
@@ -86,6 +95,9 @@ function updateGame() {
 	//Update Display values
 	Display.calcScreenSize();
 
+	//Update AudioPlayer
+	AudioPlayer.update();
+
 	if (Mouse.button2Pressed) {
 		let mouse = [...Display.inverseCalcElementDimensions(Mouse.x, Mouse.y, 0, 0)];
 		console.log([Math.round(mouse[0]), Math.round(mouse[1])]);
@@ -94,13 +106,21 @@ function updateGame() {
 
 	AnimationPlayer.playUnderlayAnimations();
 
-	if (Level.level == 0) {
-		Level.level = 1;
+	if (Game.level == 0) {
+		Game.level = 1;
 		DynamicObject.clear();
 		scene = "initMenu";
 	}
 	
 	switch (scene) {
+		case "none":
+			if (Keyboard.isKeyDown("f")) {
+				Display.draw("redPlayer", 1920/2, 1080/2, 500, 200);
+			}
+			if (Keyboard.isKeyPressed(" ")) {
+				scene = "initClient";
+			}
+			break;
 		//Initializes menu and other client elements
 		case "initClient":
 			Menu.init();
@@ -138,10 +158,10 @@ function updateGame() {
 
 		//Dialogue Gamestate
 		case "initDialogue":
-			Dialogue.loadDialogue(Level.level);
+			Dialogue.loadDialogue(Game.level);
 			scene = "dialogue";
 		case "dialogue":
-			switch (Level.level) {
+			switch (Game.level) {
 				case 1:
 					Display.draw("stoneBrickBackground", 1920/2, 1080/2, 1920, 1080);
 					break;
@@ -163,7 +183,7 @@ function updateGame() {
 			}
 			
 			if (!Dialogue.update()) {
-				Level.level++;
+				//Game.level++;
 				scene = "initDialogue";
 				//scene = "initGame";
 			}
@@ -215,12 +235,24 @@ function updateGame() {
 		//Scene Creator Gamestate
 		case "sceneCreator":
 			if (Keyboard.shiftPressed) {
+				//Respawn entities
+				for (let i = 0; i < Spawner.currentEntities.length; i++) {
+					let curEntity = Spawner.currentEntities[i];
+					switch (curEntity.type) {
+						case "slime":
+							new Slime(curEntity.x, curEntity.y);
+							break;
+						case "skeleton":
+							new Skeleton(curEntity.x, curEntity.y);
+							break;
+						default:
+							console.warn("Undetermined Entity Type: " + curEntity.type + ".");
+					}
+				}
 				Scene.flash();
-				ShadedObject.clear();
-				Game.player1 = new Player(100, 100, "red", "wadfs");
-				Game.player2 = new Player(300, 100, "blue", ["up", "left", "right", "/", "down"]);
-				Level.spawnEntities();
-				scene = "game";
+				Game.spawnPlayers();
+				Game.spawnMovingTiles();
+				document.dispatchEvent(new CustomEvent("sceneChange", {"detail": "game"}));
 			}
 			SceneBuilder.update();
 			break;
@@ -239,7 +271,7 @@ function updateGame() {
 			Scoreboard.init();
 		case "leaderboard":
 			Scoreboard.update();
-			break;
+			break; 
 
 		//Settings Gamestate
 		case "initSettings":
@@ -250,12 +282,16 @@ function updateGame() {
 			
 		//Other Gamestates
 		case "initAnimationTest":
-			AnimationPlayer.load("maceHeld", true);
+			AnimationPlayer.load("effigyAwakens", true);
 			scene = "animationTest";
-			break;
 		case "animationTest":
+			
 			//DynamicObject.updateObjects();
 			//Scene.drawShadedObjects();
+			break;
+		case "initSpawner":
+			Spawner.init();
+			scene = "spawner";
 			break;
 		case "spawner":
 			Spawner.update();
@@ -269,7 +305,6 @@ function updateGame() {
 
 	AnimationPlayer.playOverlayAnimations();
 	
-
 	//Update Pause Menu
 	PauseMenu.update();
 
@@ -279,6 +314,7 @@ function updateGame() {
 	//Reset single frame input varialbes
 	Display.resized = false;
 	Mouse.resetVars();
+	if (Keyboard.isKeyPressed("q")) DataManager.logData();
 	Keyboard.resetVars();
 }
 
@@ -495,18 +531,71 @@ document.addEventListener("emit", (event) => {
 //Catch scene from server
 socket.on("scene", (data) => {
 	console.log("Received Scene Data from Server.");
+	console.log("Clearing data...");
+	DynamicObject.clear();
+	InteractableObject.clear();
+	Scene.decorations = [];
+
+	//Load Decorations
+	console.log("Loading Decorations...");
+	let receivedDecorations = data["decorations"];
 	
+	for (let i = 0; i < receivedDecorations.length; i++) {
+		let curDecor = receivedDecorations[i];
+		Scene.decorations.push(new VisualObject(curDecor["image"], curDecor["x"], curDecor["y"], curDecor["width"], curDecor["height"]));
+	}
+
+	//Load and Spawn Objects
+	console.log("Loading Objects...");
+	let receivedObjects = data["objects"];
+	InteractableObject.interactableObjects = [];
+	
+	for (let i = 0; i < receivedObjects.length; i++) {
+		let curObj = receivedObjects[i];
+		switch (curObj["type"]) {
+			case "chest":
+				new Chest(curObj["x"], curObj["y"], curObj["coinRange"]);
+				break;
+			case "door":
+				new Door(curObj["x"], curObj["y"]);
+				break;
+			default:
+				console.warn("Undetermined Object Type: " + curObj["type"] + ". Creating Standard Object");
+				new ShadedObject(curObj["image"], curObj["orderNum"], curObj["x"], curObj["y"], curObj["width"], curObj["height"], curObj["shade"]);
+		}
+	}
+
+	//Load and Spawn Entities
+	console.log("Loading Entities...");
+	let receivedEntities = data["entities"];
+	Spawner.currentEntities = [];
+	for (let i = 0; i < receivedEntities.length; i++) {
+		let curEntity = receivedEntities[i];
+		//Spawner.currentEntities.push(curEntity);
+		switch (curEntity["type"]) {
+			case "slime":
+				Spawner.currentEntities.push(new Slime(curEntity["x"], curEntity["y"]));
+				break;
+			case "skeleton":
+				Spawner.currentEntities.push(new Skeleton(curEntity["x"], curEntity["y"]));
+				break;
+			default:
+				console.warn("Undetermined Entity Type: " + curEntity["type"] + ". Creating Standard Entity");
+				Spawner.currentEntities.push(new DynamicObject(curEntity["type"], curEntity["orderNum"], curEntity["x"], curEntity["y"], curEntity["width"], curEntity["height"], curEntity["hasCollision"], curEntity["shade"]));
+		}
+	}
+
 	let receivedStructure = data["structure"];
 	let structure = [];
-	
+
 	//Create SceneTiles from scene title values
 	console.log("Loading Structure...");
 	for (let i = 0; i < receivedStructure.length; i++) {
 		structure.push([]);
 		for (let j = 0; j < receivedStructure[i].length; j++) {
-			
+
 			let curTile = receivedStructure[i][j];
-			
+
 			switch (curTile["type"]) {
 				case "SceneTile":
 					structure[i].push(new SceneTile(curTile["image"], curTile["col"], curTile["row"], curTile["hasCollision"]));
@@ -522,62 +611,14 @@ socket.on("scene", (data) => {
 	}
 	console.log("Baking Scene...");
 	Scene.initScene(structure, SceneBuilder.bakeScene(structure));
-	console.log("Scene Baked.");
 	//Link by reference
 	SceneBuilder.structure = Scene.structure;
 	SceneBuilder.shaderStructure = Scene.shaderStructure;
 
-	//Load Decorations
-	console.log("Loading Decorations...");
-	let receivedDecorations = data["decorations"];
-	Scene.decorations = [];
+	console.log("Flashing Scene...");
+	Scene.flash();
 	
-	for (let i = 0; i < receivedDecorations.length; i++) {
-		let curDecor = receivedDecorations[i];
-		Scene.decorations.push(new VisualObject(curDecor["image"], curDecor["x"], curDecor["y"], curDecor["width"], curDecor["height"]));
-	}
-	//Link by reference
-	SceneBuilder.currentDecorations = Scene.decorations;
-
-	//Load and Spawn Objects
-	console.log("Loading Objects...");
-	let receivedObjects = data["objects"];
-	SceneBuilder.currentObjects = [];
-	
-	for (let i = 0; i < receivedObjects.length; i++) {
-		let curObj = receivedObjects[i];
-		SceneBuilder.currentObjects.push(curObj);
-		switch (curObj["type"]) {
-			case "chest":
-				new Chest(curObj["x"], curObj["y"], curObj["coinRange"]);
-			case "door":
-				new Door(curObj["x"], curObj["y"]);
-			default:
-				console.warn("Undetermined Object Type: " + curObj["type"] + ". Creating Standard Object");
-				new ShadedObject(curObj["image"], curObj["orderNum"], curObj["x"], curObj["y"], curObj["width"], curObj["height"], curObj["shade"]);
-		}
-	}
-
-	//Load and Spawn Entities
-	console.log("Loading Entities...");
-	let receivedEntities = data["entities"];
-	SceneBuilder.currentEntities = [];
-	
-	for (let i = 0; i < receivedEntities.length; i++) {
-		let curEntity = receivedEntities[i];
-		SceneBuilder.currentEntities.push(curEntity);
-		switch (curEntity["type"]) {
-			case "slime":
-				new Slime(curEntity["x"], curEntity["y"]);
-			case "skeleton":
-				new Skeleton(curEntity["x"], curEntity["y"]);
-			default:
-				console.warn("Undetermined Entity Type: " + curEntity["type"] + ". Creating Standard Entity");
-				new DynamicObject(curEntity["type"], curEntity["orderNum"], curEntity["x"], curEntity["y"], curEntity["width"], curEntity["height"], curEntity["hasCollision"], curEntity["shade"]);
-		}
-	}
-	
-	console.log("Scene Loading Completed.");
+	console.log("Loading Completed.");
 });
 
 socket.on("leaderboardUpdate", (data) => {

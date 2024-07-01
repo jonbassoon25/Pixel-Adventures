@@ -1,11 +1,12 @@
 //Util Imports
 import { Display } from "../util/Display.js";
 import { Keyboard } from "../util/Keyboard.js";
-import { Level } from "../util/Level.js";
 import { AudioPlayer } from "../util/AudioPlayer.js";
 
 //UI Object Imports
 import { Button } from "../UIObjects/Button.js";
+import { Game } from "../gamestates/Game.js";
+import { Util } from "../util/Util.js";
 
 
 //PauseMenu Class
@@ -54,32 +55,26 @@ export class PauseMenu {
 			Display.draw("upgradePlaque", 960, 540, 351, 513);
 			Display.drawText("Menu", 960 - Display.getTextWidth("Menu", 60)/2, 1080/2 - 160, 60, true, "white");
 			if (this.menuButton.subsistAsButton()) {
-				Level.level = 0;
+				Game.level = 0;
 				this.paused = false;
 			}
 			if (this.audioToggle.subsistAsButton()) {
-				AudioPlayer.muted = !AudioPlayer.muted;
-				if (AudioPlayer.muted) {
-					AudioPlayer.pauseAll();
-				}
+				AudioPlayer.toggleMute();
 			}
 			if (this.audioDown.subsistAsButton()) {
-				console.log(AudioPlayer.volume);
-				if (AudioPlayer.volume > 0) {
-					AudioPlayer.volume -= 0.1;
-					AudioPlayer.updateVolume();
-					AudioPlayer.play("upgrade");
+				if (AudioPlayer.volume > 0.1) {
+					AudioPlayer.updateVolume(Util.round(AudioPlayer.volume - 0.1, 1));
+					console.log(AudioPlayer.volume);
 				}
+				AudioPlayer.play("upgrade");
 			}
 			if (this.audioUp.subsistAsButton()) {
-				console.log(AudioPlayer.volume);
 				if (AudioPlayer.volume < 1) {
-					AudioPlayer.volume += 0.1;
-					AudioPlayer.updateVolume();
-					AudioPlayer.play("upgrade");
+					AudioPlayer.updateVolume(Util.round(AudioPlayer.volume + 0.1, 1));
+					console.log(AudioPlayer.volume);
 				}
+				AudioPlayer.play("upgrade");
 			}
-			
 		}
 	}
 }

@@ -14,13 +14,12 @@ export class Chest extends InteractableObject {
 	//*********************************************************************//
 	//Constructor
 
-	constructor(x, y, coinRange = [6, 12]) {
+	constructor(x, y, coinRange = [8, 12]) {
 		//Image, orderNum, x, y, width, height
 		super("chest", 5, x, y, 40, 40);
 		this.coinRange = coinRange;
 		this.coinRange = coinRange;
 		this.coins = Util.randInt(coinRange[0], coinRange[1]);
-		
 		this.type = "chest";
 	}
 

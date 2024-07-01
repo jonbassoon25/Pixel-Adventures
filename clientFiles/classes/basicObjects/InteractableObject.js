@@ -38,7 +38,7 @@ export class InteractableObject extends ShadedObject {
 	}
 
 	delete() {
-		super.delete();
 		Util.delValue(InteractableObject.interactableObjects, this);
+		super.delete();
 	}
 }

@@ -1,6 +1,4 @@
 //Util Imports
-import { AudioPlayer } from "../util/AudioPlayer.js";
-import { Level } from "../util/Level.js";
 import { Game } from "../gamestates/Game.js";
 import { Player } from "../gameEntities/Player.js";
 
@@ -28,9 +26,8 @@ export class Door extends InteractableObject {
 	 * @param {Player} - The player that is interacting with this InteractableObject
 	 */
 	interactWith(player) {
-		AudioPlayer.play("door");
-		Level.level++;
-		if (Level.level != 4) {
+		Game.level++;
+		if (Game.level != 4) {
 			Player.retainedValues["p1Coins"] = Game.player1.coins;
 			Player.retainedValues["p2Coins"] = Game.player2.coins;
 			Player.retainedValues["p1Score"] = Game.player1.points;

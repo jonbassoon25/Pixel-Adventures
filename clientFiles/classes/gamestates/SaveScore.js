@@ -28,6 +28,7 @@ export class SaveScore extends Gamestate {
 		super.init();
 		AnimationPlayer.load("fadeIn");
 		this.textbox.isSelected = true;
+		this.textbox.text = "";
 		if (Difficulty.pointMultiplier != 0) {
 			this.setScene("saveScore");
 		} else {

@@ -4,8 +4,9 @@ function loadAssets() {
 	let textures = {};
 	//Assign folders to load
 	foldersToLoad["shaders"] = ["shader_black"];
-	foldersToLoad["decorations"] = ["bannerWhite", "bannerWhiteFBLA", "chairLeft", "chairRight", "plant1", "plant2", "woodenTable", "bookshelf", "sunset", "skull"];
-	foldersToLoad["tiles"] = ["stoneBrick", "rottedWoodPlanks", "blueTile", "redTile", "blackTile", "insetLantern", "wood", "dirt"];
+	foldersToLoad["decorations"] = ["bannerWhite", "bannerWhiteFBLA", "chairLeft", "chairRight", "plant1", "plant2", "woodenTable", "bookshelf", "sunset", "skull", "fountain"];
+	foldersToLoad["decorations/vineSets"] = ["plainVineSet1", "plainVineSet2", "flowerVineSet1", "flowerVineSet2", "fruitVineSet1", "fruitVineSet2"];
+	foldersToLoad["tiles"] = ["stoneBrick", "rottedWoodPlanks", "blueTile", "redTile", "blackTile", "insetLantern", "wood", "dirt", "cobblestoneHorizontal", "cobblestoneHorizontalFlipped", "cobblestoneVertical", "cobblestoneHorizontalEndLeft", "cobblestoneHorizontalEndRight", "cobblestoneVerticalEndUp", "cobblestoneVerticalEndDown", "cobblestone"];
 	foldersToLoad["menu"] = ["mainMenuPanoTinted", "plaque", "banner", "stoneBrickBackground", "woodenPlaque", "leaderboardPlaque", "upgradePlaque", "selectionBox", "settings", "flasher1", "flasher2", "buttonPlaque", "transferCoins", "glassPane", "priceTag", "maceWarning", "congratulations", "youDied"];
 	foldersToLoad["buttons"] = ["buttonHovered", "buttonPressed", "playButton", "back", "cog", "leaderboard", "upgradeJump", "upgradeMaxHealth", "upgradeRegen", "upgradeSpeed", "upgradeWeapon", "upgradeSword", "upgradeMace", "continue", "easy", "medium", "hard", "custom", "sliderFrame", "sliderHandle", "saveScore", "textBox", "escape", "musicEnabled", "musicDisabled", "plus", "minus", "help", "redToBlue", "blueToRed", "clickToReturn"];
 	foldersToLoad["util"] = ["placeholder", "crosshair", "visualDimensions", "painting"];
@@ -16,10 +17,10 @@ function loadAssets() {
 	foldersToLoad["items"] = ["coin", "educationShard", "progressShard", "serviceShard", "fbla", "shard1", "shard2", "shard3"];
 	foldersToLoad["weapons/melee"] = ["sword", "mace"];
 	foldersToLoad["monsters"] = ["slime", "skeleton", "skeletonWalk", "skeletonJump"];
+	foldersToLoad["monsters/effigy"] = ["effigy", "effigyWalk", "effigyDormant", "effigyCharge1", "effigyCharge2", "effigyCharge3", "effigyAttack1", "effigyAttack2", "effigyAttack3", "effigyAttack4"];
 	foldersToLoad["particles"] = ["sparkYellow", "sparkOrange", "sparkRed", "death", "glass"];
 	foldersToLoad["specialCharacters"] = ["centCharacter"];
 	foldersToLoad["gameObjects"] = ["chest", "chestOpened", "door", "chestAlt", "chestOpenedAlt", "doorAlt", "doorEdge"];
-	foldersToLoad["decorations/vineSets"] = ["plainVineSet1", "plainVineSet2", "flowerVineSet1", "flowerVineSet2", "fruitVineSet1", "fruitVineSet2"];
 	console.log("Loading Textures...");
 	//For every folder to load
 	for (let currentFolderIndex = 0; currentFolderIndex < Object.keys(foldersToLoad).length; currentFolderIndex++) {

@@ -1,6 +1,7 @@
 //Util Imports
 import { Vector } from "../util/Vector.js";
 import { Scene } from "../util/Scene.js";
+import { Util } from "../util/Util.js";
 
 //UI Object Imports
 
@@ -15,6 +16,8 @@ import { DynamicObject } from "../basicObjects/DynamicObject.js";
 
 //Particle Class
 export class Particle extends DynamicObject {
+	//Static Variables
+	static particles = [];
 	//Constructor
 
 	/**
@@ -47,6 +50,7 @@ export class Particle extends DynamicObject {
 		
 		this.dragMultiplier = dragMultiplier;
 		this.hasGravity = hasGravity;
+		Particle.particles.push(this);
 	}
 
 
@@ -56,7 +60,19 @@ export class Particle extends DynamicObject {
 
 	//*********************************************************************//
 	//Public Methods
-
+	
+	static clear() {
+		for (let i = 0; i < Particle.particles.length; i++) {
+			Particle.particles[i].delete();
+		}
+		Particle.particles = [];
+	}
+	
+	delete() {
+		super.delete();
+		Particle.particles = Util.delValue(Particle.particles, this);
+	}
+	
 	update() {
 		if (!this.hasGravity) {
 			this.velocity.add(Vector.GRAVITY, -1);

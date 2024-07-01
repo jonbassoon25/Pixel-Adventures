@@ -23,7 +23,7 @@ export class Slime extends Enemy {
 	
 	/**Creates a new slime */
 	constructor(x, y) {
-		super("slime", x, y, 30, 30, 100, 25, 100, 1000);
+		super("slime", x, y, 30, 30, 100, 25, 100, 300);
 		this.type = "slime";
 		this.visualWidth = this.width * 1.3;
 		this.visualHeight = this.height * 1.3;
@@ -40,6 +40,7 @@ export class Slime extends Enemy {
 		if (this.isGrounded) {
 			this.velocity.x = 0;
 			if (this.currentAnimation == "jump") {
+				AudioPlayer.play("slime");
 				this.setAnimation("land");
 			}
 		}
@@ -47,13 +48,13 @@ export class Slime extends Enemy {
 			return;
 		}
 		if (this.x%Scene.tileSize == 15 && this.isGrounded) {
-			AudioPlayer.play("slime");
+			//AudioPlayer.play("slime");
 			if (this.currentAnimation == "idle") this.setAnimation("jump");
 			this.accelerations.push(new Vector([2.4, -3]));
 			return;
 		}
 		if (this.x%Scene.tileSize == (Scene.tileSize - 15) && this.isGrounded) {
-			AudioPlayer.play("slime");
+			//AudioPlayer.play("slime");
 			if (this.currentAnimation == "idle") this.setAnimation("jump");
 			this.accelerations.push(new Vector([-2.4, -3]));
 			return;
@@ -78,13 +79,13 @@ export class Slime extends Enemy {
 			if (!(this.velocity.x > this.speed)) {
 				if (this.currentAnimation == "idle") this.setAnimation("jump");
 				this.accelerations.push(new Vector([this.speed/90 * Util.randInt(1, 3), -7]));
-				AudioPlayer.play("slime");
+				//AudioPlayer.play("slime");
 			}
 		} else if (this.x > this.target[0]) {
 			if (!(this.velocity.x < -this.speed)) {
 				if (this.currentAnimation == "idle") this.setAnimation("jump");
 				this.accelerations.push(new Vector([-this.speed/90 * Util.randInt(1, 3), -7]));
-				AudioPlayer.play("slime");
+				//AudioPlayer.play("slime");
 			}
 		} else {
 			this.velocity.x = 0;

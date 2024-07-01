@@ -2,13 +2,13 @@
 import { AnimationPlayer } from "../util/AnimationPlayer.js";
 import { AudioPlayer } from "../util/AudioPlayer.js";
 import { Display } from "../util/Display.js";
-import { Level } from "../util/Level.js";
 
 //UI Object Imports
 import { Button } from "../UIObjects/Button.js";
 
 //Gamestate Imports
 import { Gamestate } from "./Gamestate.js";
+import { Game } from "./Game.js";
 
 //Basic Object Imports
 import { DynamicObject } from "../basicObjects/DynamicObject.js";
@@ -41,7 +41,7 @@ export class Lose extends Gamestate {
 		DynamicObject.clear();
 		ShadedObject.clear();
 		
-		Level.level = 1;
+		Game.level = 1;
 		this.setScene("lose");
 	}
 

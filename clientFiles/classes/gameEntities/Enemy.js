@@ -34,6 +34,7 @@ export class Enemy extends NPC {
 		this.target = [x, y];
 		this.returnPoint = [x, y];
 		this.knockbackMultiplier = knockbackMultiplier;
+		this.tags = [];
 	}
 
 	//*********************************************************************//
@@ -57,7 +58,7 @@ export class Enemy extends NPC {
 		for (let i = 0; i < DynamicObject.dynamicObjects.length; i++) {
 			let curObj = DynamicObject.dynamicObjects[i];
 			if (curObj instanceof Player && !curObj.isDead) {
-				if ((Math.abs(curObj.x - this.x) < distance || distance == -1) && (this.y - Scene.tileSize * 3 < curObj.y && this.y + Scene.tileSize * 3 > curObj.y)) {
+				if ((Math.abs(curObj.x - this.x) < distance || distance == -1) && (this.y - Scene.tileSize * 3 < curObj.y && this.y + Scene.tileSize * 2 > curObj.y)) {
 					distance = Math.abs(curObj.x - this.x);
 					this.target = [curObj.x, curObj.y];
 				}

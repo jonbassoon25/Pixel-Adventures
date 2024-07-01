@@ -1,4 +1,5 @@
 //Util Imports
+import { AudioPlayer } from "../util/AudioPlayer.js";
 import { Display } from "../util/Display.js";
 import { Vector } from "../util/Vector.js";
 import { Util } from "../util/Util.js";
@@ -64,16 +65,7 @@ export class Mace extends MeleeWeapon {
 				this.parent.setAnimation("maceAttack");
 			}
 		} else if (this.parent.type == "effigy") {
-			if (this.currentAnimation == "charge" && this.currentFrame != 35) {
-				this.currentAnimation = "cancelCharge";
-				this.currentFrame = 35 - this.currentFrame;
-				//Update the current keyframe
-				super.update(false, false, true);
-				//Update player animation
-				this.parent.currentAnimation = "maceCancelCharge";
-				this.parent.currentFrame = 35 - this.parent.currentFrame;
-				this.parent.update(true);
-			} else if (this.currentAnimation == "charge") {
+			if (this.currentAnimation == "idle") {
 				this.setAnimation("attack");
 				this.parent.setAnimation("maceAttack");
 			}
@@ -86,7 +78,7 @@ export class Mace extends MeleeWeapon {
 	
 	update() {
 		super.update();
-		if (this.parent.velocity.x != 0 && this.currentAnimation == "idle" && Display.frames % 4 == 0) {
+		if (this.parent.velocity.x != 0 && this.currentAnimation == "idle" && Display.frames % 4 == 0 && !(this.parent.type == "effigy")) {
 		new Particle("spark", this.x - (22 * ((this.parent.flipped)? -1 : 1)), this.y + 19, 6, 6, new Vector([((Util.randInt(1) == 0)? 2 : -2) * Math.random(), Math.random() * -3]), 0.25);
 		}
 		//Restrict the speed of the player when used
@@ -102,6 +94,7 @@ export class Mace extends MeleeWeapon {
 			}
 		}
 		if (this.currentFrame == 15 && this.currentAnimation == "attack") {
+			AudioPlayer.play("maceHit");
 			let attackBox = new VisualObject("placeholder", this.parent.x + 22 * (this.parent.flipped? -1 : 1), this.parent.y, this.reach, this.parent.height);
 			//Damage Enemies
 			for (let i = 0; i < DynamicObject.dynamicObjects.length; i++) {
@@ -111,6 +104,7 @@ export class Mace extends MeleeWeapon {
 					continue;
 				}
 				if (attackBox.isColliding(curObj)) {
+					if (curObj.type == "effigy" && curObj.currentAnimation == "statue") continue;
 					if (curObj instanceof Healthbar) continue;
 					let radius = 100; //attackEfficacy is currently inversely linearly proportional to curObj's distance from the strike point. At (radius) pixels away, the attackEfficacy will be 0, at 0 pixels away, it will be 1 (max).
 					let strikePoint = new Vector([this.x + (this.parent.flipped? -22 : 22), this.y + 19]);
