@@ -104,12 +104,11 @@ export class Mace extends MeleeWeapon {
 					continue;
 				}
 				if (attackBox.isColliding(curObj)) {
-					if (curObj.type == "effigy" && curObj.currentAnimation == "statue") continue;
-					if (curObj instanceof Healthbar) continue;
+					if (curObj.type == "effigy" && (curObj.currentAnimation == "statue" || curObj.currentAnimation == "maceCharge")) continue;
+					if (curObj instanceof Healthbar || curObj instanceof InteractableObject) continue;
 					let radius = 100; //attackEfficacy is currently inversely linearly proportional to curObj's distance from the strike point. At (radius) pixels away, the attackEfficacy will be 0, at 0 pixels away, it will be 1 (max).
 					let strikePoint = new Vector([this.x + (this.parent.flipped? -22 : 22), this.y + 19]);
 					let attackEfficacy = Keyframe.getRawValue((radius - Util.pythagorean(strikePoint.x - curObj.x, 1/3 * (strikePoint.y - curObj.y)))/radius, "linear");
-					console.log("Strike efficacy: " + attackEfficacy);
 					curObj.health -= attackEfficacy * this.damage;
 					let tempKnockback = new Vector([this.knockback.x, this.knockback.y]);
 					this.knockback.multiply(attackEfficacy);

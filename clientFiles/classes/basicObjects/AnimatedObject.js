@@ -820,6 +820,126 @@ export class AnimatedObject extends ShadedObject {
 					"frames": 0
 				}
 			]
+		},
+		"chest": {
+			"idle": [
+				{
+					"image": "chestClosed",
+					"initialDimensions": [40, 40],
+					"frames": 0
+				}
+			],
+			"open": [
+				{
+					"image": "chestOpening1",
+					"initialDimensions": [40, 40],
+					"frames": 7
+				}, 
+				{
+					"image": "chestOpening2",
+				},
+				{
+					"image": "chestOpening3",
+				},
+				{
+					"image": "chestOpen",
+				},
+				{
+					"frames": -1
+				}
+			]
+		},
+		"redGrave": {
+			"idle": [
+				{
+					"image": "redGrave",
+					"initialDimensions": [40, 40],
+					"frames": 0
+				}
+			],
+			"flower": [
+				{
+					"image": "redFlower",
+					"initialPosition": [7, 13],
+					"initialDimensions": [27, 13],
+					"initialRotation": 0,
+					"finalRotation": 360,
+					"frames": 60
+				},
+				{"frames": -1}
+			],
+			"spawn": [
+				{
+					"image": "redGrave",
+					"initialPosition": [0, 20],
+					"finalPosition": [0, 0],
+					"initialDimensions": [40, 0],
+					"finalDimensions": [40, 40],
+					"frames": 45
+				}
+			],
+			"despawn": [
+				{
+					"image": "redGrave",
+					"initialPosition": [0, 0],
+					"finalPosition": [0, 20],
+					"initialDimensions": [40, 40],
+					"finalDimensions": [40, 0],
+					"frames": 45
+				}
+			]
+		},
+		"blueGrave": {
+			"idle": [
+				{
+					"image": "blueGrave",
+					"initialDimensions": [40, 40],
+					"frames": 0
+				}
+			],
+			"flower": [
+				{
+					"image": "blueFlower",
+					"initialPosition": [7, 13],
+					"initialDimensions": [27, 13],
+					"initialRotation": 0,
+					"finalRotation": 360,
+					"frames": 60
+				},
+				{"frames": -1}
+			],
+			"spawn": [
+				{
+					"image": "blueGrave",
+					"initialPosition": [0, 20],
+					"finalPosition": [0, 0],
+					"initialDimensions": [40, 0],
+					"finalDimensions": [40, 40],
+					"frames": 45,
+					"transitionType": "sinusoidal"
+				}
+			],
+			"despawn": [
+				{
+					"image": "blueGrave",
+					"initialPosition": [0, 0],
+					"finalPosition": [0, 20],
+					"initialDimensions": [40, 40],
+					"finalDimensions": [40, 0],
+					"frames": 45,
+					"transitionType": "sinusoidal"
+				}
+			]
+		},
+		"door": {
+			"idle": [
+				{
+					"image": "door",
+					"initialPosition": [0, 0],
+					"initialDimensions": [40, 60],
+					"frames": 0
+				}
+			]
 		}
 	}
 
@@ -847,14 +967,14 @@ export class AnimatedObject extends ShadedObject {
 						if (currentKeyframe["image"] == undefined) {
 							throw new SyntaxError("\nNo Initial Image in Weapon Animation: " + objKey + "_" + key);
 						}
-						if (currentKeyframe["initialPosition"] == undefined) {
-							throw new SyntaxError("\nNo Initial Position in Weapon Animation: " + objKey + "_" + key);
-						}
 						if (currentKeyframe["initialDimensions"] == undefined) {
 							throw new SyntaxError("\nNo Initial Dimensions in Weapon Animation: " + objKey + "_" + key);
 						}
 
 						//Implicitly defined elements
+						if (currentKeyframe["initialPosition"] == undefined) {
+							currentKeyframe["initialPosition"] = [0, 0]
+						}
 						if (currentKeyframe["finalPosition"] == undefined) {
 							currentKeyframe["finalPosition"] = currentKeyframe["initialPosition"];
 						}

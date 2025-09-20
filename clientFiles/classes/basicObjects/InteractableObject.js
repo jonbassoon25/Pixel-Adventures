@@ -2,10 +2,10 @@
 import { Util } from "../util/Util.js";
 
 //Basic Object Imports
-import { ShadedObject } from "./ShadedObject.js";
+import { DynamicObject } from "./DynamicObject.js";
 
 //Interactable Object Class
-export class InteractableObject extends ShadedObject {
+export class InteractableObject extends DynamicObject {
 	//Static Variables
 
 	static interactableObjects = [];
@@ -20,9 +20,9 @@ export class InteractableObject extends ShadedObject {
 
 	//*********************************************************************//
 	//Constructor
-
-	constructor(image, orderNum, x, y, width, height) {
-		super(image, orderNum, x, y, width, height);
+	//type, orderNum, x, y, width, height
+	constructor(type, orderNum, x, y, width, height) {
+		super(type, orderNum, x, y, width, height);
 		
 		InteractableObject.interactableObjects.push(this);
 	}

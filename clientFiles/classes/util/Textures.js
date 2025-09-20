@@ -18,9 +18,9 @@ function loadAssets() {
 	foldersToLoad["weapons/melee"] = ["sword", "mace"];
 	foldersToLoad["monsters"] = ["slime", "skeleton", "skeletonWalk", "skeletonJump"];
 	foldersToLoad["monsters/effigy"] = ["effigy", "effigyWalk", "effigyDormant", "effigyCharge1", "effigyCharge2", "effigyCharge3", "effigyAttack1", "effigyAttack2", "effigyAttack3", "effigyAttack4"];
-	foldersToLoad["particles"] = ["sparkYellow", "sparkOrange", "sparkRed", "death", "glass"];
+	foldersToLoad["particles"] = ["sparkYellow", "sparkOrange", "sparkRed", "death", "glass", "blueFlower", "redFlower"];
 	foldersToLoad["specialCharacters"] = ["centCharacter"];
-	foldersToLoad["gameObjects"] = ["chest", "chestOpened", "door", "chestAlt", "chestOpenedAlt", "doorAlt", "doorEdge"];
+	foldersToLoad["gameObjects"] = ["chestClosed", "chestOpening1", "chestOpening2", "chestOpening3", "chestOpen", "door", "doorEdge"];
 	console.log("Loading Textures...");
 	//For every folder to load
 	for (let currentFolderIndex = 0; currentFolderIndex < Object.keys(foldersToLoad).length; currentFolderIndex++) {

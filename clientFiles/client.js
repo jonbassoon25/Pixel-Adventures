@@ -1,5 +1,5 @@
 /*
-Created by Jonathan Hanson, Zac Young, Mariasha Taariq
+Created by Jonathan Hanson and Zac Young
 
 client.js
 
@@ -56,7 +56,6 @@ import { Door } from "./classes/gameObjects/Door.js";
 import { Player } from "./classes/gameEntities/Player.js";
 import { Skeleton } from "./classes/gameEntities/Skeleton.js";
 import { Slime } from "./classes/gameEntities/Slime.js";
-import { MovingTileSet } from "./classes/gameEntities/MovingTileSet.js";
 
 //Basic Object Imports
 import { AnimatedObject } from "./classes/basicObjects/AnimatedObject.js";
@@ -77,13 +76,7 @@ const socket = io();
 //------------------------------------------------------------------------------------//
 //Variables
 
-let temp;
-let temp2;
-let temp3;
 let lastFrameTime = new Date().getTime();
-
-//------------------------------------------------------------------------------------//
-//Util Functions
 
 //------------------------------------------------------------------------------------//
 //Main Function
@@ -443,8 +436,10 @@ document.addEventListener("keydown", (event) => {
 			Keyboard.keyDown("/");
 			break;
 		case "Backquote":
-			Keyboard.backquoteDown = true;
-			Keyboard.backquotePressed = true;
+			if (Settings.debug) {
+				Keyboard.backquoteDown = true;
+				Keyboard.backquotePressed = true;
+			}
 			break;
 		default:
 			if (event.key.length !== 1) {

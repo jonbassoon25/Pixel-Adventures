@@ -14,9 +14,8 @@ export class Door extends InteractableObject {
      * @param {number} y - y position of the middle of the bottom of the door
      */
     constructor(x, y) {
-        super("door", 5, x, y, 40, 60);
-		this.yOffset = -10;
-		this.type = "door";
+        super("door", 5, x, y - 10, 40, 60);
+		this.levelInc = 1
     }
 
     //*********************************************************************//
@@ -26,7 +25,8 @@ export class Door extends InteractableObject {
 	 * @param {Player} - The player that is interacting with this InteractableObject
 	 */
 	interactWith(player) {
-		Game.level++;
+		Game.level += this.levelInc;
+		this.levelInc = 0
 		if (Game.level != 4) {
 			Player.retainedValues["p1Coins"] = Game.player1.coins;
 			Player.retainedValues["p2Coins"] = Game.player2.coins;

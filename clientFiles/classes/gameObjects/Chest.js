@@ -15,12 +15,10 @@ export class Chest extends InteractableObject {
 	//Constructor
 
 	constructor(x, y, coinRange = [8, 12]) {
-		//Image, orderNum, x, y, width, height
+		//type, orderNum, x, y, width, height
 		super("chest", 5, x, y, 40, 40);
 		this.coinRange = coinRange;
-		this.coinRange = coinRange;
 		this.coins = Util.randInt(coinRange[0], coinRange[1]);
-		this.type = "chest";
 	}
 
 	//*********************************************************************//
@@ -35,13 +33,10 @@ export class Chest extends InteractableObject {
 	 * @param {Player} - The player that is interacting with this ChestTile
 	 */
 	interactWith(player) {
+		if (this.currentAnimation == "open") return;
 		player.coins += this.coins;
 		player.points += this.coins * Chest.pointsPerCoin;
 		this.coins = 0;
-	}
-
-	/** Draws this chest */
-	draw() {
-		Display.draw(((this.coins == 0)? "chestOpened" : "chest"), this.x, this.y, this.width, this.height);
+		this.setAnimation("open")
 	}
 }

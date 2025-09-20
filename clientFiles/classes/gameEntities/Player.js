@@ -2,8 +2,8 @@
 import { AudioPlayer } from "../util/AudioPlayer.js";
 import { Display } from "../util/Display.js";
 import { Keyboard } from "../util/Keyboard.js";
-import { Scene } from "../util/Scene.js";
 import { Mouse } from "../util/Mouse.js";
+import { Util } from "../util/Util.js";
 
 //Game Entity Imports
 import { Slime } from "./Slime.js";
@@ -182,6 +182,7 @@ export class Player extends DynamicObject {
 	}
 
 	#spawnGrave() {
+		/*
 		let col;
 		let row;
 		[col, row] = Scene.calcBlockCoordinates(this.x, this.y);
@@ -218,7 +219,9 @@ export class Player extends DynamicObject {
 			}
 			potentialTile = Scene.structure[nextRow][nextCol];
 		}
-		new Grave(this, ...Scene.inverseCalcBlockCoordinates(potentialTile.col, potentialTile.row));
+		new Grave(this, ...Scene.inverseCalcBlockCoordinates(potentialTile.col, potentialTile.row), this.velocity);
+		*/
+		new Grave(this, this.x, this.y + this.height / 2 - 20, new Vector(this.velocity.componatizedVector), Util.clone(this.accelerations));
 	}
 
 	#takeDamage() {

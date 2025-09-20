@@ -87,60 +87,14 @@ export class Scene {
 	
 	/** Draws the shaders for all shadedObjects */
 	static drawShadedObjects() {
-		let curObj;
-		//Update Tile Backgrounds
-		
-		/*for (let i = Object.keys(ShadedObject.shadedObjects).length - 1; i >= 0; i--) {
-			for (let j = 0; j < Object.values(ShadedObject.shadedObjects)[i].length; j++) {
-				//Assign current object
-				curObj = Object.values(ShadedObject.shadedObjects)[i][j];
-				if (!curObj.shaded) continue;
-				if (curObj instanceof MovingTileSet) continue;
-				Display.drawData(this.tileBackground, 0, 0, ...curObj.vUpperLeft, curObj.visualWidth, curObj.visualHeight);
-			}
-			
-		}*/
-
 		//Draw Shaded Objects
 		for (let i = Object.keys(ShadedObject.shadedObjects).length - 1; i >= 0; i--) {
 			for (let j = 0; j < Object.values(ShadedObject.shadedObjects)[i].length; j++) {
 				//Draw current object
 				Object.values(ShadedObject.shadedObjects)[i][j].draw();
 			}
-
 		}
-
 		Display.drawCanvas(this.shaderBackground);
-
-		//Display.updateCurrentData();
-
-		//Update Shader Overlay
-		/*for (let i = Object.keys(ShadedObject.shadedObjects).length - 1; i >= 0; i--) {
-			for (let j = 0; j < Object.values(ShadedObject.shadedObjects)[i].length; j++) {
-				curObj = Object.values(ShadedObject.shadedObjects)[i][j];
-				if (!curObj.shaded) continue;
-				if (!(curObj instanceof MovingTileSet)) {
-					Display.drawData(this.shaderBackground, 0, 0, ...curObj.vUpperLeft, curObj.visualWidth, curObj.visualHeight, true);
-				} else {
-					switch(curObj.direction) {
-						case "up":
-							Display.drawData(this.shaderBackground, 0, 0, curObj.upperLeft[0], curObj.upperRight[1], curObj.visualWidth, curObj.visualHeight * Keyframe.getRawValue((curObj.time - curObj.currentFrame) / curObj.time, "sinusoidal"), true);
-							break;
-						case "left":
-							Display.drawData(this.shaderBackground, 0, 0, curObj.upperLeft[0], curObj.upperRight[1], curObj.visualWidth * Keyframe.getRawValue((curObj.time - curObj.currentFrame) / curObj.time, "sinusoidal"), curObj.visualHeight, true);
-							break;
-						case "down":
-							Display.drawData(this.shaderBackground, 0, 0, curObj.upperLeft[0], curObj.upperRight[1], curObj.visualWidth, curObj.visualHeight * Keyframe.getRawValue((curObj.time - curObj.currentFrame) / curObj.time, "sinusoidal"), true);
-							break;
-						case "right":
-							Display.drawData(this.shaderBackground, 0, 0, curObj.upperLeft[0], curObj.upperRight[1], curObj.visualWidth * Keyframe.getRawValue((curObj.time - curObj.currentFrame) / curObj.time, "sinusoidal"), curObj.visualHeight, true);
-							break;
-						default:
-							console.log("illegal direction in MovingTileSet " + this.direction);
-					}
-				}
-			}
-		}*/
 	}
 
 	/**

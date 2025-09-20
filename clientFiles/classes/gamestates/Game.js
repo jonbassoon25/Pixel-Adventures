@@ -32,6 +32,7 @@ import { ShadedObject } from "../basicObjects/ShadedObject.js";
 import { Util } from "../util/Util.js";
 import { Shop } from "./Shop.js";
 import { Effigy } from "../gameEntities/Effigy.js"
+import { Settings } from "./Settings.js";
 
 
 
@@ -207,6 +208,10 @@ export class Game extends Gamestate {
 
 				if (Keyboard.backquoteDown && Keyboard.isKeyPressed("p")) {
 					Game.spawnPlayers();
+				}
+
+				if (Keyboard.backquoteDown && Keyboard.isKeyPressed("v")) {
+					Game.player1.die();
 				}
 
 				Scene.drawBackground();

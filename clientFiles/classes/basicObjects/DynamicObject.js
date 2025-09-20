@@ -175,7 +175,7 @@ export class DynamicObject extends AnimatedObject {
 				let check3 = (this.x - this.width/2 != tileSet.realX + tileSet.realWidth/2);
 				//Prevents horizontal collisions while travelling horizontally across tileSets
 				let check4 = !check1 && (this.y + this.height/2 <= tileSet.realY - tileSet.realHeight/2 + Vector.GRAVITY.magnitude);
-				//Top of this and bottom of sceneTile aren't the same
+				//Top of this and bottom of tileSet aren't the same
 				let check5 = (this.y - this.height/2 == tileSet.realY + tileSet.realHeight/2);
 				if ((check1 && check2 && check3) || check4 || check5) {
 					//Vertical collision
